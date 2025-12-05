@@ -21,6 +21,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role',
     ];
 
     /**
@@ -44,5 +45,41 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    // Relationships
+    public function profile()
+    {
+        return $this->hasOne(UserProfile::class);
+    }
+
+    public function projectMembers()
+    {
+        return $this->hasMany(ProjectMember::class);
+    }
+
+    public function projects()
+    {
+        return $this->belongsToMany(Project::class, 'project_members')->withPivot('role');
+    }
+
+    public function equipmentBookings()
+    {
+        return $this->hasMany(EquipmentBooking::class);
+    }
+
+    public function notifications()
+    {
+        return $this->hasMany(Notification::class);
+    }
+
+    public function contactResponses()
+    {
+        return $this->hasMany(ContactResponse::class, 'admin_id');
+    }
+
+    public function isAdmin()
+    {
+        return $this->role === 'admin';
     }
 }
