@@ -1,16 +1,20 @@
 <template>
-  <NavigationBar />
+
+  <NavigationBar v-if="!isAdminRoute" />
   <router-view />
-  <Footer></Footer>
+  <Footer v-if="!isAdminRoute" />
 </template>
 
 <script setup>
-import Footer from './components/Footer/Footer.vue';
-import NavigationBar from './components/header/NavigationBar.vue';
-const components = {
-  NavigationBar,
-  Footer
-};
+import { useRoute } from 'vue-router'
+import Footer from './components/Footer/Footer.vue'
+import NavigationBar from './components/header/NavigationBar.vue'
+
+
+const route = useRoute()
+
+import { computed } from 'vue'
+const isAdminRoute = computed(() => route.path.startsWith('/admin'))
 </script>
 
 <style>
