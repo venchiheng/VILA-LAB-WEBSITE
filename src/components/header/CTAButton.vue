@@ -12,6 +12,7 @@
     color: var(--color-primary);
     font-weight: 600;
     padding: 8px 20px;
+    height: 42px;
     border-radius: 9999px;
     transition: background 0.2s;
 }

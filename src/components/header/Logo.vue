@@ -1,22 +1,3 @@
-<script setup>
-import logoImg from '@/assets/logo/VilaLab.png'
-
-const props = defineProps({
-    size: {
-        type: Number,
-        default: 60, // width & height of logo image
-    },
-    label: {
-        type: String,
-        default: 'ViLa Lab'
-    },
-    fontSize: {
-        type: Number,
-        default: 24 // font size for the label in pixels
-    }
-})
-</script>
-
 <template>
     <div class="logo-container">
         <!-- Logo image -->
@@ -27,6 +8,25 @@ const props = defineProps({
         <span class="logo-label" :style="{ fontSize: props.fontSize + 'px' }">{{ props.label }}</span>
     </div>
 </template>
+
+<script setup>
+import logoImg from '@/assets/logo/VilaLab.png'
+
+const props = defineProps({
+    size: {
+        type: Number,
+        default: 60,
+    },
+    label: {
+        type: String,
+        default: 'ViLa Lab'
+    },
+    fontSize: {
+        type: Number,
+        default: 24
+    }
+})
+</script>
 
 <style scoped>
 .logo-container {
@@ -51,8 +51,8 @@ const props = defineProps({
 }
 
 .logo-label {
-    font-weight: 700;
-    white-space: nowrap;
+    font-weight: 500;
+ 
     color: var(--color-bg);
 }
 </style>
