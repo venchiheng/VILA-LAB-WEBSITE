@@ -1,10 +1,12 @@
 <template>
-  <div >
-    <navigation/>
-    
+  <div>
+    <h1>To be constructed...</h1>
+    <!-- <ProjectSection />   -->
   </div>
+
+
 </template>
 
 <script setup>
-import Navigation from '@/components/header/Navigation.vue'
+import ProjectSection from '@/components/showcase/ProjectShowcase.vue'
 </script>
