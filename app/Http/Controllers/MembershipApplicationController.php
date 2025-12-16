@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\MembershipApplication;
+use App\Models\User;
 use App\Http\Resources\MembershipApplicationResource;
 use App\Services\MembershipService;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests; 
@@ -54,16 +55,27 @@ class MembershipApplicationController extends Controller
     }
 
 
+public function approve($id)
+{
+    $application = MembershipApplication::findOrFail($id);
+    $this->authorize('approve', $application);
 
-    public function approve($id)
-    {
-        $application = MembershipApplication::findOrFail($id);
-        $this->authorize('approve', $application);
+    $approved = $this->service->approveApplication(
+        $application,
+        auth()->id()
+    );
 
-        $approved = $this->service->approveApplication($application, auth()->id());
+    $user = User::where('email', $approved->email)->first();
 
-        return new MembershipApplicationResource($approved);
-    }
+    return response()->json([
+        'message' => 'Application approved successfully',
+        'data' => [
+            'application' => new MembershipApplicationResource($approved),
+            'member_code' => $user?->member_code,
+            'user_id' => $user?->id,
+        ]
+    ]);
+}
 
     
 
