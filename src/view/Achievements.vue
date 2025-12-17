@@ -16,10 +16,6 @@
           :event="item.event"
           :year="item.year"
           :image="item.image"
-          :authors="item.authors"
-          :journal="item.journal"
-          :pdf="item.pdf"
-          :doi="item.doi"
         />
       </v-col>
     </v-row>
@@ -27,21 +23,12 @@
 </template>
 
 <script setup>
-import AchievementCard from '@/components/achievement/AchievementCard.vue'
+import AchievementCard from '@/components/achievement/achievementcard.vue'
 
 const achievements = [
   {
-    title: 'Generative Adversarial Networks for Realistic Image Synthesis',
-    description: 'A brief description of the achievement.',
-    event: 'Vision Conference',
-    year: 2023,
     image: '/src/assets/achievement/achievementcard1.png',
-    authors: 'J. Doe, A. Smith, B. Johnson',
-    journal: 'Journal of Vision and Learning, 2023',
-    pdf: '/files/paper.pdf', // uploaded file path
-    doi: 'https://doi.org/10.1234/example'
   },
-  // add more achievements here
 ]
 </script>
 
