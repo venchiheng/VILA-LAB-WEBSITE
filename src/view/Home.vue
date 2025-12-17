@@ -4,6 +4,16 @@
     <!-- <ProjectSection />   -->
   </div>
 
+  <div class="projects-grid">
+    <ProjectCard
+      v-for="project in projects"
+      :key="project.id"
+      :project-name="project.projectName"
+      :description="project.description"
+      :image="project.image"
+    />
+  </div>
+
   <div class="member-grid">
     <ResearchMemberCard
       v-for="member in members"
@@ -21,7 +31,32 @@
 <script setup>
 import ProjectSection from '@/components/showcase/ProjectShowcase.vue'
 
+import ProjectCard from '../components/project/ProjectCard.vue'
 import ResearchMemberCard from '../components/research-member/ResearchMemberCard.vue'
+
+const projects = [
+  {
+    id: 1,
+    projectName: 'OUK CHAKTRANG',
+    description:
+      'Play the game online, anytime, anywhere! Choose Classic Mode for casual play or Ranked Mode to climb the leaderboard. Love the experience ...',
+    image: '/src/assets/project/chatbot.png',
+  },
+  {
+    id: 2,
+    projectName: 'KHMER ONLINE HANDWRITING',
+    description:
+      'The collection of Khmer handwriting data is significant for supporting AI research on the Khmer language. Your participation in providing handwriting samples is extremely ...',
+    image: '/src/assets/project/khmer-handwriting.png',
+  },
+  {
+    id: 3,
+    projectName: 'AIR HANDWRITING FOR KHMER CHARACTERS',
+    description:
+      'The collection of Khmer handwriting data is significant for supporting AI research on the Khmer languages ...',
+    image: '/src/assets/project/air-handwriting.png',
+  },
+]
 
 const members = [
   {
@@ -73,6 +108,19 @@ const goToDetail = (id) => {
 </script>
 
 <style scoped>
+
+.projects-grid {
+  background-color: var(--color-bg);
+  padding: 100px 0px 100px 100px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(288px, 1fr));
+  gap: 40px;
+  max-width: 1440px;
+  margin: 0 auto;
+  justify-items: center;
+  direction: rtl;
+}
+
 .member-grid {
   /* display: grid; */
   padding: 100px 80px 156px 80px;

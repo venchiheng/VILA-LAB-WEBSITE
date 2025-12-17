@@ -127,6 +127,7 @@ const statusClass = computed(() => {
 .title {
   color: var(--color-text);
   text-align: left;
+  width: 50%;
 }
 
 .spec {
