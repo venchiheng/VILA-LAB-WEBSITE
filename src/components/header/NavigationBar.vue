@@ -10,7 +10,7 @@
 
       <div class="nav-actions">
         <SettingsButton :isActive="false"/>
-        <CTAButton />
+        <CTAButton :isActive="false"/>
       </div>
     </div>
 
@@ -31,13 +31,12 @@ import { useScreenStore } from '../../stores/responsiveStore'
 const navStore = useNavStore()
 const screenStore = useScreenStore()
 const navItems = [
-  { label: 'Home', path: '/home', isActive: true },
-  { label: 'About Lab', path: '/aboutlab', isActive: false },
-  { label: 'Achievements', path: '/achievements', isActive: false },
-  { label: 'Projects', path: '/projects', isActive: false },
-  { label: 'Contact Us', path: '/contactus', isActive: false }
+  { label: 'Home', path: '/home' },
+  { label: 'About Lab', path: '/aboutlab' },
+  { label: 'Achievements', path: '/achievements' },
+  { label: 'Projects', path: '/projects' },
+  { label: 'Contact Us', path: '/contactus' }
 ]
-
 </script>
 
 <style scoped>

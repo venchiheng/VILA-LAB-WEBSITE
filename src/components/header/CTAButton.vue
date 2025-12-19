@@ -1,11 +1,23 @@
-<script setup></script>
-
 <template>
-    <button class="cta-button">
+    <button class="cta-button" :class="{ active: isActive }" @click="goToEquipments">
         Become a member
     </button>
 </template>
 
+<script setup>
+import { computed } from 'vue'
+import { Icon } from '@iconify/vue'
+import { useRouter, useRoute } from 'vue-router'
+
+const router = useRouter()
+const route = useRoute()
+
+const isActive = computed(() => route.path === '/becomemember')
+
+function goToEquipments() {
+  router.push('/becomemember')
+}
+</script>
 <style scoped>
 .cta-button {
     background-color: var(--color-bg);
@@ -19,5 +31,10 @@
 
 .cta-button:hover {
     background-color: var(--color-bg);
+}
+
+.cta-button.active {
+    background-color: var(--color-primary);
+    color: white;
 }
 </style>
