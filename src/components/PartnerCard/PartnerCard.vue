@@ -1,35 +1,66 @@
+<!-- src/components/PartnerCard/PartnerCard.vue -->
 <template>
-  <div class="circle-logo" @click="triggerUpload">
-    <input
-      ref="fileInput"
-      type="file"
-      accept="image/*"
-      class="hidden-input"
-      @change="onFileChange"
-    />
+  <div class="partner-card">
+    <div class="circle-logo" :style="logoStyle">
+      <v-img
+        v-if="imagePreview"
+        :src="imagePreview"
+        class="logo-img"
+        :contain="fit === 'contain'"
+        :cover="fit === 'cover'"
+      />
+    </div>
 
-    <v-img
-      v-if="imagePreview"
-      :src="imagePreview"
-      contain
-      class="logo-img"
-    />
+    <div class="partner-info">
+      <h3 v-if="name" class="partner-name">{{ name }}</h3>
+      <p v-if="title" class="partner-title">{{ title }}</p>
+
+      <a
+        v-if="link"
+        :href="link"
+        target="_blank"
+        class="partner-link"
+        rel="noopener"
+      >
+        {{ linkText }}
+      </a>
+    </div>
   </div>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { computed } from 'vue'
 
 const props = defineProps({
   image: {
-    type: [String, Object],
+    type: [String, File, Blob],
+    default: null
+  },
+  name: {
+    type: String,
     default: ''
+  },
+  title: {
+    type: String,
+    default: ''
+  },
+  link: {
+    type: String,
+    default: ''
+  },
+  linkText: {
+    type: String,
+    default: 'Visit'
+  },
+  size: {
+    type: Number,
+    default: 180
+  },
+  fit: {
+    type: String,
+    default: 'cover' // cover | contain
   }
 })
-
-const emit = defineEmits(['update:image'])
-
-const fileInput = ref(null)
 
 const imagePreview = computed(() => {
   if (!props.image) return ''
@@ -38,29 +69,30 @@ const imagePreview = computed(() => {
     : URL.createObjectURL(props.image)
 })
 
-const triggerUpload = () => {
-  fileInput.value.click()
-}
-
-const onFileChange = (e) => {
-  const file = e.target.files[0]
-  if (file) emit('update:image', file)
-}
+const logoStyle = computed(() => ({
+  width: `${props.size}px`,
+  height: `${props.size}px`
+}))
 </script>
 
 <style scoped>
+.partner-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
 .circle-logo {
-  width: 200px;
-  height: 200px;
-  background: var(--color-secondary);
   border-radius: 50%;
-  padding: 20px;
-  box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+  background-color: var(--color-bg);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
+  overflow: hidden;
   transition: transform 0.3s ease;
+  margin-bottom: 12px;
 }
 
 .circle-logo:hover {
@@ -68,25 +100,34 @@ const onFileChange = (e) => {
 }
 
 .logo-img {
-  max-width: 85%;
-  max-height: 85%;
+  width: 100%;
+  height: 100%;
 }
 
-.placeholder-text {
+.partner-name {
   font-weight: 600;
-  color: #222;
-  text-align: center;
+  font-size: 18px;
+  margin: 4px 0;
+  color: var(--color-text);
 }
 
-.hidden-input {
-  display: none;
+.partner-title {
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--color-text);
+  margin-bottom: 6px;
 }
 
-/* Mobile */
-@media (max-width: 600px) {
-  .circle-logo {
-    width: 140px;
-    height: 140px;
-  }
+.partner-link {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-primary);
+  text-decoration: none;
+  transition: color 0.25s;
+}
+
+.partner-link:hover {
+  color: var(--color-secondary);
+  text-decoration: underline;
 }
 </style>
