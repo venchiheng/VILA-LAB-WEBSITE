@@ -9,21 +9,33 @@ class MembershipApplication extends Model
 {
     use HasFactory;
 
-    protected $table = 'membership_applications';
-
+    
     protected $fillable = [
         'full_name',
+        'gender',
         'email',
+        'qualification',
+        'faculty',
+        'year',
+        'stu_id',
+        'phone_number',
         'cv_path',
-        'google_form_response_url',
+        'motivation',
+        'time_management',
+        'availability',
         'status',
         'reviewed_by',
         'review_notes',
     ];
+
+    
+    public function user()
+    {
+        return $this->hasOne(User::class, 'email', 'email');
+    }
 
     public function reviewer()
     {
         return $this->belongsTo(User::class, 'reviewed_by');
     }
 }
-

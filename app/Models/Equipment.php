@@ -6,15 +6,16 @@ use Illuminate\Database\Eloquent\Model;
 
 class Equipment extends Model
 {
-    public $timestamps = false;
+    public $timestamps = true;
 
     protected $table = 'equipment';
-
+    
     protected $fillable = [
         'name',
         'description',
         'image',
         'availability',
+        'condition',
         'created_at',
     ];
 

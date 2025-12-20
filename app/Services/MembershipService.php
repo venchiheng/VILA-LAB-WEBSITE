@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\MembershipApplication;
 use App\Models\User;
+use Illuminate\Support\Str; 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Carbon\Carbon;
@@ -12,12 +13,27 @@ class MembershipService
 {
     public function createApplication(array $data)
     {
-        $data['status'] = 'pending';
-        return MembershipApplication::create($data);
+        
+        $applicationData = [
+            'full_name'       => $data['full_name'],
+            'gender'          => $data['gender'],
+            'email'           => $data['email'],
+            'qualification'   => $data['qualification'],
+            'faculty'         => $data['faculty'],
+            'year'            => $data['year'],
+            'stu_id'          => $data['stu_id'],
+            'phone_number'    => $data['phone_number'],
+            'cv_path'         => $data['cv_path'] ?? null,
+            'motivation'      => $data['motivation'],
+            'time_management' => $data['time_management'],
+            'availability'    => $data['availability'],
+            'status'          => 'pending',
+        ];
+
+        return MembershipApplication::create($applicationData);
     }
 
-
-    private function generateMemberCode(): string
+    private function generateMemberId(): string
     {
         $year = Carbon::now()->year;
 
@@ -32,34 +48,35 @@ class MembershipService
     {
         return DB::transaction(function () use ($application, $admin_id) {
 
-            $memberCode = $this->generateMemberCode();
-
-           
+            $memberId = $this->generateMemberId();
+            $initialPassword = Str::random(12);
             $application->update([
                 'status'      => 'approved',
                 'reviewed_by' => $admin_id,
             ]);
 
             $user = User::create([
-                'name'        => $application->full_name,
-                'email'       => $application->email,
-                'password'    => Hash::make($memberCode),
-                'role'        => 'member',
-                'member_code' => $memberCode,
+                'name'      => $application->full_name,
+                'email'     => $application->email,
+                'password'  => Hash::make($initialPassword),
+                'role'      => 'member',
+                'member_id' => $memberId,
             ]);
-
             $user->profile()->create([]);
-
-            return $application;
+            return [
+            'member_id' => $memberId,
+            'password'  => $initialPassword,
+            'user'      => $user,
+        ];
         });
     }
 
     public function rejectApplication(MembershipApplication $application, $admin_id, $notes = null)
     {
         $application->update([
-            'status'        => 'rejected',
-            'reviewed_by'   => $admin_id,
-            'review_notes'  => $notes,
+            'status'       => 'rejected',
+            'reviewed_by'  => $admin_id,
+            'review_notes' => $notes,
         ]);
 
         return $application;

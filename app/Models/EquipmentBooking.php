@@ -1,29 +1,27 @@
 <?php
 
 namespace App\Models;
-
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class EquipmentBooking extends Model
 {
-    public $timestamps = false;
+    use HasFactory;
 
     protected $fillable = [
-        'user_id',
+        'member_id',     
+        'full_name',      
+        'purpose',        
+        'quantity',       
+        'approved_by',
         'equipment_id',
-        'admin_id',
-        'date',
-        'start_time',
-        'end_time',
+        'booking_date',
+        'approve_date',
+        'return_date',
         'status',
-        'created_at',
     ];
 
-    protected $casts = [
-        'date' => 'date',
-        'created_at' => 'datetime',
-    ];
-
+    
     public function user()
     {
         return $this->belongsTo(User::class);
@@ -33,10 +31,9 @@ class EquipmentBooking extends Model
     {
         return $this->belongsTo(Equipment::class);
     }
-
-    public function admin()
+    public function approver()
     {
-        return $this->belongsTo(User::class, 'admin_id');
+        return $this->belongsTo(User::class, 'approved_by');
     }
 
     public function notifications()

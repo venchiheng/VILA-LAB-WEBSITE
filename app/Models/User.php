@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
+
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
@@ -25,7 +26,7 @@ class User extends Authenticatable
         'email',
         'password',
         'role',
-        'member_code',
+        'member_id',
     ];
 
     /**
@@ -86,4 +87,5 @@ class User extends Authenticatable
     {
         return $this->role === 'admin';
     }
+    
 }
