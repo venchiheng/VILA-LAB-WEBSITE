@@ -1,15 +1,30 @@
 <template>
   <Banner />
-  <div class="projects-grid">
-    <ProjectCard
-      v-for="project in projects"
-      :key="project.id"
-      :project-name="project.projectName"
-      :description="project.description"
-      :image="project.image"
-    />
+  <div class="project-section">
+    <div class="project-content">
+      <div class="project-title">
+        <h1>Our Projects</h1>
+        <p>Our project uses Natural Language Processing and Computer Vision to improve how machines understand Khmer language and visual content.</p>
+        <router-link to="/projects" class="explore-btn">
+          <img
+            src="@/assets/icons/ic--baseline-message.png"
+            alt="message"
+            class="btn-icon"
+          />
+          <span>Read more</span>
+        </router-link>
+      </div>
+      <div class="projects-grid">
+        <ProjectCard
+          v-for="project in projects"
+          :key="project.id"
+          :project-name="project.projectName"
+          :description="project.description"
+          :image="project.image"
+        />
+      </div>
+    </div>
   </div>
-
   <div class="member-grid">
     <ResearchMemberCard
       v-for="member in members"
@@ -45,13 +60,13 @@ const projects = [
       'The collection of Khmer handwriting data is significant for supporting AI research on the Khmer language. Your participation in providing handwriting samples is extremely ...',
     image: '/src/assets/project/khmer-handwriting.png',
   },
-  {
-    id: 3,
-    projectName: 'AIR HANDWRITING FOR KHMER CHARACTERS',
-    description:
-      'The collection of Khmer handwriting data is significant for supporting AI research on the Khmer languages ...',
-    image: '/src/assets/project/air-handwriting.png',
-  },
+  // {
+  //   id: 3,
+  //   projectName: 'AIR HANDWRITING FOR KHMER CHARACTERS',
+  //   description:
+  //     'The collection of Khmer handwriting data is significant for supporting AI research on the Khmer languages ...',
+  //   image: '/src/assets/project/air-handwriting.png',
+  // },
 ]
 
 const members = [
@@ -105,16 +120,73 @@ const goToDetail = (id) => {
 
 <style scoped>
 
+.project-section {
+  padding: 100px 156px;
+  background-color: var(--color-bg);
+  width: 100%;
+  min-height: 600px;
+
+}
+
+.project-content {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 60px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.project-title {
+  flex: 0 0 40%;
+  margin: auto 0; /* Centers vertically within parent */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.project-title h1 {
+  font-weight: bold;
+  color: var(--color-primary);
+  line-height: 1.2;
+}
+
+/* Button */
+.explore-btn {
+  align-self: center;
+  background-color: var(--color-primary);
+  color: var(--color-bg);
+  padding: 12px 24px;
+  border-radius: 100px;
+  font-weight: bold;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  transition: all 0.3s ease;
+}
+
+.btn-icon {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+}
+
+.explore-btn:hover {
+  background-color: #747bff;
+  transform: translateY(-2px);
+}
+
 .projects-grid {
   background-color: var(--color-bg);
-  padding: 100px 0px 100px 100px;
-  display: grid;
+  flex: 0 0 55%;
+  display: flex;
   grid-template-columns: repeat(auto-fill, minmax(288px, 1fr));
-  gap: 40px;
-  max-width: 1440px;
+  gap: 24px;
   margin: 0 auto;
-  justify-items: center;
-  direction: rtl;
+  flex-wrap: wrap;
+  justify-content: flex-start;
 }
 
 .member-grid {
