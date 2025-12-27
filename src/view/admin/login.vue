@@ -12,7 +12,6 @@
                                     <Icon icon="mdi:account-circle" class="user-avatar-icon" />
                                 </v-avatar>
 
-
                                 <h1 class="text-h4 font-weight-bold mb-3">
                                     Login to your account
                                 </h1>
@@ -20,20 +19,20 @@
                                     Enter your detail information
                                 </p>
 
+                                <v-form @submit.prevent="handleLogin">
+                                    <v-text-field v-model="memberId" variant="outlined" placeholder="Enter your ID"
+                                        class="mb-6" hide-details />
 
-                                <v-form>
-                                    <v-text-field variant="outlined" placeholder="Enter your ID" class="mb-6"
-                                        hide-details></v-text-field>
+                                    <v-text-field v-model="password" variant="outlined" placeholder="Enter password"
+                                        type="password" class="mb-8" hide-details />
 
-                                    <v-text-field variant="outlined" placeholder="Enter password" type="password"
-                                        class="mb-8" hide-details></v-text-field>
-
-                                    <v-btn color="blue" size="large" block rounded="pill"
-                                        class="text-capitalize py-6 text-h6">
+                                    <v-btn :loading="loading" color="blue" size="large" block rounded="pill"
+                                        class="text-capitalize py-6 text-h6" type="submit">
                                         Log in
                                     </v-btn>
-                                </v-form>
 
+                                    <p v-if="error" class="text-red-500 mt-4">{{ error }}</p>
+                                </v-form>
 
                                 <p class="text-caption mt-12 text-medium-emphasis">
                                     Copyright © 2025 - VLa Lab
@@ -54,7 +53,30 @@
 </template>
 
 <script setup>
+import { ref, computed } from 'vue'
 import holImage from '@/assets/admin/image.png'
+import { useAuthStore } from '@/stores/auth'
+import { useRouter } from 'vue-router'
+
+const auth = useAuthStore()
+const router = useRouter()
+
+// Form fields
+const memberId = ref('')
+const password = ref('')
+
+// Reactive state from auth store
+const loading = computed(() => auth.loading)
+const error = computed(() => auth.error)
+
+// Handle login
+const handleLogin = async () => {
+    try {
+        await auth.login(memberId.value, password.value, router)
+    } catch (err) {
+        // error is already handled in the store
+    }
+}
 </script>
 
 <style scoped>
@@ -81,7 +103,6 @@ body,
     align-items: flex-start;
     padding: 16px;
     height: 100%;
-
 }
 
 .image-frame {

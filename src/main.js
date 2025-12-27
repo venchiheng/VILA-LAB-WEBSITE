@@ -11,12 +11,24 @@ import * as components from 'vuetify/components'
 import * as directives from 'vuetify/directives'
 import { Icon } from '@iconify/vue'
 import App from './App.vue'
+import { useAuthStore } from '@/stores/auth'
+
 
 const router = createRouter({
   history: createWebHistory(),
   routes: generatedRoutes,
 })
+router.beforeEach((to, from, next) => {
+  const auth = useAuthStore()
 
+ 
+  if (to.meta.requiresAuth && !auth.isAuthenticated()) {
+    auth.logout()
+    next('/login')
+  } else {
+    next()
+  }
+})
 const vuetify = createVuetify({
   components,
   directives,
