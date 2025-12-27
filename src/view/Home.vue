@@ -25,21 +25,37 @@
       </div>
     </div>
   </div>
-  <div class="member-grid">
-    <ResearchMemberCard
-      v-for="member in members"
-      :key="member.id"
-      :name="member.name"
-      :program="member.program"
-      :description="member.description"
-      :image="member.image"
-      @explore="goToDetail(member.id)"
-    />
+  <div class="carousel-wrapper">
+    <v-carousel
+      height="auto"
+      show-arrows="hover"
+      cycle
+      :interval="5000"
+      hide-delimiter-background
+      class="research-carousel"
+    >
+      <v-carousel-item
+        v-for="(chunk, i) in chunkedMembers"
+        :key="i"
+      >
+        <div class="member-grid">
+          <ResearchMemberCard
+            v-for="member in chunk"
+            :key="member.id"
+            :name="member.name"
+            :program="member.program"
+            :description="member.description"
+            :image="member.image"
+            @explore="goToDetail(member.id)"
+          />
+        </div>
+      </v-carousel-item>          
+    </v-carousel>            
   </div>
-
 </template>
 
 <script setup>
+import { computed } from 'vue'
 import ProjectSection from '@/components/showcase/ProjectShowcase.vue'
 import Banner from '../components/about-us/banner.vue'
 import ProjectCard from '../components/project/ProjectCard.vue'
@@ -110,12 +126,32 @@ const members = [
       'Researcher of Khmer Question-Answer System by Fine-tuning Pre-trained language Models',
     image: '/src/assets/research-member/leang.png'
   },
+  {
+    id: 6,
+    name: 'Hengly EM',
+    program: 'M-ECS',
+    description:
+      'Researcher of Word Spotting on Khmer Printed Documents using Deep Learning',
+    image: '/src/assets/research-member/hengly.png'
+  },
 ]
+
+const itemsPerSlide = 4
+
+// Split members into chunks for carousel slides
+const chunkedMembers = computed(() => {
+  const chunks = []
+  for (let i = 0; i < members.length; i += itemsPerSlide) {
+    chunks.push(members.slice(i, i + itemsPerSlide))
+  }
+  return chunks
+})
 
 const goToDetail = (id) => {
   console.log('Explore member:', id)
   // router.push(`/research/${id}`)
 }
+
 </script>
 
 <style scoped>
@@ -189,13 +225,50 @@ const goToDetail = (id) => {
   justify-content: flex-start;
 }
 
+.carousel-wrapper {
+  width: 100%;
+  padding: auto 0 100px;
+}
+
+.research-carousel {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
 .member-grid {
-  /* display: grid; */
-  padding: 100px 80px 156px 80px;
-  grid-template-columns: repeat(auto-fill, minmax(288px, 1fr));
-  display: flex;
-  flex-wrap: wrap;
-  column-gap: 20px;
-  justify-content: center;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+  padding: 40px 20px;
+  animation: fadeIn 0.6s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+:deep(.v-btn--icon) {
+  background-color: var(--color-primary) !important;
+  color: white !important;
+}
+
+/* Vuetify carousel customization */
+:deep(.v-carousel__controls) {
+  background: transparent;
+  padding: 16px 0 24px 0; /* top right bottom left */
+}
+
+:deep(.v-btn--icon) {
+  background-color: var(--color-primary) !important;
+  color: white !important;
+}
+
+:deep(.v-carousel__controls__item) {
+  margin: 0 8px; /* Space between dots */
 }
 </style>
