@@ -95,7 +95,6 @@
     object-fit: cover;
 }
 
-/* Responsive Design */
 @media (max-width: 1024px) {
     .wrapper {
         padding-inline: 40px;

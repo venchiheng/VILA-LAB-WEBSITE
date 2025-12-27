@@ -7,6 +7,7 @@
     <OurVision />
     <OurService :services="servicesData" />
     <ResearchInterests />
+    <ExpectedApplications />
 </template>
 
 <script setup>
@@ -15,6 +16,7 @@ import HOL_Card from '../components/about-us/HOL_Card.vue';
 import OurService from '@/components/about-us/our-service.vue';
 import History from '@/components/about-us/history.vue';
 import ResearchInterests from '@/components/about-us/research-interests.vue';
+import ExpectedApplications from '@/components/about-us/expected-application.vue';
 
 // Import assets for services
 import service1 from '@/assets/our-service/service1.png'
@@ -41,7 +43,8 @@ const components = {
     HOL_Card,
     OurService,
     History,
-    ResearchInterests
+    ResearchInterests,
+    ExpectedApplications
 }
 </script>
 
