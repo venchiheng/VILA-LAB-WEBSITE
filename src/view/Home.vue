@@ -252,7 +252,8 @@ const goToDetail = (id) => {
   }
 }
 
-:deep(.v-btn--icon) {
+/* Only style the navigation arrows, not the control dots */
+:deep(.v-window__controls .v-btn--icon) {
   background-color: var(--color-primary) !important;
   color: white !important;
 }
@@ -260,15 +261,40 @@ const goToDetail = (id) => {
 /* Vuetify carousel customization */
 :deep(.v-carousel__controls) {
   background: transparent;
-  padding: 16px 0 24px 0; /* top right bottom left */
-}
-
-:deep(.v-btn--icon) {
-  background-color: var(--color-primary) !important;
-  color: white !important;
+  padding: 8px 0 16px 0;
 }
 
 :deep(.v-carousel__controls__item) {
-  margin: 0 8px; /* Space between dots */
+  margin: 0 4px;
+  pointer-events: none; /* Disable clicking on dots */
+}
+
+/* Small dots - inactive = light blue */
+:deep(.v-carousel__controls__item .v-btn) {
+  width: 8px !important;
+  height: 8px !important;
+  min-width: 8px !important;
+  background-color: var(--color-secondary) !important;
+  opacity: 1 !important;
+  border-radius: 50% !important;
+  box-shadow: none !important;
+  border: none !important;
+  outline: none !important;
+  pointer-events: none !important;
+}
+
+/* Active dot = dark blue (primary color) */
+:deep(.v-carousel__controls__item .v-btn--active) {
+  background-color: var(--color-primary) !important;
+}
+
+/* Hide all internal elements */
+:deep(.v-carousel__controls__item .v-btn::before),
+:deep(.v-carousel__controls__item .v-btn::after),
+:deep(.v-carousel__controls__item .v-btn .v-icon),
+:deep(.v-carousel__controls__item .v-btn .v-btn__overlay),
+:deep(.v-carousel__controls__item .v-btn .v-btn__underlay),
+:deep(.v-carousel__controls__item .v-btn .v-ripple__container) {
+  display: none !important;
 }
 </style>
