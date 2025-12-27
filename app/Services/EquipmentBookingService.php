@@ -29,7 +29,7 @@ class EquipmentBookingService
             'status'       => 'pending',
         ]);
 
-        // Load the relation for Resource
+
         return $booking->load('equipment');
     }
 
@@ -42,7 +42,7 @@ class EquipmentBookingService
 
             $equipment = $booking->equipment;
 
-            // Calculate total approved quantity for overlapping bookings
+      
             $totalBooked = EquipmentBooking::where('equipment_id', $equipment->id)
                 ->where('status', 'approved')
                 ->where(function ($query) use ($booking) {
@@ -55,12 +55,12 @@ class EquipmentBookingService
                 })
                 ->sum('quantity');
 
-            // Check if approving exceeds stock
+           
             if (($totalBooked + $booking->quantity) > $equipment->stock) {
                 throw new Exception('Not enough equipment available to approve this booking.');
             }
 
-            // Approve booking
+           
             $booking->update([
                 'status' => 'approved',
                 'approved_by' => $adminId,
