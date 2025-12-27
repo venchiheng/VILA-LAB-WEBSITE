@@ -16,11 +16,14 @@ class Equipment extends Model
         'image',
         'availability',
         'condition',
+        'stock',
         'created_at',
+        'updated_at',
     ];
 
     protected $casts = [
         'created_at' => 'datetime',
+        'updated_at' => 'datetime',
     ];
 
     public function bookings()

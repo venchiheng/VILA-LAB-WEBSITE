@@ -20,6 +20,12 @@ class EquipmentBooking extends Model
         'return_date',
         'status',
     ];
+    protected $casts = [
+    'booking_date' => 'datetime:Y-m-d',
+    'return_date'  => 'datetime:Y-m-d',
+    'approve_date' => 'datetime:Y-m-d H:i:s',
+];
+
 
     
     public function user()

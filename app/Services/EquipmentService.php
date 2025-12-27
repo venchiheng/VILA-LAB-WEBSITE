@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\DB;
 
 class EquipmentService
 {
-    public function listAll()
+    public function all()
     {
         return Equipment::all();
     }
