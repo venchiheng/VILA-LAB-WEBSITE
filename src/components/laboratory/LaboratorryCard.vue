@@ -38,13 +38,6 @@ const props = defineProps({
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-/* Hover effect */
-.laboratory-card:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
 }
 
 /* Image section */
@@ -54,6 +47,13 @@ const props = defineProps({
   aspect-ratio: 15 / 10;
   border-radius: 40px;
   overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Hover effect */
+.image-wrapper:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
 }
 
 @media (max-width: 640px) {
