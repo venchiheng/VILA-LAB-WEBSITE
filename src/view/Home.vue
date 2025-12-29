@@ -1,161 +1,163 @@
 <template>
-  <Banner />
-  <div class="laboratory-section">
-    <div class="laboratory-content">
-      <div class="laboratory-title">
-        <h1>Our Laboratory</h1>
-        <p>ViLa Lab is a dedicated research laboratory under the Mechatronics and Information Technology (MIT) Research Unit and the Department of Information and Communication Engineering (GIC) at ITC.</p>
+  <div class="home-container">
+    <Banner />
+    <div class="laboratory-section">
+      <div class="laboratory-content">
+        <div class="laboratory-title">
+          <h1>Our Laboratory</h1>
+          <p>ViLa Lab is a dedicated research laboratory under the Mechatronics and Information Technology (MIT) Research Unit and the Department of Information and Communication Engineering (GIC) at ITC.</p>
+        </div>
       </div>
-    </div>
-    <div class="laboratory-grid">
-      <LaboratoryCard
-        v-for="item in laboratories"
-        :key="item.id"
-        :name="item.name"
-        :image="item.image"
-      />
-    </div>
-  </div>
-  <div class="project-section">
-    <div class="project-content">
-      <div class="project-title">
-        <h1>Our Projects</h1>
-        <p>Our project uses Natural Language Processing and Computer Vision to improve how machines understand Khmer language and visual content.</p>
-        <router-link to="/projects" class="explore-btn">
-          <img
-            src="@/assets/icons/ic--baseline-message.png"
-            alt="message"
-            class="btn-icon"
-          />
-          <span>Read more</span>
-        </router-link>
-      </div>
-      <div class="projects-grid">
-        <ProjectCard
-          v-for="project in projects"
-          :key="project.id"
-          :project-name="project.projectName"
-          :description="project.description"
-          :image="project.image"
+      <div class="laboratory-grid">
+        <LaboratoryCard
+          v-for="item in laboratories"
+          :key="item.id"
+          :name="item.name"
+          :image="item.image"
         />
       </div>
     </div>
-  </div>
-  <div class="member-section">
-    <div class="member-content">
-      <div class="member-title">
-        <h1>Research Members</h1>
-        <p>Our lab consists of a diverse team of researchers and developers, working together to advance projects in AI, NLP, and Computer Vision, etc. Each member brings unique expertise to drive innovation and collaboration.</p>
-      </div>
-    </div>
-    <div class="carousel-wrapper">
-      <v-carousel
-        height="auto"
-        show-arrows="hover"
-        cycle
-        :interval="5000"
-        hide-delimiter-background
-        class="research-carousel"
-      >
-        <v-carousel-item
-          v-for="(chunk, i) in chunkedMembers"
-          :key="i"
-        >
-          <div class="member-grid">
-            <ResearchMemberCard
-              v-for="member in chunk"
-              :key="member.id"
-              :name="member.name"
-              :program="member.program"
-              :description="member.description"
-              :image="member.image"
-              @explore="goToDetail(member.id)"
+    <div class="project-section">
+      <div class="project-content">
+        <div class="project-title">
+          <h1>Our Projects</h1>
+          <p>Our project uses Natural Language Processing and Computer Vision to improve how machines understand Khmer language and visual content.</p>
+          <router-link to="/projects" class="explore-btn">
+            <img
+              src="@/assets/icons/ic--baseline-message.png"
+              alt="message"
+              class="btn-icon"
             />
-          </div>
-        </v-carousel-item>          
-      </v-carousel>            
-    </div>
-  </div>
-  <div class="achievement-section">
-    <h1 class="achievement-title">Our Achievements</h1>
-
-    <v-defaults-provider
-      :defaults="{ VBtn: { variant: 'outlined', color: '#eee' } }"
-    >
-      <div class="achievement-layout">
-        <v-sheet
-          class="overflow-hidden achievement-frame"
-          max-width="1200"
-          rounded="xl"
-        >
-          <v-carousel
-            v-model="currentIndex"
-            direction="vertical"
-            height="450"
-            hide-delimiters
-            :show-arrows="false"
-            cycle
-            interval="5000"
-          >
-            <v-carousel-item
-              v-for="(item, index) in achievements"
-              :key="index"
-            >
-              <AchievementCard
-                :image="item.image"
-                class="active-card"
-              />
-            </v-carousel-item>
-
-            <!-- Overlay -->
-            <v-overlay
-              :scrim="false"
-              content-class="w-100 h-100 d-flex flex-column justify-end align-end pa-6"
-              contained
-              model-value
-              persistent
-            >
-              <button class="learn-more-btn">
-                Learn more
-                <svg width="8" height="12" viewBox="0 0 8 12">
-                  <path
-                    d="M4.6 6L0 1.4L1.4 0L7.4 6L1.4 12L0 10.6L4.6 6Z"
-                    fill="#0049AF"
-                  />
-                </svg>
-              </button>
-            </v-overlay>
-          </v-carousel>
-        </v-sheet>
-
-        <div class="pagination-dots outside-right">
-          <span
-            v-for="(_, index) in achievements"
-            :key="index"
-            class="dot"
-            :class="{ active: index === currentIndex }"
-            @click="currentIndex = index"
-          ></span>
+            <span>Read more</span>
+          </router-link>
+        </div>
+        <div class="projects-grid">
+          <ProjectCard
+            v-for="project in projects"
+            :key="project.id"
+            :project-name="project.projectName"
+            :description="project.description"
+            :image="project.image"
+          />
         </div>
       </div>
-    </v-defaults-provider>
-  </div>
-  <div class="partners-section">
-    <h1 class="partners-title">Our Partnership</h1>
+    </div>
+    <div class="member-section">
+      <div class="member-content">
+        <div class="member-title">
+          <h1>Research Members</h1>
+          <p>Our lab consists of a diverse team of researchers and developers, working together to advance projects in AI, NLP, and Computer Vision, etc. Each member brings unique expertise to drive innovation and collaboration.</p>
+        </div>
+      </div>
+      <div class="carousel-wrapper">
+        <v-carousel
+          height="auto"
+          show-arrows="hover"
+          cycle
+          :interval="5000"
+          hide-delimiter-background
+          class="research-carousel"
+        >
+          <v-carousel-item
+            v-for="(chunk, i) in chunkedMembers"
+            :key="i"
+          >
+            <div class="member-grid">
+              <ResearchMemberCard
+                v-for="member in chunk"
+                :key="member.id"
+                :name="member.name"
+                :program="member.program"
+                :description="member.description"
+                :image="member.image"
+                @explore="goToDetail(member.id)"
+              />
+            </div>
+          </v-carousel-item>          
+        </v-carousel>            
+      </div>
+    </div>
+    <div class="achievement-section">
+      <h1 class="achievement-title">Our Achievements</h1>
 
-    <v-row justify="center" class="partners-row">
-      <v-col
-        v-for="(partner, index) in partners"
-        :key="index"
-        cols="6"
-        sm="4"
-        md="3"
-        lg="2"
-        class="d-flex justify-center pa-4"
+      <v-defaults-provider
+        :defaults="{ VBtn: { variant: 'outlined', color: '#eee' } }"
       >
-        <PartnerCard :image="partner.image" />
-      </v-col>
-    </v-row>
+        <div class="achievement-layout">
+          <v-sheet
+            class="overflow-hidden achievement-frame"
+            max-width="1200"
+            rounded="xl"
+          >
+            <v-carousel
+              v-model="currentIndex"
+              direction="vertical"
+              height="450"
+              hide-delimiters
+              :show-arrows="false"
+              cycle
+              interval="5000"
+            >
+              <v-carousel-item
+                v-for="(item, index) in achievements"
+                :key="index"
+              >
+                <AchievementCard
+                  :image="item.image"
+                  class="active-card"
+                />
+              </v-carousel-item>
+
+              <!-- Overlay -->
+              <v-overlay
+                :scrim="false"
+                content-class="w-100 h-100 d-flex flex-column justify-end align-end pa-6"
+                contained
+                model-value
+                persistent
+              >
+                <button class="learn-more-btn">
+                  Learn more
+                  <svg width="8" height="12" viewBox="0 0 8 12">
+                    <path
+                      d="M4.6 6L0 1.4L1.4 0L7.4 6L1.4 12L0 10.6L4.6 6Z"
+                      fill="#0049AF"
+                    />
+                  </svg>
+                </button>
+              </v-overlay>
+            </v-carousel>
+          </v-sheet>
+
+          <div class="pagination-dots outside-right">
+            <span
+              v-for="(_, index) in achievements"
+              :key="index"
+              class="dot"
+              :class="{ active: index === currentIndex }"
+              @click="currentIndex = index"
+            ></span>
+          </div>
+        </div>
+      </v-defaults-provider>
+    </div>
+    <div class="partners-section">
+      <h1 class="partners-title">Our Partnership</h1>
+
+      <v-row justify="center" class="partners-row">
+        <v-col
+          v-for="(partner, index) in partners"
+          :key="index"
+          cols="6"
+          sm="4"
+          md="3"
+          lg="2"
+          class="d-flex justify-center pa-4"
+        >
+          <PartnerCard :image="partner.image" />
+        </v-col>
+      </v-row>
+    </div>
   </div>
 </template>
 
@@ -323,6 +325,11 @@ const goToDetail = (id) => {
 </script>
 
 <style scoped>
+
+.home-container {
+  background-color: var(--color-bg);
+  width: 100%;
+}
 
 .laboratory-section {
   padding: 100px 156px 0px;
