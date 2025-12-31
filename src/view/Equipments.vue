@@ -1,24 +1,52 @@
 <template>
-  <div class="equipment-grid">
-    <EquipmentCard
-      v-for="item in equipments"
-      :key="item.id"
-      :name="item.name"
-      :specification="item.spec"
-      :image="item.image"
-      :status="item.status"
-      @view-detail="openDetail(item.id)"
-    />
+  <div v-if="currentView === 'list'" class="equipment-header">
+    <div class="header-left">
+      <h1>Equipment Booking</h1>
+      <p>Lab Resource management</p>
+
+      <div class="search-box">
+        <input type="text" placeholder="Search equipment..." />
+      </div>
+    </div>
+
+    <button class="my-booking-btn" @click="goToBooking">
+      <img src="/src/assets/icons/folder.png" alt="folder" />
+      <span>My Booking</span>
+    </button>
   </div>
-    <EquipmentDetail
-    :equipment="equipment"
+
+  <div v-if="currentView === 'list'" class="page-wrapper">
+    <div class="equipment-grid">
+      <EquipmentCard
+        v-for="item in equipments"
+        :key="item.id"
+        :name="item.name"
+        :specification="item.spec"
+        :image="item.image"
+        :status="item.status"
+        @view-detail="openDetail(item)"
+      />
+    </div>
+  </div>
+
+  <MyBooking v-if="currentView === 'booking'" />
+
+  <EquipmentDetail
+    v-if="currentView === 'detail'"
+    :equipment="selectedEquipment"
     :source="images"
     color="green"
+    @close="backToList"
   />
 </template>
 
 <script setup>
+import { ref } from 'vue'
 import EquipmentCard from '@/components/equipment/EquipmentCard.vue'
+import EquipmentDetail from '@/components/equipment/equipment-detail.vue'
+import MyBooking from '@/components/equipment/my-booking.vue'
+
+const currentView = ref('list') // list | booking | detail
 
 const equipments = [
   {
@@ -62,42 +90,106 @@ const equipments = [
     spec: '16GB RAM, M.2 SSD',
     image: '/src/assets/equipment/compute5.png',
     status: 'Booked'
-  },
+  }
 ]
 
-const openDetail = (id) => {
-  console.log('View equipment detail:', id)
-  // router.push(`/equipment/${id}`)
+const selectedEquipment = ref(null)
+
+const openDetail = (item) => {
+  selectedEquipment.value = {
+    name: item.name,
+    thumbnail: item.image,
+    status: item.status,
+    condition: 'New',
+    description: item.spec,
+    htmlContent: `
+      <p>
+        ${item.name} with ${item.spec}.<br />
+        Current status: <b>${item.status}</b>.
+      </p>
+    `
+  }
+
+  currentView.value = 'detail'
 }
 
+const backToList = () => {
+  selectedEquipment.value = null
+  currentView.value = 'list'
+}
 
-//////////////////////
-import { ref } from 'vue'
-import EquipmentDetail from '../components/equipment/equipment-detail.vue';
-
-const equipment = ref({
-  name: 'Raspberry Pi 5',
-  thumbnail: 'src/assets/equipment/rsbrpi.png',
-  status: 'Available',
-  condition: 'New',
-  description: 'Professional mirrorless camera',
-  htmlContent: `<p>The Raspberry Pi 5 is the latest iteration of the popular single-board computer, offering enhanced performance and features for a wide range of applications. It is equipped with a powerful quad-core ARM Cortex-A76 CPU, up to 8GB of LPDDR4X RAM, and supports dual 4K display output, making it ideal for multimedia projects, gaming, and general computing tasks.</p>`
-})
+const goToBooking = () => {
+  currentView.value = 'booking'
+}
 
 const images = ref([
-  'src/assets/equipment/rsbrpi.png',
-  'src/assets/equipment/rsbrpi.png',
-  'src/assets/equipment/rsbrpi.png'
+  '/src/assets/equipment/rsbrpi.png',
+  '/src/assets/equipment/rsbrpi.png',
+  '/src/assets/equipment/rsbrpi.png'
 ])
 </script>
 
 <style scoped>
+.equipment-header {
+  padding: 40px 250px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  text-align: left;
+
+}
+
+.header-left p {
+  margin-bottom: 40px;
+  margin-top: 15px;
+  color: var(--color-text);
+  opacity: 0.7;
+  
+}
+
+.search-box {
+  width: 260px;
+  border: 1px solid var(--color-secondary);
+  border-radius: 8px;
+  padding: 10px 14px;
+  background: var(--color-bg);
+  margin-bottom: 1px;
+
+}
+
+.search-box input {
+  border: none;
+  outline: none;
+  width: 100%;
+  font-family: inherit;
+}
+
+.my-booking-btn {
+  background-color: var(--color-primary);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  color : var(--color-bg);
+}
+
+.my-booking-btn img {
+  width: 16px;
+  height: 16px;
+}
+
+.page-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
 .equipment-grid {
-  padding: 100px 80px 156px 80px;
-  grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+  width: 100%;
+  padding: 40px 250px 156px;
   display: flex;
   flex-wrap: wrap;
-  gap: 50px 25px; 
-  justify-content: center;
+  gap: 50px 25px;
+  justify-content: flex-start;
 }
 </style>
