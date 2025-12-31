@@ -56,7 +56,7 @@
             @click="prevSlide"
             :disabled="currentIndex === 0"
           >
-            ‹
+            <img src="/src/assets/icons/left.png" alt="Previous" class="nav-icon" />
           </button>
           
           <div class="carousel-viewport">
@@ -81,7 +81,7 @@
             @click="nextSlide"
             :disabled="currentIndex >= members.length - 4"
           >
-            ›
+            <img src="/src/assets/icons/right.png" alt="Next" class="nav-icon" />
           </button>
         </div>
         
@@ -555,6 +555,13 @@ const goToDetail = (id) => {
 .carousel-nav:disabled {
   opacity: 0.3;
   cursor: not-allowed;
+}
+
+.nav-icon {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+  
 }
 
 .carousel-dots {
