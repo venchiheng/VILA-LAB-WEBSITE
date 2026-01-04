@@ -184,9 +184,10 @@ const handleSave = async (projectData) => {
 
 <style scoped>
 .admin-projects {
-  padding: 40px;
+  width: 100%;
   max-width: 1200px;
   margin: 0 auto;
+  padding: 40px 24px; /* Matches content-wrapper padding in Projects.vue */
   text-align: left;
   background-color: transparent;
 }
@@ -194,15 +195,15 @@ const handleSave = async (projectData) => {
 .header {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: flex-start; /* Changed to flex-start to match provided design */
   margin-bottom: 40px;
 }
 
 .title-section h1 {
   margin: 0;
-  font-size: 39px;
-  font-weight: 800;
-  color: #222222;
+  font-size: 39px; /* Matches Projects.vue */
+  font-weight: 700; /* Sticking to 700 */
+  color: var(--color-text); /* Using CSS var */
   letter-spacing: -0.5px;
 }
 
