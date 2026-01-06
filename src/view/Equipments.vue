@@ -41,85 +41,70 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import EquipmentCard from '@/components/equipment/EquipmentCard.vue'
 import EquipmentDetail from '@/components/equipment/equipment-detail.vue'
 import MyBooking from '@/components/equipment/my-booking.vue'
+import { useEquipmentStore } from '@/stores/equipments'
 
-const currentView = ref('list') // list | booking | detail
+const route = useRoute()
+const router = useRouter()
+const equipmentStore = useEquipmentStore()
 
-const equipments = [
-  {
-    id: 1,
-    name: 'Raspberry Pi 5',
-    spec: '16GB RAM, M.2 SSD',
-    image: '/src/assets/equipment/pi5.png',
-    status: 'Available'
-  },
-  {
-    id: 2,
-    name: 'Raspberry Pi Compute Model 5',
-    spec: '16GB RAM, M.2 SSD',
-    image: '/src/assets/equipment/compute5.png',
-    status: 'Booked'
-  },
-  {
-    id: 3,
-    name: 'Raspberry Pi Compute Model 5',
-    spec: '16GB RAM, M.2 SSD',
-    image: '/src/assets/equipment/module5.png',
-    status: 'Available'
-  },
-  {
-    id: 4,
-    name: 'Raspberry Pi 5',
-    spec: '16GB RAM, M.2 SSD',
-    image: '/src/assets/equipment/pi5.png',
-    status: 'Available'
-  },
-  {
-    id: 5,
-    name: 'Raspberry Pi 5',
-    spec: '16GB RAM, M.2 SSD',
-    image: '/src/assets/equipment/module5.png',
-    status: 'Available'
-  },
-  {
-    id: 6,
-    name: 'Raspberry Pi 5',
-    spec: '16GB RAM, M.2 SSD',
-    image: '/src/assets/equipment/compute5.png',
-    status: 'Booked'
-  }
-]
+const equipments = computed(() => equipmentStore.equipments)
 
 const selectedEquipment = ref(null)
 
-const openDetail = (item) => {
-  selectedEquipment.value = {
-    name: item.name,
-    thumbnail: item.image,
-    status: item.status,
-    condition: 'New',
-    description: item.spec,
-    htmlContent: `
-      <p>
-        ${item.name} with ${item.spec}.<br />
-        Current status: <b>${item.status}</b>.
-      </p>
-    `
-  }
+// Derive view from route
+const currentView = computed(() => {
+  const id = route.params.id
+  if (id === 'booking') return 'booking'
+  if (id && !isNaN(id)) return 'detail'
+  return 'list'
+})
 
-  currentView.value = 'detail'
+// Update selected equipment based on route
+const updatedSelectedEquipment = () => {
+  const id = parseInt(route.params.id)
+  if (id && !isNaN(id)) {
+    const item = equipmentStore.getById(id)
+    if (item) {
+      selectedEquipment.value = {
+        name: item.name,
+        thumbnail: item.image,
+        status: item.status,
+        condition: 'New',
+        description: item.spec,
+        htmlContent: `
+          <p>
+            ${item.name} with ${item.spec}.<br />
+            Current status: <b>${item.status}</b>.
+          </p>
+        `
+      }
+    } else {
+        // Handle invalid ID if needed, maybe redirect to list?
+        // For now, let's just go back to list if not found to avoid broken state
+       router.replace('/equipments')
+    }
+  } else {
+    selectedEquipment.value = null
+  }
+}
+
+watch(() => route.params.id, updatedSelectedEquipment, { immediate: true })
+
+const openDetail = (item) => {
+  router.push(`/equipments/${item.id}`)
 }
 
 const backToList = () => {
-  selectedEquipment.value = null
-  currentView.value = 'list'
+  router.push('/equipments')
 }
 
 const goToBooking = () => {
-  currentView.value = 'booking'
+  router.push('/equipments/booking')
 }
 
 const images = ref([
@@ -131,7 +116,7 @@ const images = ref([
 
 <style scoped>
 .equipment-header {
-  padding: 40px 250px;
+  padding: 40px 156px;
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
@@ -186,10 +171,10 @@ const images = ref([
 
 .equipment-grid {
   width: 100%;
-  padding: 40px 250px 156px;
+  padding: 40px 156px;
   display: flex;
   flex-wrap: wrap;
-  gap: 50px 25px;
+  gap: 50px 55px;
   justify-content: flex-start;
 }
 </style>

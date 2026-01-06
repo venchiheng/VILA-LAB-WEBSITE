@@ -140,7 +140,7 @@ const images = ref([
 
 <style scoped>
 .my-booking-page {
-  padding: 40px 250px 120px;
+  padding: 40px 156px;
   text-align: left;
   margin-bottom: 10px;
 }
@@ -221,18 +221,22 @@ const images = ref([
 
 .booking-image-wrapper {
   margin: 60px 0;
-  width: 100%;
+  width: 100vw; /* Full viewport width */
+  margin-left: calc(-156px); /* Negative of the parent padding */
+  position: relative;
+  left: 0;
 }
 
 .booking-image-wrapper img {
   width: 100%;
   display: block;
+  object-fit: cover; /* Ensures the image covers the area nicely */
 }
 
 .equipment-grid {
   display: flex;
   flex-wrap: wrap;
-  gap: 50px 25px;
+  gap: 50px 55px;
   justify-content: flex-start;
 }
 </style>
