@@ -87,7 +87,7 @@
 
 <script setup>
 import { ref, computed } from 'vue';
-import ProjectModal from '../project.vue';
+import ProjectModal from '@/components/admin/project-card.vue';
 import projectImage from '@/assets/project/image1.jpeg';
 
 const searchQuery = ref('');
