@@ -1,17 +1,3 @@
 <template>
-    <div class="test-admin-view">
-        <AdminProjects />
-    </div>
+    <h1>Hi this is for contacting us</h1>
 </template>
-
-<script setup>
-import AdminProjects from '@/view/admin/projects.vue';
-</script>
-
-<style scoped>
-.test-admin-view {
-    padding-top: 80px; /* Space for navbar */
-    min-height: 100vh;
-    background: #f8f9fa;
-}
-</style>
