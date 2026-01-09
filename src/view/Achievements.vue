@@ -232,7 +232,7 @@ const handleUpload = ({ type, file }) => {
   margin: 0 auto;
 }
 
-/* Tab Content */
+
 .tab-content {
   padding: 40px 20px;
 }
