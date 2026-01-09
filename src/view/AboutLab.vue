@@ -1,13 +1,22 @@
 <template>
+    <div class="cover-container">
+        <img src="@/assets/about-us/cover.png" alt="Cover Image" class="cover-image" />
+    </div>
+    <History />
     <HOL_Card />    
     <OurVision />
     <OurService :services="servicesData" />
+    <ResearchInterests />
+    <ExpectedApplications />
 </template>
 
 <script setup>
 import OurVision from '@/components/about-us/our-vision.vue'
 import HOL_Card from '../components/about-us/HOL_Card.vue';
 import OurService from '@/components/about-us/our-service.vue';
+import History from '@/components/about-us/history.vue';
+import ResearchInterests from '@/components/about-us/research-interests.vue';
+import ExpectedApplications from '@/components/about-us/expected-application.vue';
 
 // Import assets for services
 import service1 from '@/assets/our-service/service1.png'
@@ -32,6 +41,22 @@ const servicesData = [
 const components = {
     OurVision,
     HOL_Card,
-    OurService
+    OurService,
+    History,
+    ResearchInterests,
+    ExpectedApplications
 }
 </script>
+
+<style scoped>
+.cover-container {
+    width: 100%;
+    margin-bottom: 60px;
+}
+
+.cover-image {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+}
+</style>
