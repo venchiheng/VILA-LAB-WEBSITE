@@ -10,7 +10,7 @@
       </button>
     </div>
 
-    <!-- Stats summary -->
+
     <div class="stats-grid">
       <div class="stat-card">
         <span class="stat-label">Total Projects</span>
@@ -29,12 +29,8 @@
         <input type="text" v-model="searchQuery" placeholder="Search projects by title or description..." />
       </div>
       <div class="filter-chips">
-        <button 
-          v-for="cat in categories" 
-          :key="cat" 
-          :class="['chip', { active: activeCategory === cat }]"
-          @click="activeCategory = cat"
-        >
+        <button v-for="cat in categories" :key="cat" :class="['chip', { active: activeCategory === cat }]"
+          @click="activeCategory = cat">
           {{ cat }}
         </button>
       </div>
@@ -47,41 +43,36 @@
         <div class="card-image-wrapper">
           <img :src="project.image" :alt="project.title" />
           <div class="admin-overlay">
-             <button class="action-btn edit" @click="editProject(project)" title="Edit">
-                <Icon icon="mdi:pencil" />
-              </button>
-              <button class="action-btn delete" @click="deleteProject(project.id)" title="Delete">
-                <Icon icon="mdi:delete" />
-              </button>
+            <button class="action-btn edit" @click="editProject(project)" title="Edit">
+              <Icon icon="mdi:pencil" />
+            </button>
+            <button class="action-btn delete" @click="deleteProject(project.id)" title="Delete">
+              <Icon icon="mdi:delete" />
+            </button>
           </div>
           <div class="category-badge">{{ project.category }}</div>
         </div>
-        
+
         <div class="card-bottom-section">
           <h3 class="project-name">{{ project.title }}</h3>
           <p class="description">{{ project.description }}</p>
           <div class="tags-container">
             <span v-for="(tag, index) in project.tags" :key="index" class="tag">
-                {{ tag }}<span v-if="index < project.tags.length - 1" class="separator">, </span>
+              {{ tag }}<span v-if="index < project.tags.length - 1" class="separator">, </span>
             </span>
           </div>
         </div>
       </div>
     </div>
-    
+
     <div class="empty-state" v-else>
       <Icon icon="mdi:folder-open-outline" class="empty-icon" />
       <p>No projects found matching your criteria</p>
     </div>
 
     <!-- Modal for Create/Edit -->
-    <ProjectModal 
-      v-if="showModal" 
-      :project="currentProject" 
-      :loading="isSaving"
-      @close="showModal = false" 
-      @save="handleSave"
-    />
+    <ProjectModal v-if="showModal" :project="currentProject" :loading="isSaving" @close="showModal = false"
+      @save="handleSave" />
   </div>
 </template>
 
@@ -98,87 +89,87 @@ const isSaving = ref(false);
 
 // Dummy data for admin
 const projects = ref([
-    { 
-        id: 1,
-        title: "Project Alpha: Autonomous Drone Nagavation", 
-        description: "Developing AI for real-time environmental mapping.", 
-        tags: ["AI", "Robotics"],
-        category: "Artificial Intelligence",
-        image: projectImage
-    },
-    { 
-        id: 2,
-        title: "Project Beta: Natural Language Understanding", 
-        description: "Developing a conversational AI that understands nuanced human language.", 
-        tags: ["AI", "HCI"],
-        category: "NLP",
-        image: projectImage
-    },
-    { 
-        id: 3,
-        title: "Project Gamma: Predictive Data Modeling", 
-        description: "Using machine learning to forecast market trends with high accuracy.", 
-        tags: ["Data Science"],
-        category: "Data Science",
-        image: projectImage
-    },
-    { 
-        id: 4,
-        title: "Project Delta: Human-Computer Interaction Study", 
-        description: "Researching intuitive interfaces for complex systems.", 
-        tags: ["Robotics", "HCI"],
-        category: "Computer Vision",
-        image: projectImage
-    }
+  {
+    id: 1,
+    title: "Project Alpha: Autonomous Drone Nagavation",
+    description: "Developing AI for real-time environmental mapping.",
+    tags: ["AI", "Robotics"],
+    category: "Artificial Intelligence",
+    image: projectImage
+  },
+  {
+    id: 2,
+    title: "Project Beta: Natural Language Understanding",
+    description: "Developing a conversational AI that understands nuanced human language.",
+    tags: ["AI", "HCI"],
+    category: "NLP",
+    image: projectImage
+  },
+  {
+    id: 3,
+    title: "Project Gamma: Predictive Data Modeling",
+    description: "Using machine learning to forecast market trends with high accuracy.",
+    tags: ["Data Science"],
+    category: "Data Science",
+    image: projectImage
+  },
+  {
+    id: 4,
+    title: "Project Delta: Human-Computer Interaction Study",
+    description: "Researching intuitive interfaces for complex systems.",
+    tags: ["Robotics", "HCI"],
+    category: "Computer Vision",
+    image: projectImage
+  }
 ]);
 
 const categories = ["All", "Artificial Intelligence", "Computer Vision", "Data Science", "NLP"];
 
 const filteredProjects = computed(() => {
-    return projects.value.filter(p => {
-        const matchesSearch = p.title.toLowerCase().includes(searchQuery.value.toLowerCase()) || 
-                             p.description.toLowerCase().includes(searchQuery.value.toLowerCase());
-        const matchesCategory = activeCategory.value === 'All' || p.category === activeCategory.value;
-        return matchesSearch && matchesCategory;
-    });
+  return projects.value.filter(p => {
+    const matchesSearch = p.title.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+      p.description.toLowerCase().includes(searchQuery.value.toLowerCase());
+    const matchesCategory = activeCategory.value === 'All' || p.category === activeCategory.value;
+    return matchesSearch && matchesCategory;
+  });
 });
 
 const openCreateModal = () => {
-    currentProject.value = null;
-    showModal.value = true;
+  currentProject.value = null;
+  showModal.value = true;
 };
 
 const editProject = (project) => {
-    currentProject.value = { ...project };
-    showModal.value = true;
+  currentProject.value = { ...project };
+  showModal.value = true;
 };
 
 const deleteProject = (id) => {
-    if (confirm('Are you sure you want to delete this project?')) {
-        projects.value = projects.value.filter(p => p.id !== id);
-    }
+  if (confirm('Are you sure you want to delete this project?')) {
+    projects.value = projects.value.filter(p => p.id !== id);
+  }
 };
 
 const handleSave = async (projectData) => {
-    isSaving.value = true;
-    
-    // Mock API call delay for backend connectivity simulation
-    await new Promise(resolve => setTimeout(resolve, 1200));
-    
-    if (projectData.id) {
-        const index = projects.value.findIndex(p => p.id === projectData.id);
-        if (index !== -1) projects.value[index] = projectData;
-    } else {
-        const newProject = {
-            ...projectData,
-            id: Date.now(),
-            image: projectData.image || projectImage
-        };
-        projects.value.push(newProject);
-    }
-    
-    isSaving.value = false;
-    showModal.value = false;
+  isSaving.value = true;
+
+  // Mock API call delay for backend connectivity simulation
+  await new Promise(resolve => setTimeout(resolve, 1200));
+
+  if (projectData.id) {
+    const index = projects.value.findIndex(p => p.id === projectData.id);
+    if (index !== -1) projects.value[index] = projectData;
+  } else {
+    const newProject = {
+      ...projectData,
+      id: Date.now(),
+      image: projectData.image || projectImage
+    };
+    projects.value.push(newProject);
+  }
+
+  isSaving.value = false;
+  showModal.value = false;
 };
 </script>
 
@@ -187,7 +178,8 @@ const handleSave = async (projectData) => {
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
-  padding: 40px 24px; /* Matches content-wrapper padding in Projects.vue */
+  padding: 40px 24px;
+  /* Matches content-wrapper padding in Projects.vue */
   text-align: left;
   background-color: transparent;
 }
@@ -195,15 +187,19 @@ const handleSave = async (projectData) => {
 .header {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start; /* Changed to flex-start to match provided design */
+  align-items: flex-start;
+  /* Changed to flex-start to match provided design */
   margin-bottom: 40px;
 }
 
 .title-section h1 {
   margin: 0;
-  font-size: 39px; /* Matches Projects.vue */
-  font-weight: 700; /* Sticking to 700 */
-  color: var(--color-text); /* Using CSS var */
+  font-size: 39px;
+  /* Matches Projects.vue */
+  font-weight: 700;
+  /* Sticking to 700 */
+  color: var(--color-text);
+  /* Using CSS var */
   letter-spacing: -0.5px;
 }
 
@@ -429,7 +425,7 @@ const handleSave = async (projectData) => {
   border-radius: 10px;
   font-size: 13px;
   font-weight: 700;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .card-bottom-section {
@@ -472,9 +468,9 @@ const handleSave = async (projectData) => {
 }
 
 .tag {
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--color-primary);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-primary);
 }
 
 .separator {
@@ -505,24 +501,22 @@ const handleSave = async (projectData) => {
     align-items: flex-start;
     gap: 28px;
   }
-  
+
   .projects-container {
     grid-template-columns: 1fr;
   }
-  
+
   .title-section h1 {
     font-size: 32px;
   }
-  
+
   .stats-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .add-btn {
     width: 100%;
     justify-content: center;
   }
 }
 </style>
-
-
