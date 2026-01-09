@@ -205,7 +205,6 @@ const handleUpload = ({ type, file }) => {
   text-align: start;
 }
 
-/* Tabs Wrapper */
 .tabs-wrapper {
   background-color: transparent !important;
 }
