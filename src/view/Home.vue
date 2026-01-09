@@ -265,13 +265,6 @@ const projects = [
       'The collection of Khmer handwriting data is significant for supporting AI research on the Khmer language. Your participation in providing handwriting samples is extremely ...',
     image: '/src/assets/project/khmer-handwriting.png',
   },
-  // {
-  //   id: 3,
-  //   projectName: 'AIR HANDWRITING FOR KHMER CHARACTERS',
-  //   description:
-  //     'The collection of Khmer handwriting data is significant for supporting AI research on the Khmer languages ...',
-  //   image: '/src/assets/project/air-handwriting.png',
-  // },
 ]
 
 const members = [
