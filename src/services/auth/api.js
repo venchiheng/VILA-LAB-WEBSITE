@@ -1,4 +1,4 @@
-import api from '../api.js'  // correct path
+import api from '../api.js' 
 
 export const loginApi = async (memberId, password) => {
   const response = await api.post('/login', { member_id: memberId, password })
