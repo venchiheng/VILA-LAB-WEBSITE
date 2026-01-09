@@ -139,6 +139,7 @@ const onExplore = () => {
 }
 
 .explore-btn:hover {
-  background-color: #747bff;
+  background-color: var(--color-primary);
+  color: var(--color-bg);
 }
 </style>
