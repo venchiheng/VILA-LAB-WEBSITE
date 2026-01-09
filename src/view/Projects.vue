@@ -13,26 +13,21 @@
                 <div class="search-bar">
                     <div class="search-icon">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M11 19C15.4183 19 19 15.4183 19 11C19 6.58172 15.4183 3 11 3C6.58172 3 3 6.58172 3 11C3 15.4183 6.58172 19 11 19Z" stroke="#222222" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                            <path d="M21 21L16.65 16.65" stroke="#222222" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path
+                                d="M11 19C15.4183 19 19 15.4183 19 11C19 6.58172 15.4183 3 11 3C6.58172 3 3 6.58172 3 11C3 15.4183 6.58172 19 11 19Z"
+                                stroke="#222222" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                            <path d="M21 21L16.65 16.65" stroke="#222222" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round" />
                         </svg>
                     </div>
-                    <input 
-                        type="text" 
-                        v-model="searchQuery" 
-                        placeholder="Search projects...." 
-                        class="search-input"
-                    />
+                    <input type="text" v-model="searchQuery" placeholder="Search projects...." class="search-input" />
                 </div>
 
                 <!-- Filter Buttons -->
                 <div class="filter-buttons">
-                    <button 
-                        v-for="category in categories" 
-                        :key="category"
+                    <button v-for="category in projectCategoriesStore.categories" :key="category"
                         :class="['filter-btn', { active: activeCategory === category }]"
-                        @click="activeCategory = category"
-                    >
+                        @click="activeCategory = category">
                         {{ category }}
                     </button>
                 </div>
@@ -40,64 +35,64 @@
 
             <!-- Projects Grid -->
             <div class="projects-grid">
-                <ProjectCard 
-                    v-for="(project, index) in filteredProjects" 
-                    :key="index"
-                    :projectName="project.title"
-                    :description="project.description"
-                    :image="project.image"
-                    :tags="project.tags"
-                />
+                <ProjectCard v-for="(project, index) in filteredProjects" :key="index" :projectName="project.title"
+                    :description="project.description" :image="project.image" :tags="project.tags" />
             </div>
         </div>
     </div>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import ProjectCard from '@/components/project/ProjectCard.vue';
 import projectImage from '@/assets/project/image1.jpeg';
 
-// Dummy data for demonstration
+import { defineStore } from 'pinia'
+import { useProjectCategoriesStore } from '../stores/categories';
+
+// const searchQuery = ref('');
+// const activeCategory = ref('All Projects');
+
+const projectCategoriesStore = useProjectCategoriesStore();
 const projects = [
-    { 
-        title: "Project Alpha: Autonomous Drone Nagavation", 
-        description: "Developing AI for real-time environmental mapping.", 
+    {
+        title: "Project Alpha: Autonomous Drone Nagavation",
+        description: "Developing AI for real-time environmental mapping.",
         tags: ["AI", "Robotics"],
         category: "Artificial Intelligence",
         image: projectImage
     },
-    { 
-        title: "Project Beta: Natural Language Understanding", 
-        description: "Developing a conversational AI that understands nuanced human language.", 
+    {
+        title: "Project Beta: Natural Language Understanding",
+        description: "Developing a conversational AI that understands nuanced human language.",
         tags: ["AI", "HCI"],
         category: "NLP",
         image: projectImage
     },
-    { 
-        title: "Project Gamma: Predictive Data Modeling", 
-        description: "Using machine learning to forecast market trends with high accuracy.", 
+    {
+        title: "Project Gamma: Predictive Data Modeling",
+        description: "Using machine learning to forecast market trends with high accuracy.",
         tags: ["Data Science"],
         category: "Data Science",
         image: projectImage
     },
-    { 
-        title: "Project Delta: Human-Computer Interaction Study", 
-        description: "Researching intuitive interfaces for complex systems.", 
+    {
+        title: "Project Delta: Human-Computer Interaction Study",
+        description: "Researching intuitive interfaces for complex systems.",
         tags: ["Robotics", "HCI"],
         category: "Computer Vision",
         image: projectImage
     },
-        { 
-        title: "Project Epsilon: Predictive Data Analytics", 
-        description: "Using machine learning to forecast market trends.", 
+    {
+        title: "Project Epsilon: Predictive Data Analytics",
+        description: "Using machine learning to forecast market trends.",
         tags: ["Data Science"],
         category: "Data Science",
         image: projectImage
     },
-    { 
-        title: "Project Zeta: Advanced Robotic Arm", 
-        description: "Building a robotic arm with human-like dexterity.", 
+    {
+        title: "Project Zeta: Advanced Robotic Arm",
+        description: "Building a robotic arm with human-like dexterity.",
         tags: ["AI, Robotics"],
         category: "Artificial Intelligence",
         image: projectImage
@@ -111,12 +106,15 @@ const activeCategory = ref("All Projects");
 
 const filteredProjects = computed(() => {
     return projects.filter(project => {
-        const matchesSearch = project.title.toLowerCase().includes(searchQuery.value.toLowerCase()) || 
-                              project.description.toLowerCase().includes(searchQuery.value.toLowerCase());
+        const matchesSearch = project.title.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+            project.description.toLowerCase().includes(searchQuery.value.toLowerCase());
         const matchesCategory = activeCategory.value === "All Projects" || project.category === activeCategory.value;
-        
+
         return matchesSearch && matchesCategory;
     });
+});
+onMounted(async () => {
+    await projectCategoriesStore.fetchCategories(); // load categories dynamically
 });
 </script>
 
@@ -124,7 +122,8 @@ const filteredProjects = computed(() => {
 .projects-page {
     background-color: var(--color-bg);
     min-height: 100vh;
-    padding-top: 120px; /* Space for fixed navbar + header spacing */
+    padding-top: 120px;
+    /* Space for fixed navbar + header spacing */
     padding-bottom: 80px;
     display: flex;
     justify-content: center;
@@ -147,7 +146,8 @@ const filteredProjects = computed(() => {
 .page-header h1 {
     font-size: 39px;
     font-weight: 700;
-    color: var(--color-text); /* Black title */
+    color: var(--color-text);
+    /* Black title */
     margin-bottom: 16px;
 }
 
@@ -177,8 +177,10 @@ const filteredProjects = computed(() => {
     width: 100%;
     height: 50px;
     border: 1px solid #CCCCCC;
-    border-radius: 12px; /* Slight rounding like screenshot */
-    padding-left: 50px; /* Space for icon */
+    border-radius: 12px;
+    /* Slight rounding like screenshot */
+    padding-left: 50px;
+    /* Space for icon */
     padding-right: 16px;
     font-size: 16px;
     font-family: inherit;
@@ -209,7 +211,8 @@ const filteredProjects = computed(() => {
 .filter-btn {
     padding: 10px 24px;
     border-radius: 100px;
-    background-color: #E0E0E0; /* Inactive gray color */
+    background-color: #E0E0E0;
+    /* Inactive gray color */
     color: var(--color-text);
     font-weight: 500;
     border: none;
@@ -223,13 +226,15 @@ const filteredProjects = computed(() => {
 
 .filter-btn.active {
     background-color: var(--color-primary);
-    color: var(--color-bg); /* White text on active */
+    color: var(--color-bg);
+    /* White text on active */
 }
 
 /* Grid */
 .projects-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr); /* 3 Columns on desktop */
+    grid-template-columns: repeat(3, 1fr);
+    /* 3 Columns on desktop */
     gap: 32px;
 }
 
@@ -244,11 +249,11 @@ const filteredProjects = computed(() => {
     .projects-grid {
         grid-template-columns: 1fr;
     }
-    
+
     .page-header h1 {
         font-size: 32px;
     }
-    
+
     .search-bar {
         max-width: 100%;
     }
