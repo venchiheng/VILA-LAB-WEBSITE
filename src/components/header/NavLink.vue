@@ -5,7 +5,10 @@
 </template>
 
 <script setup>
-defineProps({
+import { computed } from 'vue'
+import { useRoute } from 'vue-router'
+
+const props = defineProps({
     to: {
         type: String,
         required: true
@@ -13,12 +16,11 @@ defineProps({
     label: {
         type: String,
         required: true
-    },
-    isActive: {
-        type: Boolean,
-        default: false
     }
 })
+
+const route = useRoute()
+const isActive = computed(() => route.path === props.to)
 </script>
 
 <style scoped>
