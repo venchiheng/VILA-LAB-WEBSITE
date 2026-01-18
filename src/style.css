@@ -28,7 +28,7 @@ html, body{
 
 a {
   font-weight: 500;
-  color: var(--color-secondary);
+  color: var(--color-text);
   text-decoration: none;
 }
 
@@ -111,6 +111,18 @@ button:focus-visible {
   background-color: var(--color-bg);
   border-radius: 0.5rem;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+input,
+textarea {
+  color: #222222;
+  font-family: inherit;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #9ca3af;
+  opacity: 1;
 }
 
 @media (prefers-color-scheme: light) {
