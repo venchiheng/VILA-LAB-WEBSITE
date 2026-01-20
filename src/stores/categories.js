@@ -1,6 +1,7 @@
 
 import { defineStore } from 'pinia';
-import projectCategoriesService from '@/services/projectCategories';
+import projectCategoriesService from '../services/projectcategories';
+// import projectCategoriesService from '@/services/projectCategories';
 
 export const useProjectCategoriesStore = defineStore('projectCategories', {
   state: () => ({

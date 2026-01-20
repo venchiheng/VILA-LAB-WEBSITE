@@ -110,6 +110,7 @@
 
 <script>
 import { Icon } from '@iconify/vue'
+import { useContactMessageStore } from '../stores/contact_message';
 
 export default {
     name: 'VisitForm',
@@ -186,6 +187,7 @@ export default {
                 await store.postMessage({ ...this.formData })
                 this.showSnackbar('Message sent successfully', 'success')
                 this.resetForm()
+                console.log('Message sent:', this.formData)
             } catch (error) {
                 console.error(error)
                 this.showSnackbar('Failed to send message', 'error')

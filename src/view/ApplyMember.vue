@@ -21,8 +21,8 @@
 
         <select v-model="formData.gender">
           <option disabled value="">Select your gender</option>
-          <option>Male</option>
-          <option>Female</option>
+          <option>male</option>
+          <option>female</option>
           <option>Other</option>
         </select>
         <span v-if="errors.gender" class="error">{{ errors.gender }}</span>
@@ -90,31 +90,35 @@
 import { reactive } from 'vue'
 import { Icon } from '@iconify/vue'
 import { useRouter } from 'vue-router'
+import { useMembershipStore } from '../stores/member_registration'
+const membershipStore = useMembershipStore()
+
 /* ======================
    FORM STATE
 ====================== */
-const formData = reactive({
-  name: '',
-  gender: '',
-  email: '',
-  phone: '',
-  studentId: '',
-  faculty: '',
-  year: '',
-  cv: null as File | null,
-  motivation: '',
-  timeManagement: '',
-  availability: ''
-})
+// const formData = reactive({
+//   name: '',
+//   gender: '',
+//   email: '',
+//   phone: '',
+//   studentId: '',
+//   faculty: '',
+//   year: '',
+//   cv: null as File | null,
+//   motivation: '',
+//   timeManagement: '',
+//   availability: ''
+// })
 
-const errors = reactive<Record<string, string>>({})
+const formData = membershipStore.formData
+const errors = membershipStore.errors
+// const errors = reactive<Record<string, string>>({})
 
 /* ======================
    FILE HANDLER
 ====================== */
-function handleFileChange(event: Event) {
-  const file = (event.target as HTMLInputElement).files?.[0]
-
+function handleFileChange(e) {
+  const file = e.target.files[0]
   if (!file) return
 
   if (file.type !== 'application/pdf') {
@@ -122,8 +126,7 @@ function handleFileChange(event: Event) {
     return
   }
 
-  formData.cv = file
-  errors.cv = ''
+  membershipStore.setFile(file)
 }
 
 /* ======================
@@ -197,18 +200,14 @@ function validateForm() {
 /* ======================
    SUBMIT
 ====================== */
-const router = useRouter()
-function submitForm() {
-  if (!validateForm()) return
-
-  console.log('FORM DATA SUBMITTED:')
-  console.log({
-    ...formData,
-    cv: formData.cv?.name
-  })
-
-  alert('Form validated successfully. Check console.')
-  router.push('/submissionpage')
+async function submitForm() {
+  try {
+    await membershipStore.submitForm()
+    alert('Application submitted successfully!')
+    router.push('/submissionpage')
+  } catch (e) {
+    console.log(errors)
+  }
 }
 </script>
 
