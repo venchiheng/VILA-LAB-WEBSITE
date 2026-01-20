@@ -10,13 +10,14 @@
   },
   "dependencies": {
     "@iconify/vue": "^5.0.0",
+    "@mdi/font": "^7.4.47",
     "@tailwindcss/vite": "^4.1.17",
     "axios": "^1.13.2",
     "pinia": "^3.0.4",
     "vue": "^3.5.24",
-    "vue-router": "^4.6.3",
+    "vue-router": "^4.6.4",
     "vuestic-ui": "^1.10.3",
-    "vuetify": "^3.11.3"
+    "vuetify": "^4.0.0-alpha.0"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^6.0.1",
