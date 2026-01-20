@@ -1,161 +1,182 @@
 <template>
-  <Banner />
-  <div class="laboratory-section">
-    <div class="laboratory-content">
-      <div class="laboratory-title">
-        <h1>Our Laboratory</h1>
-        <p>ViLa Lab is a dedicated research laboratory under the Mechatronics and Information Technology (MIT) Research Unit and the Department of Information and Communication Engineering (GIC) at ITC.</p>
+  <div class="home-container">
+    <Banner />
+    <div class="laboratory-section">
+      <div class="laboratory-content">
+        <div class="laboratory-title">
+          <h1>Our Laboratory</h1>
+          <p>ViLa Lab is a dedicated research laboratory under the Mechatronics and Information Technology (MIT) Research Unit and the Department of Information and Communication Engineering (GIC) at ITC.</p>
+        </div>
       </div>
-    </div>
-    <div class="laboratory-grid">
-      <LaboratoryCard
-        v-for="item in laboratories"
-        :key="item.id"
-        :name="item.name"
-        :image="item.image"
-      />
-    </div>
-  </div>
-  <div class="project-section">
-    <div class="project-content">
-      <div class="project-title">
-        <h1>Our Projects</h1>
-        <p>Our project uses Natural Language Processing and Computer Vision to improve how machines understand Khmer language and visual content.</p>
-        <router-link to="/projects" class="explore-btn">
-          <img
-            src="@/assets/icons/ic--baseline-message.png"
-            alt="message"
-            class="btn-icon"
-          />
-          <span>Read more</span>
-        </router-link>
-      </div>
-      <div class="projects-grid">
-        <ProjectCard
-          v-for="project in projects"
-          :key="project.id"
-          :project-name="project.projectName"
-          :description="project.description"
-          :image="project.image"
+      <div class="laboratory-grid">
+        <LaboratoryCard
+          v-for="item in laboratories"
+          :key="item.id"
+          :name="item.name"
+          :image="item.image"
         />
       </div>
     </div>
-  </div>
-  <div class="member-section">
-    <div class="member-content">
-      <div class="member-title">
-        <h1>Research Members</h1>
-        <p>Our lab consists of a diverse team of researchers and developers, working together to advance projects in AI, NLP, and Computer Vision, etc. Each member brings unique expertise to drive innovation and collaboration.</p>
+    <div class="project-section">
+      <div class="project-content">
+        <div class="project-title">
+          <h1>Our Projects</h1>
+          <p>Our project uses Natural Language Processing and Computer Vision to improve how machines understand Khmer language and visual content.</p>
+          <router-link to="/projects" class="explore-btn">
+            <img
+              src="@/assets/icons/ic--baseline-message.png"
+              alt="message"
+              class="btn-icon"
+            />
+            <span>Read more</span>
+          </router-link>
+        </div>
+        <div class="projects-grid">
+          <ProjectCard
+            v-for="project in projects"
+            :key="project.id"
+            :project-name="project.projectName"
+            :description="project.description"
+            :image="project.image"
+          />
+        </div>
       </div>
     </div>
-    <div class="carousel-wrapper">
-      <v-carousel
-        height="auto"
-        show-arrows="hover"
-        cycle
-        :interval="5000"
-        hide-delimiter-background
-        class="research-carousel"
-      >
-        <v-carousel-item
-          v-for="(chunk, i) in chunkedMembers"
-          :key="i"
-        >
-          <div class="member-grid">
-            <ResearchMemberCard
-              v-for="member in chunk"
-              :key="member.id"
-              :name="member.name"
-              :program="member.program"
-              :description="member.description"
-              :image="member.image"
-              @explore="goToDetail(member.id)"
-            />
-          </div>
-        </v-carousel-item>          
-      </v-carousel>            
-    </div>
-  </div>
-  <div class="achievement-section">
-    <h1 class="achievement-title">Our Achievements</h1>
-
-    <v-defaults-provider
-      :defaults="{ VBtn: { variant: 'outlined', color: '#eee' } }"
-    >
-      <div class="achievement-layout">
-        <v-sheet
-          class="overflow-hidden achievement-frame"
-          max-width="1200"
-          rounded="xl"
-        >
-          <v-carousel
-            v-model="currentIndex"
-            direction="vertical"
-            height="450"
-            hide-delimiters
-            :show-arrows="false"
-            cycle
-            interval="5000"
+    <div class="member-section">
+      <div class="member-content">
+        <div class="member-title">
+          <h1>Research Members</h1>
+          <p>Our lab consists of a diverse team of researchers and developers, working together to advance projects in AI, NLP, and Computer Vision, etc. Each member brings unique expertise to drive innovation and collaboration.</p>
+        </div>
+      </div>
+      <div class="carousel-wrapper">
+        <div class="carousel-container">
+          <button 
+            class="carousel-nav prev" 
+            @click="prevSlide"
+            :disabled="currentIndex === 0"
           >
-            <v-carousel-item
-              v-for="(item, index) in achievements"
-              :key="index"
+            <img src="/src/assets/icons/left.png" alt="Previous" class="nav-icon" />
+          </button>
+          
+          <div class="carousel-viewport">
+            <div 
+              class="member-grid" 
+              :style="{ transform: `translateX(-${currentIndex * (100 / 4)}%)` }"
             >
-              <AchievementCard
-                :image="item.image"
-                class="active-card"
+              <ResearchMemberCard
+                v-for="member in members"
+                :key="member.id"
+                :name="member.name"
+                :program="member.program"
+                :description="member.description"
+                :image="member.image"
+                @explore="goToDetail(member.id)"
               />
-            </v-carousel-item>
-
-            <!-- Overlay -->
-            <v-overlay
-              :scrim="false"
-              content-class="w-100 h-100 d-flex flex-column justify-end align-end pa-6"
-              contained
-              model-value
-              persistent
-            >
-              <button class="learn-more-btn">
-                Learn more
-                <svg width="8" height="12" viewBox="0 0 8 12">
-                  <path
-                    d="M4.6 6L0 1.4L1.4 0L7.4 6L1.4 12L0 10.6L4.6 6Z"
-                    fill="#0049AF"
-                  />
-                </svg>
-              </button>
-            </v-overlay>
-          </v-carousel>
-        </v-sheet>
-
-        <div class="pagination-dots outside-right">
-          <span
-            v-for="(_, index) in achievements"
+            </div>
+          </div>
+          
+          <button 
+            class="carousel-nav next" 
+            @click="nextSlide"
+            :disabled="currentIndex >= members.length - 4"
+          >
+            <img src="/src/assets/icons/right.png" alt="Next" class="nav-icon" />
+          </button>
+        </div>
+        
+        <div class="carousel-dots">
+          <span 
+            v-for="(member, index) in members" 
             :key="index"
             class="dot"
             :class="{ active: index === currentIndex }"
-            @click="currentIndex = index"
+            @click="goToSlide(index)"
           ></span>
         </div>
       </div>
-    </v-defaults-provider>
-  </div>
-  <div class="partners-section">
-    <h1 class="partners-title">Our Partnership</h1>
+    </div>
+    <div class="achievement-section">
+      <h1 class="achievement-title">Our Achievements</h1>
 
-    <v-row justify="center" class="partners-row">
-      <v-col
-        v-for="(partner, index) in partners"
-        :key="index"
-        cols="6"
-        sm="4"
-        md="3"
-        lg="2"
-        class="d-flex justify-center pa-4"
+      <v-defaults-provider
+        :defaults="{ VBtn: { variant: 'outlined', color: '#eee' } }"
       >
-        <PartnerCard :image="partner.image" />
-      </v-col>
-    </v-row>
+        <div class="achievement-layout">
+          <v-sheet
+            class="overflow-hidden achievement-frame"
+            max-width="1200"
+            rounded="xl"
+          >
+            <v-carousel
+              v-model="currentIndex"
+              direction="vertical"
+              height="450"
+              hide-delimiters
+              :show-arrows="false"
+              cycle
+              interval="5000"
+            >
+              <v-carousel-item
+                v-for="(item, index) in achievements"
+                :key="index"
+              >
+                <AchievementCard
+                  :image="item.image"
+                  class="active-card"
+                />
+              </v-carousel-item>
+
+              <!-- Overlay -->
+              <v-overlay
+                :scrim="false"
+                content-class="w-100 h-100 d-flex flex-column justify-end align-end pa-6"
+                contained
+                model-value
+                persistent
+              >
+                <button class="learn-more-btn">
+                  Learn more
+                  <svg width="8" height="12" viewBox="0 0 8 12">
+                    <path
+                      d="M4.6 6L0 1.4L1.4 0L7.4 6L1.4 12L0 10.6L4.6 6Z"
+                      fill="#0049AF"
+                    />
+                  </svg>
+                </button>
+              </v-overlay>
+            </v-carousel>
+          </v-sheet>
+
+          <div class="pagination-dots outside-right">
+            <span
+              v-for="(_, index) in achievements"
+              :key="index"
+              class="dot"
+              :class="{ active: index === currentIndex }"
+              @click="currentIndex = index"
+            ></span>
+          </div>
+        </div>
+      </v-defaults-provider>
+    </div>
+    <div class="partners-section">
+      <h1 class="partners-title">Our Partnership</h1>
+
+      <v-row justify="center" class="partners-row">
+        <v-col
+          v-for="(partner, index) in partners"
+          :key="index"
+          cols="6"
+          sm="4"
+          md="3"
+          lg="2"
+          class="d-flex justify-center pa-4"
+        >
+          <PartnerCard :image="partner.image" />
+        </v-col>
+      </v-row>
+    </div>
   </div>
 </template>
 
@@ -244,13 +265,6 @@ const projects = [
       'The collection of Khmer handwriting data is significant for supporting AI research on the Khmer language. Your participation in providing handwriting samples is extremely ...',
     image: '/src/assets/project/khmer-handwriting.png',
   },
-  // {
-  //   id: 3,
-  //   projectName: 'AIR HANDWRITING FOR KHMER CHARACTERS',
-  //   description:
-  //     'The collection of Khmer handwriting data is significant for supporting AI research on the Khmer languages ...',
-  //   image: '/src/assets/project/air-handwriting.png',
-  // },
 ]
 
 const members = [
@@ -304,16 +318,23 @@ const members = [
   },
 ]
 
-const itemsPerSlide = 4
-
-// Split members into chunks for carousel slides
-const chunkedMembers = computed(() => {
-  const chunks = []
-  for (let i = 0; i < members.length; i += itemsPerSlide) {
-    chunks.push(members.slice(i, i + itemsPerSlide))
+const nextSlide = () => {
+  if (currentIndex.value < members.length - 4) {
+    currentIndex.value++
   }
-  return chunks
-})
+}
+
+const prevSlide = () => {
+  if (currentIndex.value > 0) {
+    currentIndex.value--
+  }
+}
+
+const goToSlide = (index) => {
+  if (index <= members.length - 4) {
+    currentIndex.value = index
+  }
+}
 
 const goToDetail = (id) => {
   console.log('Explore member:', id)
@@ -323,6 +344,11 @@ const goToDetail = (id) => {
 </script>
 
 <style scoped>
+
+.home-container {
+  background-color: var(--color-bg);
+  width: 100%;
+}
 
 .laboratory-section {
   padding: 100px 156px 0px;
@@ -432,11 +458,15 @@ const goToDetail = (id) => {
   padding: 10px 156px;
   background-color: var(--color-bg);
   width: 100%;
-
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .member-title {
   text-align: start;
+  width: 100%;
+  max-width: 1400px;
 }
 
 .member-title h1 {
@@ -446,24 +476,42 @@ const goToDetail = (id) => {
   padding-bottom: 20px;
 }
 
+.member-title p {
+  color: var(--color-text);
+  line-height: 1.6;
+}
 
 .carousel-wrapper {
   width: 100%;
   padding: auto 0 100px;
   margin-bottom: 100px;
+  max-width: 1400px;
+  padding: 40px 0 100px;
+  margin-bottom: 100px;
 }
 
-.research-carousel {
-  max-width: 1400px;
-  margin: 0 auto;
+.carousel-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.carousel-container:hover .carousel-nav:not(:disabled) {
+  opacity: 1;
+}
+
+.carousel-viewport {
+  overflow: hidden;
+  width: 100%;
 }
 
 .member-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(6, calc(25% - 18px));
   gap: 24px;
-  padding: 40px 20px;
-  animation: fadeIn 0.6s ease-out;
+  transition: transform 0.5s ease-in-out;
+  width: 100%;
 }
 
 @keyframes fadeIn {
@@ -475,21 +523,81 @@ const goToDetail = (id) => {
   }
 }
 
-/* Style the navigation arrows */
-:deep(.v-window__controls .v-btn--icon) {
-  background-color: var(--color-primary) !important;
-  color: var(--color-bg) !important;
-
+.carousel-nav {
+  background-color: var(--color-primary);
+  color: var(--color-bg);
+  border: none;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  font-size: 24px;
+  cursor: pointer;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.3s ease, transform 0.2s ease;
+  z-index: 10;
+  opacity: 0;
 }
 
-:deep(.v-carousel__controls__item) {
-  margin-top: 15px;
-  color: var(--color-primary);
+.carousel-nav:hover:not(:disabled) {
+  transform: scale(1.1);
 }
 
-/* Active dot = dark blue (primary color) */
-:deep(.v-carousel__controls__item .v-btn--active) {
-  background-color: var(--color-primary) !important;
+.carousel-nav:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.nav-icon {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+  
+}
+
+.carousel-dots {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 30px;
+}
+
+.dot {
+  width: 12px;
+  height: 12px;
+  background-color: #e0e0e0;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.dot:hover {
+  transform: scale(1.2);
+}
+
+.dot.active {
+  background-color: var(--color-primary);
+}
+
+/* Responsive Design */
+@media screen and (max-width: 1400px) {
+  .member-section {
+    padding-left: 80px;
+    padding-right: 80px;
+  }
+}
+
+@media screen and (max-width: 1024px) {
+  .member-section {
+    padding-left: 40px;
+    padding-right: 40px;
+  }
+  
+  .member-grid {
+    grid-template-columns: repeat(6, calc(33.333% - 16px));
+  }
 }
 
 .achievement-section {
@@ -497,6 +605,10 @@ const goToDetail = (id) => {
   background-color: var(--color-bg);
   width: 100%;
   min-height: 600px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
 .achievement-title {
@@ -508,6 +620,8 @@ const goToDetail = (id) => {
   display: flex;
   align-items: center;
   gap: 24px;
+  width: 100%;
+  max-width: 1400px;
 }
 
 .achievement-frame {
@@ -516,6 +630,7 @@ const goToDetail = (id) => {
   background: var(--color-bg);
   overflow: hidden;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  flex: 1;
 }
 
 .active-card {
@@ -533,13 +648,16 @@ const goToDetail = (id) => {
   cursor: pointer;
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
+  margin: 0 auto;
 }
 
 .pagination-dots.outside-right {
   display: flex;
   flex-direction: column;
   gap: 12px;
+  align-items: center;
 }
 
 .dot {
@@ -548,6 +666,7 @@ const goToDetail = (id) => {
   background-color: #e0e0e0;
   border-radius: 50%;
   cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
 .dot.active {
@@ -560,16 +679,24 @@ const goToDetail = (id) => {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   padding: 110px 156px;
+  margin: 0 auto;
 }
 
 .partners-title { 
   color: var(--color-text);
   margin-bottom: 30px;
+  text-align: center;
 }
 
 .partners-row {
   row-gap: 40px;   
   column-gap: 40px; 
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
 }
 </style>

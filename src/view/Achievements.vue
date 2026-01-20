@@ -1,147 +1,177 @@
 <template>
-  <div class="wrapper">
-    <h1 class="page-title">Our Achievements</h1>
+  <div class="achievements-container">
+    <!-- Header Section -->
+    <div class="header-section">
+      <h1 class="main-title">Achievements & Publications</h1>
+      <p class="subtitle">Showcasing the awards, recognitions, and published research from the Vila Laboratory.</p>
+    </div>
 
-    <v-defaults-provider
-      :defaults="{ VBtn: { variant: 'outlined', color: '#eee' } }"
-    >
-      <div class="achievement-layout">
-        <v-sheet
-          class="overflow-hidden achievement-frame"
-          max-width="1200"
-          rounded="xl"
-        >
-          <v-carousel
-            v-model="currentIndex"
-            direction="vertical"
-            height="450"
-            hide-delimiters
-            :show-arrows="false"
-            cycle
-            interval="5000"
-          >
-            <v-carousel-item
-              v-for="(item, index) in achievements"
-              :key="index"
-            >
-              <AchievementCard
-                :image="item.image"
-                class="active-card"
+    <!-- Tabs Section -->
+    <v-sheet elevation="0" class="tabs-wrapper">
+      <v-tabs v-model="tab" color="primary" class="custom-tabs">
+        <v-tab value="awards">Awards</v-tab>
+        <v-tab value="publications">Publications</v-tab>
+        <v-tab value="news">In the news</v-tab>
+      </v-tabs>
+
+      <v-divider></v-divider>
+
+      <!-- Tabs Content -->
+      <v-tabs-window v-model="tab">
+        <!-- Awards Tab -->
+        <v-tabs-window-item value="awards">
+          <div class="tab-content">
+            <h4 class="section-title">Awards & Recognitions</h4>
+            <div class="award">
+              <v-timeline align="start" side="end" class="custom-timeline">
+                <v-timeline-item
+                  v-for="award in awards"
+                  :key="award.id"
+                  dot-color="primary"
+                  size="large"
+                >
+                  <template v-slot:icon>
+                    <v-icon color="white">{{ award.icon }}</v-icon>
+                  </template>
+
+                  <div class="timeline-content">
+                    <h3 class="award-title">{{ award.title }}</h3>
+                    <p class="award-organization">{{ award.organization }}</p>
+                  </div>
+                </v-timeline-item>
+              </v-timeline>
+            </div>
+          </div>
+        </v-tabs-window-item>
+
+        <!-- Publications Tab -->
+        <v-tabs-window-item value="publications">
+          <div class="publications-wrapper">
+            <h4 class="pub-title">Published Research</h4>
+            <div class="publication-list">
+              <PublicationCard
+                v-for="(pub, index) in publications"
+                :key="index"
+                :title="pub.title"
+                :authors="pub.authors"
+                :journal="pub.journal"
+                :year="pub.year"
+                @upload="handleUpload"
               />
-            </v-carousel-item>
+            </div>
+          </div>
+        </v-tabs-window-item>
 
-            <!-- Overlay -->
-            <v-overlay
-              :scrim="false"
-              content-class="w-100 h-100 d-flex flex-column justify-end align-end pa-6"
-              contained
-              model-value
-              persistent
-            >
-              <button class="learn-more-btn">
-                Learn more
-                <svg width="8" height="12" viewBox="0 0 8 12">
-                  <path
-                    d="M4.6 6L0 1.4L1.4 0L7.4 6L1.4 12L0 10.6L4.6 6Z"
-                    fill="#0049AF"
-                  />
-                </svg>
-              </button>
-            </v-overlay>
-          </v-carousel>
-        </v-sheet>
+        <!-- In the news Tab -->
+        <v-tabs-window-item value="news">
+          <div class="news-wrapper">
+            <h4 class="news-title">ViLa Lab in the News</h4>
+            
+            <!-- Featured Publication Card -->
+            <div class="featured-publication">
+              <PublicationCard
+                :title="featuredNews.title"
+                :authors="featuredNews.authors"
+                :journal="featuredNews.journal"
+                :year="featuredNews.year"
+                @upload="handleUpload"
+              />
+            </div>
 
-        <div class="pagination-dots outside-right">
-          <span
-            v-for="(_, index) in achievements"
-            :key="index"
-            class="dot"
-            :class="{ active: index === currentIndex }"
-            @click="currentIndex = index"
-          ></span>
-        </div>
-      </div>
-    </v-defaults-provider>
-
-    <div class="partners-section">
-      <h1 class="page-title">Our Partnership</h1>
-
-      <v-row justify="center">
-        <v-col
-          v-for="(partner, index) in partners"
-          :key="index"
-          cols="6"
-          sm="4"
-          md="3"
-          lg="2"
-          class="d-flex justify-center pa-4"
-        >
-          <PartnerCard :image="partner.image" />
-        </v-col>
-      </v-row>
-    </div>
-
-    <div class="publication-list">
-      <PublicationCard
-        v-for="(pub, index) in publications"
-        :key="index"
-        :title="pub.title"
-        :authors="pub.authors"
-        :journal="pub.journal"
-        :year="pub.year"
-        @upload="handleUpload"
-      />
-    </div>
+            <!-- News Cards Grid -->
+            <div class="news-cards-grid">
+              <NewsCard
+                v-for="(news, index) in newsItems"
+                :key="index"
+                :source="news.source"
+                :title="news.title"
+                :date="news.date"
+                :link="news.link"
+              />
+            </div>
+          </div>
+        </v-tabs-window-item>
+      </v-tabs-window>
+    </v-sheet>
   </div>
 </template>
 
 <script setup>
 import { ref } from 'vue'
-
-import AchievementCard from '@/components/achievement/achievementcard.vue'
-import PartnerCard from '@/components/PartnerCard/PartnerCard.vue'
 import PublicationCard from '@/components/publication/PublicationCard.vue'
+import NewsCard from '@/components/news/NewsCard.vue'
 
-import achievementImg1 from '@/assets/achievement/achievementcard1.png'
-import achievementImg2 from '@/assets/achievement/achievementcard2.png'
-import achievementImg3 from '@/assets/achievement/achievementcard3.png'
-import achievementImg4 from '@/assets/achievement/achievementcard4.png'
+const tab = ref('awards')
 
-import partner1 from '@/assets/Partner/partner1.png'
-import partner2 from '@/assets/Partner/partner2.png'
-import partner3 from '@/assets/Partner/partner3.png'
-import partner4 from '@/assets/Partner/partner4.png'
-import partner5 from '@/assets/Partner/partner5.png'
-import partner6 from '@/assets/Partner/partner6.png'
-import partner7 from '@/assets/Partner/partner7.png'
+const awards = ref([
+  {
+    id: 1,
+    title: 'Best Paper Award',
+    organization: 'NeurIPS 2023',
+    icon: 'mdi-trophy'
+  },
+  {
+    id: 2,
+    title: 'Innovation in AI Grant',
+    organization: 'National Science Foundation, 2022',
+    icon: 'mdi-lightbulb'
+  },
+  {
+    id: 3,
+    title: 'Outstanding Dissertation Award',
+    organization: 'ACM, 2021',
+    icon: 'mdi-school'
+  },
+  {
+    id: 4,
+    title: 'Early Career Researcher Prize',
+    organization: 'IEEE Computer Society, 2020',
+    icon: 'mdi-account-star'
+  }
+])
 
-const currentIndex = ref(0)
-
-const achievements = [
-  { image: achievementImg1 },
-  { image: achievementImg2 },
-  { image: achievementImg3 },
-  { image: achievementImg4 }
-]
-
-const partners = [
-  { image: partner1 },
-  { image: partner2 },
-  { image: partner3 },
-  { image: partner4 },
-  { image: partner5 },
-  { image: partner6 },
-  { image: partner7 }
-]
-
-const publications = [
+const publications = ref([
   {
     title: 'Generative Adversarial Networks for Realistic Image Synthesis',
     authors: 'J. Doe, A. Smith, B. Johnson',
     journal: 'Journal of Vision and Learning',
     year: 2023
+  },
+  {
+    title: 'Deep Learning Approaches for Natural Language Processing',
+    authors: 'M. Chen, L. Wang, R. Brown',
+    journal: 'ACM Transactions on Intelligent Systems',
+    year: 2023
+  },
+  {
+    title: 'Reinforcement Learning in Robotics: A Survey',
+    authors: 'K. Lee, P. Davis, S. Martinez',
+    journal: 'IEEE Robotics and Automation Letters',
+    year: 2022
   }
-]
+])
+
+const featuredNews = ref({
+  title: 'Generative Adversarial Networks for Realistic Image Synthesis',
+  authors: 'J. Doe, A. Smith, B. Johnson',
+  journal: 'Journal of Vision and Learning',
+  year: 2023
+})
+
+const newsItems = ref([
+  {
+    source: 'TechCrunch',
+    title: "ViLa Lab's breakthrough AI could change medical diagnostics.",
+    date: 'October 23, 2023',
+    link: '#'
+  },
+  {
+    source: 'Wired',
+    title: 'The ethical implications of next-gen language models, featuring ViLa Lab experts.',
+    date: 'August 14, 2023',
+    link: '#'
+  }
+])
 
 const handleUpload = ({ type, file }) => {
   console.log(type, file)
@@ -149,80 +179,145 @@ const handleUpload = ({ type, file }) => {
 </script>
 
 <style scoped>
-.wrapper {
-  margin-top: 40px;
-  padding: 40px 24px;
-  display: flex;
-  flex-direction: column;
-  gap: 100px;
-  align-items: center;
+.achievements-container {
   background-color: var(--color-bg);
-}
-
-.page-title {
-  color: var(--color-primary);
-  text-align: center;
-  font-size: 2.8rem;
-  font-weight: 700;
-  margin-bottom: 10px;
-}
-
-.achievement-layout {
-  display: flex;
-  align-items: center;
-  gap: 24px;
-}
-
-.achievement-frame {
-  border: 1px solid var(--color-primary);
-  border-radius: 40px;
-  background: var(--color-bg);
-  overflow: hidden;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-}
-
-.active-card {
   width: 100%;
   height: 100%;
-}
-
-.learn-more-btn {
-  background-color: var(--color-secondary);
-  color: var(--color-primary);
-  border: none;
-  padding: 12px 24px;
-  border-radius: 100px;
-  font-weight: 600;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.pagination-dots.outside-right {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.dot {
-  width: 12px;
-  height: 12px;
-  background-color: #e0e0e0;
-  border-radius: 50%;
-  cursor: pointer;
-}
-
-.dot.active {
-  background-color: var(--color-primary);
-}
-
-.partners-section {
-  width: 100%;
   max-width: 1400px;
-  display: flex;
+  margin: 0 auto;
+  padding: 65px 156px;
+}
+
+/* Header Section */
+.header-section {
+  margin-bottom: 48px;
+}
+
+.main-title {
+  font-weight: 700;
+  color: var(--color-text);
+  margin-bottom: 12px;
+  text-align: start;
+}
+
+.subtitle {
+  line-height: 1.6;
+  text-align: start;
+}
+
+.tabs-wrapper {
+  background-color: transparent !important;
+}
+
+.custom-tabs {
+  margin-bottom: 16px;
+}
+
+:deep(.v-tab) {
+  text-transform: none;
+  border: none;
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: normal;
+}
+
+:deep(.v-tab--selected) {
+  color: var(--v-theme-primary);
+}
+
+.awards {
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+
+.tab-content {
+  padding: 40px 20px;
+}
+
+.section-title {
+  font-weight: 700;
+  color: var(--color-text);
+  margin-bottom: 40px;
+  text-align: start;
+}
+
+/* Timeline Customization */
+.custom-timeline {
+  padding-left: 0px;
+  margin-left: 0 !important;
+  margin-right: auto !important;
+
+}
+
+/* Override Vuetify flex centering */
+:deep(.v-timeline) {
+  justify-content: flex-start !important;
+}
+
+:deep(.v-timeline-item) {
+  min-height: 120px;   /* increase this */
+  padding-bottom: 32px;
+}
+
+:deep(.v-timeline-divider__line) {
+  min-height: 100%;
+}
+
+:deep(.v-timeline-divider) {
+  padding-bottom: 60px;
+}
+
+:deep(.v-timeline-item__body) {
+  padding-inline-start: 48px !important; /* default is small */
+  align-items: flex-start !important;
+  text-align: left;
+}
+
+:deep(.v-timeline-item:last-child) {
+  padding-bottom: 0;
+}
+
+:deep(.v-timeline-divider__dot) {
+  background-color: rgb(var(--v-theme-primary));
+}
+
+.timeline-content {
+  padding-left: 24px;
+}
+
+.award-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--color-text);
+  margin-bottom: 4px;
+}
+
+.award-organization {
+  font-size: 14px;
+  color: #999;
+  margin: 0;
+}
+
+.placeholder-text {
+  color: #666;
+  font-size: 16px;
+}
+
+/* Publications Section */
+
+.publications-wrapper {
+  padding: 40px 24px;
   flex-direction: column;
   align-items: center;
+}
+
+.pub-title {
+  font-weight: 700;
+  color: var(--color-text);
+  margin-bottom: 60px;
+  text-align: start;
 }
 
 .publication-list {
@@ -234,14 +329,56 @@ const handleUpload = ({ type, file }) => {
   align-items: center;
 }
 
+/* News Section */
+.news-wrapper {
+  padding: 40px 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.news-title {
+  font-weight: 700;
+  color: var(--color-text);
+  margin-bottom: 60px;
+  text-align: start;
+}
+
+.featured-publication {
+  width: 100%;
+  max-width: 1128px;
+  margin: 0 auto 40px;
+}
+
+.news-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+  max-width: 1128px;
+  margin: 0 auto;
+}
+
 @media (max-width: 768px) {
-  .achievement-layout {
-    flex-direction: column;
+  .news-cards-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .achievements-container {
+    padding: 40px 20px;
   }
 
-  .pagination-dots.outside-right {
-    flex-direction: row;
-    margin-top: 20px;
+  .main-title {
+    font-size: 28px;
+  }
+
+  .section-title {
+    font-size: 24px;
+  }
+
+  .tab-content {
+    padding: 30px 10px;
   }
 }
 </style>
