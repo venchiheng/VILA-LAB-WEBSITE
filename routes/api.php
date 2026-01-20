@@ -5,10 +5,15 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\EquipmentBookingController;
 use App\Http\Controllers\EquipmentController;
+use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\ProjectCategoryController;
+
 
 Route::post('/membership-applications', [MembershipApplicationController::class, 'store']);
 Route::post('/login', [AuthController::class, 'login']);
-
+Route::apiResource('projects', ProjectController::class);
+Route::apiResource('project-categories', ProjectCategoryController::class)
+    ->only(['index', 'store']);
 Route::middleware('auth:sanctum')->group(function () {
 
     Route::apiResource('membership-applications', MembershipApplicationController::class)
