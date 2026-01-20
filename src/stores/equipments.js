@@ -1,4 +1,4 @@
-import { defineStore } from 'pinia'
+import { defineStore } from 'pinia' 
 
 export const useEquipmentStore = defineStore('equipment', {
   state: () => ({
@@ -6,14 +6,44 @@ export const useEquipmentStore = defineStore('equipment', {
       {
         id: 1,
         name: 'Raspberry Pi 5',
-        thumbnail: new URL('@/assets/equipment/rsbrpi.png', import.meta.url).href,
-        status: 'Available',
-        condition: 'New',
-        description: 'Single-board computer for embedded projects',
-        images: [
-          new URL('@/assets/equipment/rsbrpi.png', import.meta.url).href,
-          new URL('@/assets/equipment/rsbrpi.png', import.meta.url).href
-        ]
+        spec: '16GB RAM, M.2 SSD',
+        image: '/src/assets/equipment/pi5.png',
+        status: 'Available'
+      },
+      {
+        id: 2,
+        name: 'Raspberry Pi Compute Model 5',
+        spec: '16GB RAM, M.2 SSD',
+        image: '/src/assets/equipment/compute5.png',
+        status: 'Booked'
+      },
+      {
+        id: 3,
+        name: 'Raspberry Pi Compute Model 5',
+        spec: '16GB RAM, M.2 SSD',
+        image: '/src/assets/equipment/module5.png',
+        status: 'Available'
+      },
+      {
+        id: 4,
+        name: 'Raspberry Pi 5',
+        spec: '16GB RAM, M.2 SSD',
+        image: '/src/assets/equipment/pi5.png',
+        status: 'Available'
+      },
+      {
+        id: 5,
+        name: 'Raspberry Pi 5',
+        spec: '16GB RAM, M.2 SSD',
+        image: '/src/assets/equipment/module5.png',
+        status: 'Available'
+      },
+      {
+        id: 6,
+        name: 'Raspberry Pi 5',
+        spec: '16GB RAM, M.2 SSD',
+        image: '/src/assets/equipment/compute5.png',
+        status: 'Booked'
       }
     ]
   }),

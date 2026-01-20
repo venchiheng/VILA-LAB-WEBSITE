@@ -29,7 +29,7 @@ defineProps({
 
 <style scoped>
 .our-service-section {
-  padding: 80px 24px;
+  padding: 40px 24px;
   background-color: var(--color-bg);
   display: flex;
   justify-content: center;

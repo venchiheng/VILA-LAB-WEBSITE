@@ -145,6 +145,7 @@ const statusClass = computed(() => {
   color: var(--color-bg);
   border: none;
   border-radius: 100px;
+  padding: 12px 24px;
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
