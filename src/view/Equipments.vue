@@ -52,8 +52,10 @@ const route = useRoute()
 const router = useRouter()
 const equipmentStore = useEquipmentStore()
 
+// Computed list from store
 const equipments = computed(() => equipmentStore.equipments)
 
+// Selected equipment for detail view
 const selectedEquipment = ref(null)
 
 // Derive view from route
@@ -84,9 +86,7 @@ const updatedSelectedEquipment = () => {
         `
       }
     } else {
-        // Handle invalid ID if needed, maybe redirect to list?
-        // For now, let's just go back to list if not found to avoid broken state
-       router.replace('/equipments')
+      router.replace('/equipments')
     }
   } else {
     selectedEquipment.value = null
@@ -95,24 +95,24 @@ const updatedSelectedEquipment = () => {
 
 watch(() => route.params.id, updatedSelectedEquipment, { immediate: true })
 
-const openDetail = (item) => {
-  router.push(`/equipments/${item.id}`)
-}
+// Navigation handlers
+const openDetail = (item) => router.push(`/equipments/${item.id}`)
+const backToList = () => router.push('/equipments')
+const goToBooking = () => router.push('/equipments/booking')
 
-const backToList = () => {
-  router.push('/equipments')
-}
+// // Example images for detail carousel
+// const images = ref([
+//   '/src/assets/equipment/rsbrpi.png',
+//   '/src/assets/equipment/rsbrpi.png',
+//   '/src/assets/equipment/rsbrpi.png'
+// ])
 
-const goToBooking = () => {
-  router.push('/equipments/booking')
-}
-
-const images = ref([
-  '/src/assets/equipment/rsbrpi.png',
-  '/src/assets/equipment/rsbrpi.png',
-  '/src/assets/equipment/rsbrpi.png'
-])
+// Fetch equipment from API on mounted
+onMounted(() => {
+  equipmentStore.fetchEquipments()
+})
 </script>
+
 
 <style scoped>
 .equipment-header {

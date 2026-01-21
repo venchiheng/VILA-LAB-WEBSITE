@@ -39,7 +39,7 @@ import FormInput from './formInput.vue'
 import QuantitySelector from './quantity-selector.vue'
 import DatePicker from './datePicker.vue'
 import { Icon } from '@iconify/vue'
-
+import api from '../../services/api'
 const props = defineProps({
     modelValue: Boolean,
     equipment: Object
@@ -74,16 +74,31 @@ const close = () => {
     dialog.value = false
 }
 
-const confirmBooking = () => {
-    console.log('Form submitted:', {
-        equipment: props.equipment,
-        ...form
-    })
-    emit('confirm', {
-        equipment: props.equipment,
-        ...form
-    })
-    close()
+const confirmBooking = async () => {
+    try {
+        const payload = {
+            equipment_id: props.equipment.id,
+            full_name: form.fullName,
+            member_id: form.memberId,
+            purpose: form.purpose,
+            quantity: form.quantity,
+            borrow_date: form.borrowDate,
+            return_date: form.returnDate
+        }
+
+        const res = await api.post('/equipment-bookings', payload)
+
+        console.log('Booking success:', res.data)
+
+        // emit event to parent to update UI
+        emit('confirm', res.data)
+
+        // close dialog
+        close()
+    } catch (err) {
+        console.error('Booking failed:', err.response?.data || err.message)
+        alert('Failed to book equipment. Please try again.')
+    }
 }
 
 watch(

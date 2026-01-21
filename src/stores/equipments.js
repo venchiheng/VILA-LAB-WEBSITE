@@ -1,55 +1,38 @@
-import { defineStore } from 'pinia' 
+import { defineStore } from 'pinia'
+import api from '../services/api'
 
 export const useEquipmentStore = defineStore('equipment', {
   state: () => ({
-    equipments: [
-      {
-        id: 1,
-        name: 'Raspberry Pi 5',
-        spec: '16GB RAM, M.2 SSD',
-        image: '/src/assets/equipment/pi5.png',
-        status: 'Available'
-      },
-      {
-        id: 2,
-        name: 'Raspberry Pi Compute Model 5',
-        spec: '16GB RAM, M.2 SSD',
-        image: '/src/assets/equipment/compute5.png',
-        status: 'Booked'
-      },
-      {
-        id: 3,
-        name: 'Raspberry Pi Compute Model 5',
-        spec: '16GB RAM, M.2 SSD',
-        image: '/src/assets/equipment/module5.png',
-        status: 'Available'
-      },
-      {
-        id: 4,
-        name: 'Raspberry Pi 5',
-        spec: '16GB RAM, M.2 SSD',
-        image: '/src/assets/equipment/pi5.png',
-        status: 'Available'
-      },
-      {
-        id: 5,
-        name: 'Raspberry Pi 5',
-        spec: '16GB RAM, M.2 SSD',
-        image: '/src/assets/equipment/module5.png',
-        status: 'Available'
-      },
-      {
-        id: 6,
-        name: 'Raspberry Pi 5',
-        spec: '16GB RAM, M.2 SSD',
-        image: '/src/assets/equipment/compute5.png',
-        status: 'Booked'
-      }
-    ]
+    equipments: [],
+    loading: false,
+    error: null
   }),
 
   getters: {
     getById: (state) => (id) =>
       state.equipments.find(e => e.id === Number(id))
+  },
+
+  actions: {
+    async fetchEquipments() {
+      this.loading = true
+      this.error = null
+      try {
+        const response = await api.get('/equipment') // your backend route
+        // map the response if needed
+        this.equipments = response.data.data.map(e => ({
+          id: e.id,
+          name: e.name,
+          spec: e.spec || e.description || '',
+          image: e.image || '/src/assets/equipment/default.png', // fallback
+          status: e.availability === 'available' ? 'Available' : 'Booked'
+        }))
+      } catch (err) {
+        this.error = err
+        console.error('Failed to fetch equipments:', err)
+      } finally {
+        this.loading = false
+      }
+    }
   }
 })
