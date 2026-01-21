@@ -11,7 +11,6 @@
       <v-tabs v-model="tab" color="primary" class="custom-tabs">
         <v-tab value="awards">Awards</v-tab>
         <v-tab value="publications">Publications</v-tab>
-        <v-tab value="news">In the news</v-tab>
       </v-tabs>
 
       <v-divider></v-divider>
@@ -62,35 +61,6 @@
           </div>
         </v-tabs-window-item>
 
-        <!-- In the news Tab -->
-        <v-tabs-window-item value="news">
-          <div class="news-wrapper">
-            <h4 class="news-title">ViLa Lab in the News</h4>
-            
-            <!-- Featured Publication Card -->
-            <div class="featured-publication">
-              <PublicationCard
-                :title="featuredNews.title"
-                :authors="featuredNews.authors"
-                :journal="featuredNews.journal"
-                :year="featuredNews.year"
-                @upload="handleUpload"
-              />
-            </div>
-
-            <!-- News Cards Grid -->
-            <div class="news-cards-grid">
-              <NewsCard
-                v-for="(news, index) in newsItems"
-                :key="index"
-                :source="news.source"
-                :title="news.title"
-                :date="news.date"
-                :link="news.link"
-              />
-            </div>
-          </div>
-        </v-tabs-window-item>
       </v-tabs-window>
     </v-sheet>
   </div>
@@ -327,26 +297,6 @@ const handleUpload = ({ type, file }) => {
   flex-direction: column;
   gap: 25px;
   align-items: center;
-}
-
-/* News Section */
-.news-wrapper {
-  padding: 40px 24px;
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-.news-title {
-  font-weight: 700;
-  color: var(--color-text);
-  margin-bottom: 60px;
-  text-align: start;
-}
-
-.featured-publication {
-  width: 100%;
-  max-width: 1128px;
-  margin: 0 auto 40px;
 }
 
 .news-cards-grid {

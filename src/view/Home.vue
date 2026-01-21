@@ -135,7 +135,7 @@
                 model-value
                 persistent
               >
-                <button class="learn-more-btn">
+                <router-link to="/achievements" class="learn-more-btn">
                   Learn more
                   <svg width="8" height="12" viewBox="0 0 8 12">
                     <path
@@ -143,7 +143,7 @@
                       fill="#0049AF"
                     />
                   </svg>
-                </button>
+                </router-link>
               </v-overlay>
             </v-carousel>
           </v-sheet>
@@ -650,7 +650,6 @@ const goToDetail = (id) => {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  margin: 0 auto;
 }
 
 .pagination-dots.outside-right {

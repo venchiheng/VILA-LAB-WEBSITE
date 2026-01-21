@@ -101,6 +101,7 @@ const onExplore = () => {
   display: flex;
   flex-direction: column;
   gap: 10px;
+  flex: 1; 
 }
 
 .name {
@@ -118,6 +119,7 @@ const onExplore = () => {
 }
 /* Button */
 .explore-btn {
+  margin-top: auto; /* key line */
   align-self: flex-start;
   background-color: var(--color-secondary);
   color: var(--color-text);
