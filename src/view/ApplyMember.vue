@@ -112,6 +112,7 @@ const membershipStore = useMembershipStore()
 
 const formData = membershipStore.formData
 const errors = membershipStore.errors
+const router = useRouter()
 // const errors = reactive<Record<string, string>>({})
 
 /* ======================
