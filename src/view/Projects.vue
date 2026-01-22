@@ -45,9 +45,11 @@
 </template>
 
 <script setup>
+import { ref, computed, onMounted } from 'vue';
+import ProjectCard from '@/components/project/ProjectCard.vue';
+import projectImage from '@/assets/project/image1.jpeg';
 import { useProjectCategoriesStore } from '../stores/categories';
 import projectsService from '@/services/projects';
-import { ref, computed, onMounted } from 'vue';
 
 // const searchQuery = ref('');
 // const activeCategory = ref('All Projects');
