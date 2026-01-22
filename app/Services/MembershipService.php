@@ -18,7 +18,7 @@ class MembershipService
             'full_name'       => $data['full_name'],
             'gender'          => $data['gender'],
             'email'           => $data['email'],
-            'qualification'   => $data['qualification'],
+            // 'qualification'   => $data['qualification'],
             'faculty'         => $data['faculty'],
             'year'            => $data['year'],
             'stu_id'          => $data['stu_id'],

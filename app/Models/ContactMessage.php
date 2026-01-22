@@ -6,19 +6,20 @@ use Illuminate\Database\Eloquent\Model;
 
 class ContactMessage extends Model
 {
-    public $timestamps = false;
+    // Enable automatic timestamps
+    public $timestamps = true;
 
     protected $fillable = [
         'name',
         'email',
-        'subject',
+        'phone_number',
         'message',
         'status',
-        'created_at',
     ];
 
     protected $casts = [
         'created_at' => 'datetime',
+        'updated_at' => 'datetime',
     ];
 
     public function responses()

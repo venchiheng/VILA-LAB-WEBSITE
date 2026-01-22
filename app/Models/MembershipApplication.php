@@ -14,7 +14,7 @@ class MembershipApplication extends Model
         'full_name',
         'gender',
         'email',
-        'qualification',
+        // 'qualification',
         'faculty',
         'year',
         'stu_id',

@@ -21,7 +21,7 @@ class MembershipApplicationResource extends JsonResource
             'year' => $this->year,
             'stu_id' => $this->stu_id,
             'phone_number' => $this->phone_number,
-            'cv_path' => $this->cv_path,
+            'cv_path' => $this->cv_path ? asset('storage/' . $this->cv_path) : null,
             'motivation' => $this->motivation,
             'time_management' => $this->time_management,
             'availability' => $this->availability,
