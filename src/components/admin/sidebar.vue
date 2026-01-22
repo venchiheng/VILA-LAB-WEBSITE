@@ -35,6 +35,7 @@ const tabs = [
   { label: 'Users', path: '/admin/users', icon: '' },
   { label: 'Projects', path: '/admin/project', icon: '' },
   { label: 'Contact Messages', path: '/admin/contact', icon: '' },
+  { label: 'Achievements', path: '/admin/achievement', icon: '' },
 ]
 
 // Navigate programmatically
