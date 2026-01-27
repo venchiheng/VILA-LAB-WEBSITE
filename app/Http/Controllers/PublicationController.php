@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Publication;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 
 class PublicationController extends Controller
 {
@@ -23,11 +24,14 @@ class PublicationController extends Controller
         $validated = $request->validate([
             'project_id'      => 'required|exists:projects,id',
             'title'           => 'required|string|max:255',
-            'authors'         => 'nullable|string',
-            'published_date'  => 'nullable|date',
+            'authors'         => 'nullable|string'
+            // 'published_date'  => 'nullable|date',
         ]);
 
-        return Publication::create($validated);
+        return Publication::create([
+            ...$validated,
+            'published_date' => Carbon::now('Asia/Phnom_Penh'),
+        ]);
     }
 
     /**
@@ -51,6 +55,8 @@ class PublicationController extends Controller
         ]);
 
         $publication->update($validated);
+        $publication->published_date = Carbon::now('Asia/Phnom_Penh');
+        $publication->save();
 
         return $publication;
     }
