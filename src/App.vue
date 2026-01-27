@@ -1,9 +1,12 @@
 <template>
-
-  <NavigationBar v-if="!isAdminRoute" />
+<div>
+ <NavigationBar v-if="!isAdminRoute" />
   <router-view />
   <Footer v-if="!isAdminRoute" />
+  </div>
 </template>
+
+<
 
 <script setup>
 import { useRoute } from 'vue-router'

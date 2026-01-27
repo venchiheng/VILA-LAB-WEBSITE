@@ -1,49 +1,84 @@
 <template>
-  <div class="table-container">
+  <div class="table-container mb-6">
     <div class="table-header">
-      <h2 class="text-h5 font-weight-bold mb-4">Projects</h2>
-
-      <div class="filters">
-        <input
-          type="text"
-          v-model="searchQuery"
+      <h2 class="text-h5 font-weight-bold mb-4">All Projects</h2>
+      <div style="display:flex; gap:12px;">
+        <v-text-field
+          v-model="searchProject"
+          density="compact"
           placeholder="Search project..."
-          class="search-input"
+          hide-details
         />
+
+        <button class="btn-primary" @click="openCreate">
+          + Create
+        </button>
+
+        <button
+          class="btn-secondary"
+          :disabled="!selectedProject"
+          @click="openEdit"
+        >
+          Edit
+        </button>
       </div>
     </div>
 
     <table class="booking-table">
       <thead>
         <tr>
-          <th>ID</th>
           <th>Title</th>
           <th>Category</th>
           <th>Status</th>
-          <th>Featured</th>
           <th>Members</th>
         </tr>
       </thead>
       <tbody>
-        <tr v-for="project in paginatedProjects" :key="project.id">
-          <td class="cell-center">{{ project.id }}</td>
+        <tr
+          v-for="project in filteredProjects"
+          :key="project.id"
+          @click="selectProject(project)"
+          class="project-row"
+        >
           <td class="cell-center">{{ project.title }}</td>
-          <td class="cell-center">{{ project.category?.name || '-' }}</td>
+          <td class="cell-center">{{ project.category.name }}</td>
           <td class="cell-center">
             <span class="status-badge" :class="getStatusClass(project.status)">
               {{ project.status }}
             </span>
           </td>
-          <td class="cell-center">{{ project.is_featured ? 'Yes' : 'No' }}</td>
           <td class="cell-center">{{ project.members.length }}</td>
         </tr>
       </tbody>
     </table>
 
-    <div class="pagination">
-      <button @click="prevPage" :disabled="page === 1">Previous</button>
-      <span>Page {{ page }} of {{ totalPages }}</span>
-      <button @click="nextPage" :disabled="page === totalPages">Next</button>
+    <!-- Project Modal -->
+    <div v-if="showModal" class="modal-overlay">
+      <div class="modal-card">
+        <h3>{{ isEdit ? 'Update Project' : 'Create Project' }}</h3>
+
+        <input v-model="form.title" type="text" placeholder="Project Title" />
+
+        <input
+          v-model="form.category_id"
+          type="number"
+          placeholder="Category ID"
+          :readonly="true"
+        />
+
+        <select v-model="form.status">
+          <option value="pending">Pending</option>
+          <option value="ongoing">Ongoing</option>
+          <option value="completed">Completed</option>
+        </select>
+
+        <div class="modal-actions">
+          <button class="btn-secondary" @click="closeModal">Cancel</button>
+          <button class="btn-primary" @click="submitForm">
+            {{ isEdit ? 'Update' : 'Create' }}
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -53,135 +88,67 @@ import { ref, computed, onMounted } from 'vue'
 import axios from 'axios'
 
 const projects = ref([])
-const searchQuery = ref('')
-const page = ref(1)
-const itemsPerPage = ref(5)
+const searchProject = ref('')
+const selectedProject = ref(null)
 
-// Fetch all projects
+const showModal = ref(false)
+const isEdit = ref(false)
+const form = ref({ title: '', category_id: null, status: 'ongoing' })
+
+// Fetch projects
 const fetchProjects = async () => {
   try {
     const res = await axios.get('http://localhost:8000/api/projects')
-    projects.value = res.data.data // as your JSON has "data" key
+    projects.value = res.data.data
   } catch (err) {
-    console.error('Failed to fetch projects', err)
-    projects.value = []
+    console.error(err)
+  }
+}
+
+const filteredProjects = computed(() =>
+  projects.value.filter(p =>
+    p.title.toLowerCase().includes(searchProject.value.toLowerCase())
+  )
+)
+
+const getStatusClass = status => {
+  const map = { ongoing: 'in-use', completed: 'completed', pending: 'pending' }
+  return map[status] || 'pending'
+}
+
+const selectProject = project => {
+  selectedProject.value = project
+  emit('project-selected', project)
+}
+
+const openCreate = () => {
+  isEdit.value = false
+  form.value = { title: '', category_id: projects.value.length ? projects.value[projects.value.length-1].category.id + 1 : 1, status: 'ongoing' }
+  showModal.value = true
+}
+
+const openEdit = () => {
+  if (!selectedProject.value) return
+  isEdit.value = true
+  form.value = { ...selectedProject.value, category_id: selectedProject.value.category.id }
+  showModal.value = true
+}
+
+const closeModal = () => (showModal.value = false)
+
+const submitForm = async () => {
+  try {
+    if (isEdit.value) {
+      await axios.put(`http://localhost:8000/api/projects/${form.value.id}`, form.value)
+    } else {
+      await axios.post('http://localhost:8000/api/projects', form.value)
+    }
+    closeModal()
+    fetchProjects()
+  } catch (err) {
+    console.error('Failed to save project', err)
   }
 }
 
 onMounted(fetchProjects)
-
-// Filtered projects
-const filteredProjects = computed(() =>
-  projects.value.filter(p =>
-    !searchQuery.value ||
-    p.title.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-    p.category?.name.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-    p.status.toLowerCase().includes(searchQuery.value.toLowerCase())
-  )
-)
-
-// Pagination
-const totalPages = computed(() => Math.ceil(filteredProjects.value.length / itemsPerPage.value))
-const paginatedProjects = computed(() => {
-  const start = (page.value - 1) * itemsPerPage.value
-  const end = start + itemsPerPage.value
-  return filteredProjects.value.slice(start, end)
-})
-
-const nextPage = () => { if (page.value < totalPages.value) page.value++ }
-const prevPage = () => { if (page.value > 1) page.value-- }
-
-const getStatusClass = status => {
-  const map = { ongoing: 'pending', completed: 'approved', paused: 'in-use' }
-  return map[status] || 'pending'
-}
 </script>
-
-<style scoped>
-.table-container {
-  background: white;
-  border-radius: 0.75rem;
-  overflow: hidden;
-  padding: 1.5rem;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-}
-
-.filters {
-  display: flex;
-  gap: 1rem;
-  margin-bottom: 1rem;
-}
-
-.search-input {
-  padding: 0.5rem 0.75rem;
-  border-radius: 0.375rem;
-  border: 1px solid #d1d5db;
-  width: 220px;
-}
-
-.booking-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.booking-table th {
-  padding: 1rem 5px;
-  text-align: center;
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: #6b7280;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  border-bottom: 1px solid #e5e7eb;
-  background: #f9fafb;
-}
-
-.booking-table td {
-  padding: 1rem 5px;
-  border-bottom: 1px solid #e5e7eb;
-  text-align: center;
-}
-
-.booking-table tbody tr:hover {
-  background: #f9fafb;
-}
-
-.status-badge {
-  display: inline-block;
-  padding: 0.25rem 0.75rem;
-  font-size: 0.75rem;
-  font-weight: 500;
-  border-radius: 9999px;
-}
-
-.status-badge.pending { background: #fef3c7; color: #92400e; }
-.status-badge.approved { background: #d1fae5; color: #065f46; }
-.status-badge.in-use { background: #dbeafe; color: #1e40af; }
-
-.pagination {
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  gap: 1rem;
-  margin-top: 1rem;
-}
-
-.pagination button {
-  padding: 0.35rem 0.75rem;
-  border-radius: 0.375rem;
-  border: 1px solid #d1d5db;
-  background: white;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-
-.pagination button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.page-info {
-  font-size: 0.875rem;
-  font-weight: 500;
-}
-</style>

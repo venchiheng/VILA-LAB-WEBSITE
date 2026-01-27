@@ -9,15 +9,19 @@
 
       <div class="dashboard-content">
         <!-- Projects Table -->
-        <div class="table-container mb-6">
+        <div class="table-container">
           <div class="table-header">
-            <h2 class="text-h5 font-weight-bold mb-4">All Projects</h2>
-            <v-text-field
-              v-model="searchProject"
-              density="compact"
-              placeholder="Search project..."
-              hide-details
-            />
+            <h2 class="table-title">All Projects</h2>
+            <div class="search-add-wrapper">
+              <v-text-field
+                v-model="searchProject"
+                placeholder="Search project..."
+                hide-details
+                density="compact"
+                class="search-bar"
+              />
+              <button class="btn-create" @click="openModal">New Project</button>
+            </div>
           </div>
 
           <table class="booking-table">
@@ -30,44 +34,55 @@
               </tr>
             </thead>
             <tbody>
-              <tr
-                v-for="project in filteredProjects"
-                :key="project.id"
-                @click="selectProject(project)"
-                class="project-row"
-              >
-                <td class="cell-center">{{ project.title }}</td>
-                <td class="cell-center">{{ project.category.name }}</td>
-                <td class="cell-center">
+              <tr v-for="project in filteredProjects" :key="project.id" @click="selectProject(project)" class="project-row">
+                <td>{{ project.title }}</td>
+                <td>{{ project.category.name }}</td>
+                <td>
                   <span class="status-badge" :class="getStatusClass(project.status)">
                     {{ project.status }}
                   </span>
                 </td>
-                <td class="cell-center">{{ project.members.length }}</td>
+                <td>{{ project.members.length }}</td>
               </tr>
             </tbody>
           </table>
         </div>
 
-        <!-- Project Members Table -->
+        <!-- Project Modal -->
+        <div v-if="showModal" class="modal-overlay" @click.self="closeModal">
+          <div class="modal-card">
+            <h3>{{ editingProject ? 'Update Project' : 'Create Project' }}</h3>
+            <form @submit.prevent="saveProject">
+              <label>Title:<input v-model="form.title" required /></label>
+              <label>Description:<textarea v-model="form.description" required></textarea></label>
+              <label>Status:
+                <select v-model="form.status" required>
+                  <option value="ongoing">Ongoing</option>
+                  <option value="completed">Completed</option>
+                  <option value="on-hold">On Hold</option>
+                </select>
+              </label>
+              <div class="modal-actions">
+                <button type="button" class="btn-cancel" @click="closeModal">Cancel</button>
+                <button type="submit" class="btn-submit">{{ editingProject ? 'Update' : 'Create' }}</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- Members Table -->
         <div v-if="selectedProject" class="table-container">
           <div class="table-header">
-            <h2 class="text-h5 font-weight-bold mb-4">
-              Members of "{{ selectedProject.title }}"
-            </h2>
-            <div class="filters">
+            <h2 class="table-title">Members of "{{ selectedProject.title }}"</h2>
+            <div class="search-add-wrapper">
               <v-text-field
-                v-model="searchName"
-                density="compact"
-                placeholder="Search name..."
+                v-model="searchMember"
+                placeholder="Search member..."
                 hide-details
-              />
-              <v-text-field
-                v-model="searchRole"
                 density="compact"
-                placeholder="Search role..."
-                hide-details
+                class="search-bar"
               />
+              <button class="btn-create" @click="openAddMemberModal">New Member</button>
             </div>
           </div>
 
@@ -83,30 +98,50 @@
             </thead>
             <tbody>
               <tr v-for="member in paginatedMembers" :key="member.id">
-                <td class="cell-center">{{ member.user.id }}</td>
-                <td class="cell-center">{{ member.user.name }}</td>
-                <td class="cell-center">{{ member.user.email }}</td>
-                <td class="cell-center">
-                  <span class="status-badge" :class="getRoleClass(member.role)">
-                    {{ member.role }}
-                  </span>
+                <td>{{ member.user.id }}</td>
+                <td>{{ member.user.name }}</td>
+                <td>{{ member.user.email }}</td>
+                <td>
+                  <span class="status-badge" :class="getRoleClass(member.role)">{{ member.role }}</span>
                 </td>
-                <td class="cell-center">{{ member.user.member_id }}</td>
+                <td>{{ member.user.member_id }}</td>
               </tr>
             </tbody>
           </table>
 
-          <!-- Pagination -->
           <div class="pagination">
-            <button class="btn-prev" @click="prevPage" :disabled="page === 1">
-              Previous
-            </button>
+            <button class="btn-prev" @click="prevPage" :disabled="page === 1">Previous</button>
             <span>Page {{ page }} of {{ totalPages }}</span>
-            <button class="btn-next" @click="nextPage" :disabled="page === totalPages">
-              Next
-            </button>
+            <button class="btn-next" @click="nextPage" :disabled="page === totalPages">Next</button>
           </div>
         </div>
+
+        <!-- Add Member Modal -->
+        <div v-if="showAddMemberModal" class="modal-overlay" @click.self="closeAddMemberModal">
+          <div class="modal-card">
+            <h3>Add Member to "{{ selectedProject.title }}"</h3>
+            <v-text-field
+              v-model="searchMemberId"
+              placeholder="Search by Member ID..."
+              hide-details
+              density="compact"
+              class="search-bar"
+              @input="fetchUsersByMemberId"
+            />
+            <div class="user-list">
+              <div v-for="user in filteredUsers" :key="user.id" class="user-item"
+                   @click="selectUser(user)"
+                   :class="{ selected: selectedUser && selectedUser.id === user.id }">
+                {{ user.member_id }} - {{ user.name }} - {{ user.email }}
+              </div>
+            </div>
+            <div class="modal-actions">
+              <button class="btn-cancel" @click="closeAddMemberModal">Cancel</button>
+              <button class="btn-submit" @click="confirmAddMember" :disabled="!selectedUser">Confirm</button>
+            </div>
+          </div>
+        </div>
+
       </div>
     </main>
   </div>
@@ -114,72 +149,78 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import axios from 'axios'
 import Sidebar from '@/components/admin/sidebar.vue'
 import TopNav from '@/components/admin/topnav.vue'
+import { api } from '@/lib/api.js'
 
 const darkMode = ref(false)
 const user = ref({
   name: 'Admin User',
-  email: 'admin@viliab.com',
+  email: 'admin@vilalab.com',
   avatar: 'https://ui-avatars.com/api/?name=Admin+User&background=4f46e5&color=fff'
 })
 
+// Projects
 const projects = ref([])
-const searchProject = ref('')
 const selectedProject = ref(null)
-
-const members = ref([])
-const searchName = ref('')
-const searchRole = ref('')
+const searchProject = ref('')
 const page = ref(1)
 const itemsPerPage = ref(5)
 
-// Fetch all projects
+// Project Modal
+const showModal = ref(false)
+const editingProject = ref(null)
+const form = ref({})
+
+// Members
+const members = ref([])
+const searchMember = ref('')
+
+// Add Member Modal
+const showAddMemberModal = ref(false)
+const searchMemberId = ref('')
+const users = ref([])
+const selectedUser = ref(null)
+
+// --- FETCH PROJECTS ---
 const fetchProjects = async () => {
   try {
-    const res = await axios.get('http://localhost:8000/api/projects')
+    const res = await api.get('/projects')
     projects.value = res.data.data
   } catch (err) {
-    console.error('Failed to fetch projects', err)
+    console.error(err)
   }
 }
 
-// Fetch project members
-const fetchMembers = async (projectId) => {
-  try {
-    const res = await axios.get(`http://localhost:8000/api/projects/${projectId}/members`)
-    members.value = res.data
-    page.value = 1 // reset pagination when switching project
-  } catch (err) {
-    console.error('Failed to fetch members', err)
-    members.value = []
-  }
-}
-
-// Select project to show members
 const selectProject = (project) => {
   selectedProject.value = project
   fetchMembers(project.id)
 }
 
-// Filter projects by search
 const filteredProjects = computed(() =>
-  projects.value.filter(p =>
-    p.title.toLowerCase().includes(searchProject.value.toLowerCase())
-  )
+  projects.value.filter(p => p.title.toLowerCase().includes(searchProject.value.toLowerCase()))
 )
 
-// Filter members by name & role
+// --- FETCH MEMBERS ---
+const fetchMembers = async (projectId) => {
+  try {
+    const res = await api.get(`/projects/${projectId}/members`)
+    members.value = res.data
+    page.value = 1
+  } catch (err) {
+    console.error(err)
+    members.value = []
+  }
+}
+
 const filteredMembers = computed(() =>
   members.value.filter(
     m =>
-      (!searchName.value || m.user.name.toLowerCase().includes(searchName.value.toLowerCase())) &&
-      (!searchRole.value || m.role.toLowerCase().includes(searchRole.value.toLowerCase()))
+      (!searchMember.value || m.user.name.toLowerCase().includes(searchMember.value.toLowerCase())) ||
+      (!searchMember.value || m.role.toLowerCase().includes(searchMember.value.toLowerCase()))
   )
 )
 
-// Pagination for members
 const totalPages = computed(() => Math.ceil(filteredMembers.value.length / itemsPerPage.value))
 const paginatedMembers = computed(() => {
   const start = (page.value - 1) * itemsPerPage.value
@@ -189,46 +230,290 @@ const paginatedMembers = computed(() => {
 const nextPage = () => { if (page.value < totalPages.value) page.value++ }
 const prevPage = () => { if (page.value > 1) page.value-- }
 
-const getRoleClass = role => {
-  const map = { member: 'pending', admin: 'approved', manager: 'in-use' }
-  return map[role] || 'pending'
+// --- BADGES ---
+const getRoleClass = role => ({ member: 'pending', admin: 'approved', manager: 'in-use' }[role] || 'pending')
+const getStatusClass = status => ({ ongoing: 'in-use', completed: 'completed', 'on-hold': 'pending' }[status] || 'pending')
+
+// --- PROJECT MODAL ---
+const openModal = () => {
+  editingProject.value = null
+  form.value = { title: '', description: '', status: 'ongoing', category_id: 1 }
+  showModal.value = true
+}
+const closeModal = () => { showModal.value = false; editingProject.value = null }
+const saveProject = async () => {
+  try {
+    if (editingProject.value) {
+      await api.put(`/projects/${editingProject.value.id}`, form.value)
+      alert('Project updated successfully!')
+    } else {
+      await api.post('/projects', form.value)
+      alert('Project created successfully!')
+    }
+    closeModal()
+    fetchProjects()
+  } catch (err) {
+    console.error(err)
+    alert('Failed to save project')
+  }
+}
+const editProject = (project) => {
+  editingProject.value = project
+  form.value = { ...project }
+  showModal.value = true
 }
 
-const getStatusClass = status => {
-  const map = { ongoing: 'in-use', completed: 'completed', pending: 'pending' }
-  return map[status] || 'pending'
+// --- ADD MEMBER MODAL ---
+const openAddMemberModal = () => {
+  if (!selectedProject.value) return alert('Select a project first')
+  searchMemberId.value = ''
+  selectedUser.value = null
+  users.value = []
+  showAddMemberModal.value = true
+}
+const closeAddMemberModal = () => {
+  showAddMemberModal.value = false
+  searchMemberId.value = ''
+  selectedUser.value = null
 }
 
+const fetchUsersByMemberId = async () => {
+  if (!searchMemberId.value) { users.value = []; return }
+  try {
+    const res = await api.get(`/users?member_id=${searchMemberId.value}`)
+    users.value = res.data.data || []
+  } catch (err) {
+    console.error(err)
+    users.value = []
+  }
+}
+
+const selectUser = (user) => { selectedUser.value = user }
+
+const confirmAddMember = async () => {
+  if (!selectedProject.value || !selectedUser.value) return
+  try {
+    await api.post(`/projects/${selectedProject.value.id}/members`, { user_id: selectedUser.value.id, role: 'member' })
+    closeAddMemberModal()
+    fetchMembers(selectedProject.value.id)
+  } catch (err) {
+    console.error(err)
+    alert('Failed to add member')
+  }
+}
+
+const filteredUsers = computed(() => users.value)
+
+// --- MISC ---
 onMounted(fetchProjects)
-
 const handleTabChange = (tab) => console.log('Tab changed to:', tab)
 const toggleTheme = () => darkMode.value = !darkMode.value
 </script>
 
+
+
 <style scoped>
-.app-container { display: flex; min-height: 100vh; background-color: #f8fafc; transition: 0.3s; }
-.app-container.dark-mode { background-color: #1a1a1a; color: #e5e7eb; }
-.main-content { flex: 1; margin-left: 250px; overflow-x: hidden; overflow-y: auto; min-height: 100vh; }
-.dashboard-content { padding: 2rem; }
+.app-container { 
+  display: flex; 
+  min-height: 100vh; 
+  background: #f8fafc; 
+  transition: 0.3s; 
+}
 
-.table-container { background: white; border-radius: 0.75rem; overflow: hidden; padding: 1.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 2rem; }
-.booking-table { width: 100%; border-collapse: collapse; }
-.booking-table th { padding: 1rem 5px; text-align: center; font-size: 0.75rem; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid #e5e7eb; background: #f9fafb; }
-.booking-table td { padding: 1rem 5px; text-align: center; border-bottom: 1px solid #e5e7eb; }
-.booking-table tbody tr:hover { background: #f9fafb; cursor: pointer; }
+.main-content { 
+  flex: 1; 
+  margin-left: 250px; 
+  overflow-x: hidden; 
+  overflow-y: auto; 
+  min-height: 100vh; 
+}
 
-.status-badge { display: inline-block; padding: 0.25rem 0.75rem; font-size: 0.75rem; font-weight: 500; border-radius: 9999px; }
+.dashboard-content { 
+  padding: 2rem; 
+}
+
+.table-container { 
+  background: white; 
+  border-radius: 12px; 
+  padding: 1.5rem; 
+  margin-bottom: 2rem; 
+  box-shadow: 0 1px 5px rgba(0,0,0,.1); 
+}
+
+.table-header { 
+  display: flex; 
+  justify-content: space-between; 
+  align-items: center; 
+  flex-wrap: wrap; 
+  margin-bottom: 1rem; 
+}
+
+.table-title { 
+  font-size: 1.25rem; 
+  font-weight: 600; 
+  margin: 0; 
+}
+
+.search-add-wrapper {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+/* FIXED WIDTH SEARCH BAR */
+.search-bar {
+  width: 150px;
+  min-width: 150px; 
+  max-width: 150px;
+}
+
+.booking-table { 
+  width: 100%; 
+  border-collapse: collapse; 
+}
+
+.booking-table th, .booking-table td { 
+  padding: .75rem .5rem; 
+  text-align: center; 
+  border-bottom: 1px solid #e5e7eb; 
+}
+
+.booking-table th { 
+  font-size: .75rem; 
+  font-weight: 600; 
+  text-transform: uppercase; 
+  color: #6b7280; 
+  background: #f9fafb; 
+}
+
+.project-row:hover { 
+  background: #f3f4f6; 
+  cursor: pointer; 
+}
+
+.status-badge { 
+  display: inline-block; 
+  padding: .25rem .75rem; 
+  font-size: .75rem; 
+  font-weight: 500; 
+  border-radius: 9999px; 
+}
+
 .status-badge.pending { background: #fef3c7; color: #92400e; }
 .status-badge.approved { background: #d1fae5; color: #065f46; }
 .status-badge.in-use { background: #dbeafe; color: #1e40af; }
 .status-badge.completed { background: #f3e8ff; color: #5b21b6; }
 
-.filters { display: flex; gap: 1rem; margin-bottom: 1rem; }
+.pagination { 
+  display: flex; 
+  justify-content: flex-end; 
+  align-items: center; 
+  gap: 1rem; 
+  margin-top: 1rem; 
+}
 
-.pagination { display: flex; justify-content: flex-end; align-items: center; gap: 1rem; margin-top: 1rem; }
-.pagination button { padding: 0.5rem 1rem; border-radius: 0.375rem; font-weight: 500; cursor: pointer; transition: all 0.2s; border: none; color: white; }
-.btn-prev { background-color: #ef4444; } .btn-prev:disabled { background-color: #fca5a5; cursor: not-allowed; }
-.btn-next { background-color: #22c55e; } .btn-next:disabled { background-color: #86efac; cursor: not-allowed; }
+.pagination button { 
+  padding: .5rem 1rem; 
+  border-radius: .375rem; 
+  font-weight: 500; 
+  cursor: pointer; 
+  border: none; 
+  color: white; 
+  transition: all .2s; 
+}
 
-.project-row:hover { background: #f3f4f6; }
+.btn-prev { background: #ef4444; } 
+.btn-prev:disabled { background: #fca5a5; cursor: not-allowed; }
+.btn-next { background: #22c55e; } 
+.btn-next:disabled { background: #86efac; cursor: not-allowed; }
+
+.btn-create { 
+  background: #3b82f6; 
+  color: white; 
+  padding: .5rem 1rem; 
+  border-radius: .375rem; 
+  border: none; 
+  cursor: pointer; 
+  transition: .2s; 
+}
+
+.btn-create:hover { background: #2563eb; }
+
+.btn-submit { 
+  background: #22c55e; 
+  color: white; 
+  padding: .5rem 1rem; 
+  border-radius: .375rem; 
+  border: none; 
+  cursor: pointer; 
+  transition: .2s; 
+}
+
+.btn-submit:hover { background: #16a34a; }
+
+.btn-cancel { 
+  background: #ef4444; 
+  color: white; 
+  padding: .5rem 1rem; 
+  border-radius: .375rem; 
+  border: none; 
+  cursor: pointer; 
+  transition: .2s; 
+}
+
+.btn-cancel:hover { background: #dc2626; }
+
+.modal-overlay { 
+  position: fixed; 
+  inset: 0; 
+  background: rgba(0,0,0,0.4); 
+  display: flex; 
+  justify-content: center; 
+  align-items: center; 
+  z-index: 1000; 
+}
+
+.modal-card { 
+  background: white; 
+  padding: 2rem; 
+  width: 400px; 
+  border-radius: 12px; 
+  display: flex; 
+  flex-direction: column; 
+  gap: 1rem; 
+}
+
+.modal-card input, .modal-card select, .modal-card textarea, .search-bar { 
+  width: 100%; 
+  padding: .5rem; 
+  border-radius: 6px; 
+  border: 1px solid #d1d5db; 
+  margin-top: .25rem; 
+}
+
+textarea { min-height: 80px; resize: vertical; }
+
+.modal-actions { 
+  display: flex; 
+  justify-content: flex-end; 
+  gap: .75rem; 
+}
+
+.user-list { 
+  max-height: 200px; 
+  overflow-y: auto; 
+  border: 1px solid #d1d5db; 
+  border-radius: 6px; 
+  margin-top: .5rem; 
+}
+
+.user-item { 
+  padding: .5rem; 
+  cursor: pointer; 
+  transition: background .2s; 
+}
+
+.user-item:hover { background: #f3f4f6; }
+.user-item.selected { background: #3b82f6; color: white; }
+
 </style>
