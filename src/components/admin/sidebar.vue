@@ -33,7 +33,9 @@ const tabs = [
   { label: 'Applications', path: '/admin/application', icon: '' },
   { label: 'Equipment', path: '/admin/equipment', icon: '' },
   { label: 'Users', path: '/admin/users', icon: '' },
+  { label: 'Partnerships', path: '/admin/partnership', icon: '' },
   { label: 'Projects', path: '/admin/project', icon: '' },
+  { label: 'Publications', path: '/admin/publication', icon: '' },
   { label: 'Contact Messages', path: '/admin/contact', icon: '' },
 ]
 

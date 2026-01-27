@@ -19,11 +19,10 @@
         <input v-model="formData.name" placeholder="Enter your name" />
         <span v-if="errors.name" class="error">{{ errors.name }}</span>
 
-        <select v-model="formData.gender">
+        <select style="background-color: white;" v-model="formData.gender">
           <option disabled value="">Select your gender</option>
           <option>male</option>
           <option>female</option>
-          <option>Other</option>
         </select>
         <span v-if="errors.gender" class="error">{{ errors.gender }}</span>
 
@@ -202,6 +201,8 @@ function validateForm() {
    SUBMIT
 ====================== */
 async function submitForm() {
+  if (!validateForm()) return
+
   try {
     await membershipStore.submitForm()
     alert('Application submitted successfully!')

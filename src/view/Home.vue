@@ -165,24 +165,26 @@
 
       <v-row justify="center" class="partners-row">
         <v-col
-          v-for="(partner, index) in partners"
-          :key="index"
+          v-for="partner in partnerList"
+          :key="partner.id"
           cols="6"
           sm="4"
           md="3"
           lg="2"
           class="d-flex justify-center pa-4"
         >
-          <PartnerCard :image="partner.image" />
+          <PartnerCard :image="partner.image" :name="partner.name" />
         </v-col>
       </v-row>
+
+          <!-- <PartnerCard :image="partner.image" />
+        </v-col>
+      </v-row> -->
     </div>
   </div>
 </template>
 
 <script setup>
-import { computed } from 'vue'
-import { ref } from 'vue'
 import ProjectSection from '@/components/showcase/ProjectShowcase.vue'
 import Banner from '../components/about-us/banner.vue'
 import ProjectCard from '../components/project/ProjectCard.vue'
@@ -190,19 +192,22 @@ import ResearchMemberCard from '../components/research-member/ResearchMemberCard
 import AchievementCard from '@/components/achievement/achievementcard.vue'
 import PartnerCard from '@/components/PartnerCard/PartnerCard.vue'
 import LaboratoryCard from '@/components/laboratory/LaboratorryCard.vue'
+import { ref, onMounted, computed } from 'vue'
+import { usePartnershipStore } from '../stores/partnership'
 
 import achievementImg1 from '@/assets/achievement/achievementcard1.png'
 import achievementImg2 from '@/assets/achievement/achievementcard2.png'
 import achievementImg3 from '@/assets/achievement/achievementcard3.png'
 import achievementImg4 from '@/assets/achievement/achievementcard4.png'
 
-import partner1 from '@/assets/Partner/partner1.png'
-import partner2 from '@/assets/Partner/partner2.png'
-import partner3 from '@/assets/Partner/partner3.png'
-import partner4 from '@/assets/Partner/partner4.png'
-import partner5 from '@/assets/Partner/partner5.png'
-import partner6 from '@/assets/Partner/partner6.png'
-import partner7 from '@/assets/Partner/partner7.png'
+// import partner1 from '@/assets/Partner/partner1.png'
+// import partner2 from '@/assets/Partner/partner2.png'
+// import partner3 from '@/assets/Partner/partner3.png'
+// import partner4 from '@/assets/Partner/partner4.png'
+// import partner5 from '@/assets/Partner/partner5.png'
+// import partner6 from '@/assets/Partner/partner6.png'
+// import partner7 from '@/assets/Partner/partner7.png'
+
 
 const laboratories = [
   {
@@ -236,15 +241,15 @@ const achievements = [
   { image: achievementImg4 }
 ]
 
-const partners = [
-  { image: partner1 },
-  { image: partner2 },
-  { image: partner3 },
-  { image: partner4 },
-  { image: partner5 },
-  { image: partner6 },
-  { image: partner7 }
-]
+// const partners = [
+//   { image: partner1 },
+//   { image: partner2 },
+//   { image: partner3 },
+//   { image: partner4 },
+//   { image: partner5 },
+//   { image: partner6 },
+//   { image: partner7 }
+// ]
 
 const handleUpload = ({ type, file }) => {
   console.log(type, file)
@@ -340,6 +345,26 @@ const goToDetail = (id) => {
   console.log('Explore member:', id)
   // router.push(`/research/${id}`)
 }
+
+
+const partnershipStore = usePartnershipStore()
+// const { partnerships } = partnershipStore
+
+// Fetch partnerships on mount
+onMounted(() => {
+  partnershipStore.fetchPartnerships()
+})
+
+// Map thumbnail URL for frontend
+const partnerList = computed(() =>
+  partnershipStore.partnerships.map(p => ({
+    id: p.id,
+    image: p.thumbnail
+      ? `http://localhost:8000/storage/${p.thumbnail}` // your backend URL
+      : '', // fallback if no image
+    name: p.name
+  }))
+)
 
 </script>
 

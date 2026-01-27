@@ -118,6 +118,7 @@ input,
 textarea {
   color: #222222;
   font-family: inherit;
+  background-color: white;
 }
 
 input::placeholder,
