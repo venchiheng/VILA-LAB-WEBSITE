@@ -35,7 +35,7 @@
 
             <!-- Projects Grid -->
             <div class="projects-grid">
-                <ProjectCard v-for="(project, index) in filteredProjects" :key="index" :projectName="project.title"
+                <ProjectCardOnPage v-for="(project, index) in filteredProjects" :key="index" :projectName="project.title"
                     :description="project.description" 
                     :image="project.banner_image || projectImage" 
                     :tags="[project.status, project.category ? project.category.name : ''].filter(t => t)" />
@@ -46,7 +46,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
-import ProjectCard from '@/components/project/ProjectCard.vue';
+import ProjectCardOnPage from '../components/project/ProjectCardOnPage.vue';
 import projectImage from '@/assets/project/image1.jpeg';
 import { useProjectCategoriesStore } from '../stores/categories';
 import projectsService from '@/services/projects';
