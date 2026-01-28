@@ -9,6 +9,9 @@ use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\ProjectCategoryController;
 use App\Http\Controllers\ProjectMemberController;
 use App\Http\Controllers\ContactMessageController;
+use App\Http\Controllers\PublicationController;
+use App\Http\Controllers\AchievementController;
+use App\Http\Controllers\PartnershipController;
 
 Route::post('/membership-applications', [MembershipApplicationController::class, 'store']);
 Route::post('/login', [AuthController::class, 'login']);
@@ -45,4 +48,6 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 
 Route::resource('contact-messages', ContactMessageController::class);
-// Route::post('/membership-applications', [MembershipApplicationController::class, 'store']);
+Route::resource('/publications', PublicationController::class);
+Route::resource('/achievements', AchievementController::class);
+Route::resource('/partnerships', PartnershipController::class);
