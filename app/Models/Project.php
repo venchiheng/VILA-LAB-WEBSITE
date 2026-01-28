@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Project extends Model
 {
-    public $timestamps = false;
+    public $timestamps = true;
 
     protected $fillable = [
         'category_id',
@@ -15,11 +15,11 @@ class Project extends Model
         'status',
         'is_featured',
         'banner_image',
-        'created_at',
     ];
 
     protected $casts = [
         'created_at' => 'datetime',
+        'updated_at' => 'datetime',
         'is_featured' => 'boolean',
     ];
 
@@ -28,15 +28,15 @@ class Project extends Model
         return $this->belongsTo(ProjectCategory::class, 'category_id');
     }
 
-    public function publications()
-    {
-        return $this->hasMany(Publication::class);
-    }
+    // public function publications()
+    // {
+    //     return $this->hasMany(Publication::class);
+    // }
 
-    public function progressUpdates()
-    {
-        return $this->hasMany(ProgressProgress::class);
-    }
+    // public function progress()
+    // {
+    //     return $this->hasMany(ProjectProgress::class);
+    // }
 
     public function members()
     {

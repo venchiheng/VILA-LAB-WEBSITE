@@ -19,7 +19,6 @@ class EquipmentController extends Controller
         $this->service = $service;
     }
 
-
     public function index()
     {
         $this->authorize('viewAny', Equipment::class);
@@ -29,15 +28,13 @@ class EquipmentController extends Controller
         return EquipmentResource::collection($equipment);
     }
 
-
     public function show($id)
     {
-        $equipment = $this->service->find($id);
+        $equipment = $this->service->findById($id); // <-- fixed
         $this->authorize('view', $equipment);
 
         return new EquipmentResource($equipment);
     }
-
 
     public function store(Request $request)
     {
@@ -60,10 +57,9 @@ class EquipmentController extends Controller
         ], 201);
     }
 
-
     public function update(Request $request, $id)
     {
-        $equipment = $this->service->find($id);
+        $equipment = $this->service->findById($id); // <-- fixed
         $this->authorize('update', $equipment);
 
         $validated = $request->validate([
@@ -85,7 +81,7 @@ class EquipmentController extends Controller
 
     public function destroy($id)
     {
-        $equipment = $this->service->find($id);
+        $equipment = $this->service->findById($id); // <-- fixed
         $this->authorize('delete', $equipment);
 
         $this->service->delete($equipment);
