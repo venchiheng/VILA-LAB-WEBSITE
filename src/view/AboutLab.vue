@@ -255,7 +255,7 @@ const goToDetail = (id) => {
 .carousel-nav {
   background-color: #100d5f;
   color: var(--color-bg);
-  border: 3px solid var(--color-bg); /* Add border here */
+  border: 2px solid var(--color-bg); /* Add border here */
   width: 48px;
   height: 48px;
   border-radius: 50%;
