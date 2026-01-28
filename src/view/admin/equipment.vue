@@ -10,14 +10,18 @@
       <div class="dashboard-content">
         <!-- Equipment Table -->
         <div class="table-container mb-6">
-          <div class="table-header">
+          <div class="table-header flex-row">
             <h2 class="text-h5 font-weight-bold mb-4">All Equipment</h2>
-            <v-text-field
-              v-model="searchEquipment"
-              density="compact"
-              placeholder="Search equipment..."
-              hide-details
-            />
+            <div class="search-add-wrapper">
+              <v-text-field
+                v-model="searchEquipment"
+                density="compact"
+                placeholder="Search equipment..."
+                hide-details
+                class="search-bar"
+              />
+              <button class="btn-create" @click="openModal()">Add Equipment</button>
+            </div>
           </div>
 
           <table class="booking-table">
@@ -28,13 +32,13 @@
                 <th>Availability</th>
                 <th>Condition</th>
                 <th>Stock</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
               <tr
                 v-for="item in filteredEquipment"
                 :key="item.id"
-                @click="selectEquipment(item)"
                 class="equipment-row"
               >
                 <td class="cell-center">{{ item.name }}</td>
@@ -46,6 +50,9 @@
                 </td>
                 <td class="cell-center">{{ item.condition }}</td>
                 <td class="cell-center">{{ item.stock }}</td>
+                <td class="cell-center">
+                  <button class="btn-edit" @click="editEquipment(item)">Edit</button>
+                </td>
               </tr>
             </tbody>
           </table>
@@ -128,6 +135,46 @@
           </div>
         </div>
       </div>
+
+      <!-- Equipment Modal -->
+      <div v-if="showModal" class="modal-overlay" @click.self="closeModal">
+        <div class="modal-content">
+          <h3>{{ editingEquipment ? 'Update Equipment' : 'Add New Equipment' }}</h3>
+          <form @submit.prevent="saveEquipment">
+            <label>
+              Name:
+              <input v-model="form.name" required />
+            </label>
+            <label>
+              Description:
+              <input v-model="form.description" required />
+            </label>
+            <label>
+              Availability:
+              <select v-model="form.availability" required>
+                <option value="available">Available</option>
+                <option value="booked">Booked</option>
+              </select>
+            </label>
+            <label>
+              Condition:
+              <input v-model="form.condition" required />
+            </label>
+            <label>
+              Stock:
+              <input type="number" v-model.number="form.stock" min="0" required />
+            </label>
+
+            <div class="modal-actions">
+              <button type="submit" class="btn-submit">
+                {{ editingEquipment ? 'Update' : 'Create' }}
+              </button>
+              <button type="button" class="btn-cancel" @click="closeModal">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
     </main>
   </div>
 </template>
@@ -144,55 +191,58 @@ const user = ref({
   email: 'admin@vilalab.com',
   avatar: 'https://ui-avatars.com/api/?name=Admin+User&background=4f46e5&color=fff'
 })
-const isAdmin = true // adjust based on logged-in user role
+const isAdmin = true
 
-// Equipment state
+// Equipment
 const equipmentList = ref([])
 const searchEquipment = ref('')
 const selectedEquipment = ref(null)
 
-// Booking state
+// Bookings
 const bookings = ref([])
 const searchBooking = ref('')
 const page = ref(1)
 const itemsPerPage = ref(5)
 
-// Fetch all equipment
+// Modal & Form
+const showModal = ref(false)
+const editingEquipment = ref(null)
+const form = ref({ name: '', description: '', availability: 'available', condition: '', stock: 0 })
+
+// Fetch Equipment
 const fetchEquipment = async () => {
   try {
     const res = await api.get('/equipment')
     equipmentList.value = res.data.data
   } catch (err) {
-    console.error('Failed to fetch equipment', err)
+    console.error(err)
   }
 }
 
-// Fetch bookings for selected equipment
+// Fetch Bookings
 const fetchBookings = async (equipmentId) => {
   try {
     const res = await api.get('/equipment-bookings')
     bookings.value = res.data.data.filter(b => b.equipment?.id === equipmentId)
     page.value = 1
   } catch (err) {
-    console.error('Failed to fetch bookings', err)
+    console.error(err)
     bookings.value = []
   }
 }
 
-// Equipment selection
+// Select Equipment
 const selectEquipment = (equipment) => {
   selectedEquipment.value = equipment
   fetchBookings(equipment.id)
 }
 
-// Computed filtered equipment
+// Filtered
 const filteredEquipment = computed(() =>
   equipmentList.value.filter(e =>
     e.name.toLowerCase().includes(searchEquipment.value.toLowerCase())
   )
 )
-
-// Computed filtered bookings
 const filteredBookings = computed(() =>
   bookings.value.filter(b =>
     (!searchBooking.value || b.full_name.toLowerCase().includes(searchBooking.value.toLowerCase())) ||
@@ -210,7 +260,7 @@ const paginatedBookings = computed(() => {
 const nextPage = () => { if (page.value < totalPages.value) page.value++ }
 const prevPage = () => { if (page.value > 1) page.value-- }
 
-// Badge styles
+// Badges
 const getAvailabilityClass = availability => {
   const map = { available: 'approved', booked: 'pending' }
   return map[availability] || ''
@@ -220,29 +270,65 @@ const getStatusClass = status => {
   return map[status] || ''
 }
 
-// Admin actions
-const approveBooking = async (id) => {
-  try { await api.put(`/equipment-bookings/${id}/approve`); fetchBookings(selectedEquipment.value.id) } 
-  catch (err) { console.error(err) }
+// Booking Actions
+const approveBooking = async (id) => { try { await api.put(`/equipment-bookings/${id}/approve`); fetchBookings(selectedEquipment.value.id) } catch(err){console.error(err)} }
+const rejectBooking = async (id) => { try { await api.put(`/equipment-bookings/${id}/reject`); fetchBookings(selectedEquipment.value.id) } catch(err){console.error(err)} }
+const returnBooking = async (id) => { try { await api.put(`/equipment-bookings/${id}/return`); fetchBookings(selectedEquipment.value.id) } catch(err){console.error(err)} }
+
+// Modal
+const openModal = () => {
+  editingEquipment.value = null
+  form.value = { name: '', description: '', availability: 'available', condition: '', stock: 0 }
+  showModal.value = true
 }
-const rejectBooking = async (id) => {
-  try { await api.put(`/equipment-bookings/${id}/reject`); fetchBookings(selectedEquipment.value.id) } 
-  catch (err) { console.error(err) }
+const closeModal = () => { showModal.value = false; editingEquipment.value = null }
+const editEquipment = (equipment) => {
+  editingEquipment.value = equipment
+  form.value = {
+    name: equipment.name,
+    description: equipment.description,
+    availability: equipment.availability,
+    condition: equipment.condition,
+    stock: equipment.stock
+  }
+  showModal.value = true
 }
-const returnBooking = async (id) => {
-  try { await api.put(`/equipment-bookings/${id}/return`); fetchBookings(selectedEquipment.value.id) } 
-  catch (err) { console.error(err) }
+
+// Save/Create & Update
+const saveEquipment = async () => {
+  try {
+    const payload = {
+      name: form.value.name,
+      description: form.value.description,
+      availability: form.value.availability,
+      condition: form.value.condition,
+      stock: form.value.stock
+    }
+
+    if (editingEquipment.value) {
+      await api.put(`/equipment/${editingEquipment.value.id}`, payload)
+      alert('Equipment updated successfully!')
+    } else {
+      await api.post('/equipment', payload)
+      alert('Equipment created successfully!')
+    }
+
+    closeModal()
+    fetchEquipment()
+  } catch (err) {
+    console.error(err.response || err)
+    alert('Failed to save equipment. Check console for details.')
+  }
 }
 
 onMounted(fetchEquipment)
-
 const handleTabChange = (tab) => console.log('Tab changed to:', tab)
 const toggleTheme = () => darkMode.value = !darkMode.value
 </script>
 
 <style scoped>
 .app-container { display: flex; min-height: 100vh; background-color: #f8fafc; transition: 0.3s; }
-.app-container.dark-mode { background-color: #1a1a1a; color: #e5e7eb; }
+.app-container.dark-mode { color: #e5e7eb; }
 .main-content { flex: 1; margin-left: 250px; overflow-x: hidden; overflow-y: auto; min-height: 100vh; }
 .dashboard-content { padding: 2rem; }
 
@@ -257,15 +343,52 @@ const toggleTheme = () => darkMode.value = !darkMode.value
 .status-badge.approved { background: #d1fae5; color: #065f46; }
 .status-badge.overdue { background: #fee2e2; color: #991b1b; }
 
-.filters { display: flex; gap: 1rem; margin-bottom: 1rem; }
+.table-header.flex-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
+.search-add-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-left: auto;
+}
+
+.search-add-wrapper .search-bar {
+  width: 250px;
+}
+
 .pagination { display: flex; justify-content: flex-end; align-items: center; gap: 1rem; margin-top: 1rem; }
 .pagination button { padding: 0.5rem 1rem; border-radius: 0.375rem; font-weight: 500; cursor: pointer; transition: all 0.2s; border: none; color: white; }
 .btn-prev { background-color: #ef4444; } .btn-prev:disabled { background-color: #fca5a5; cursor: not-allowed; }
 .btn-next { background-color: #22c55e; } .btn-next:disabled { background-color: #86efac; cursor: not-allowed; }
 
+.btn-create { background-color: #3b82f6; color: white; padding: 0.5rem 1rem; border-radius: 0.375rem; border: none; cursor: pointer; }
+.btn-edit { background-color: #fbbf24; color: white; padding: 0.25rem 0.75rem; border-radius: 0.375rem; border: none; cursor: pointer; }
 .btn-approve { background-color: #22c55e; color: white; padding: 0.25rem 0.75rem; border-radius: 0.375rem; margin-right: 0.25rem; }
 .btn-reject { background-color: #ef4444; color: white; padding: 0.25rem 0.75rem; border-radius: 0.375rem; margin-right: 0.25rem; }
 .btn-return { background-color: #3b82f6; color: white; padding: 0.25rem 0.75rem; border-radius: 0.375rem; }
-.equipment-row:hover { background: #f3f4f6; }
+
 .cell-center { text-align: center; }
+
+.modal-overlay {
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center;
+  z-index: 1000;
+}
+.modal-content {
+  background: white; padding: 2rem; border-radius: 0.5rem; width: 400px;
+}
+.modal-content h3 { margin-bottom: 1rem; }
+.modal-content label { display: block; margin-bottom: 0.5rem; }
+.modal-content input, .modal-content select {
+  width: 100%; padding: 0.5rem; margin-top: 0.25rem; margin-bottom: 1rem; border-radius: 0.25rem; border: 1px solid #ccc;
+}
+.modal-actions { display: flex; justify-content: flex-end; gap: 0.5rem; }
+.btn-submit { background-color: #22c55e; color: white; padding: 0.5rem 1rem; border-radius: 0.375rem; border: none; cursor: pointer; }
+.btn-cancel { background-color: #ef4444; color: white; padding: 0.5rem 1rem; border-radius: 0.375rem; border: none; cursor: pointer; }
 </style>

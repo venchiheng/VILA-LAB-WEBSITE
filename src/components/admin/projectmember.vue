@@ -1,21 +1,11 @@
 <template>
-  <div class="table-container">
+  <div v-if="project" class="table-container">
     <div class="table-header">
-      <h2 class="text-h5 font-weight-bold mb-4">Project Members</h2>
-
-      <div class="filters">
-        <v-text-field
-          v-model="searchName"
-          density="compact"
-          placeholder="Search name..."
-          hide-details
-        />
-        <v-text-field
-          v-model="searchRole"
-          density="compact"
-          placeholder="Search role..."
-          hide-details
-        />
+      <h2 class="text-h5 font-weight-bold mb-4">Members of "{{ project.title }}"</h2>
+      <div style="display:flex; gap:12px; margin-bottom:1rem;">
+        <v-text-field v-model="searchName" density="compact" placeholder="Search name..." hide-details />
+        <v-text-field v-model="searchRole" density="compact" placeholder="Search role..." hide-details />
+        <button class="btn-primary" @click="openAddMember">+ Add Member</button>
       </div>
     </div>
 
@@ -27,6 +17,7 @@
           <th>Email</th>
           <th>Role</th>
           <th>Member ID</th>
+          <th>Actions</th>
         </tr>
       </thead>
       <tbody>
@@ -40,25 +31,52 @@
             </span>
           </td>
           <td class="cell-center">{{ member.user.member_id }}</td>
+          <td class="cell-center">
+            <button class="btn-secondary" @click="openEditMember(member)">Edit</button>
+            <button class="btn-danger" @click="deleteMember(member.id)">Delete</button>
+          </td>
         </tr>
       </tbody>
     </table>
 
     <div class="pagination">
-      <button @click="prevPage" :disabled="page === 1">Previous</button>
+      <button class="btn-prev" @click="prevPage" :disabled="page === 1">Previous</button>
       <span>Page {{ page }} of {{ totalPages }}</span>
-      <button @click="nextPage" :disabled="page === totalPages">Next</button>
+      <button class="btn-next" @click="nextPage" :disabled="page === totalPages">Next</button>
+    </div>
+
+    <!-- Member Modal -->
+    <div v-if="showMemberModal" class="modal-overlay">
+      <div class="modal-card">
+        <h3>{{ isEditMember ? 'Edit Member' : 'Add Member' }}</h3>
+
+        <select v-model="memberForm.user_id" :disabled="isEditMember">
+          <option v-for="user in allUsers" :key="user.id" :value="user.id">
+            {{ user.name }} ({{ user.email }})
+          </option>
+        </select>
+
+        <select v-model="memberForm.role">
+          <option value="member">Member</option>
+          <option value="admin">Admin</option>
+          <option value="manager">Manager</option>
+        </select>
+
+        <div class="modal-actions">
+          <button class="btn-secondary" @click="closeMemberModal">Cancel</button>
+          <button class="btn-primary" @click="submitMemberForm">{{ isEditMember ? 'Update' : 'Add' }}</button>
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import axios from 'axios'
 
-const props = defineProps({
-  projectId: { type: Number, required: true }
-})
+const props = defineProps({ project: Object })
+const emit = defineEmits(['member-updated'])
 
 const members = ref([])
 const searchName = ref('')
@@ -66,100 +84,77 @@ const searchRole = ref('')
 const page = ref(1)
 const itemsPerPage = ref(5)
 
+const showMemberModal = ref(false)
+const isEditMember = ref(false)
+const memberForm = ref({ user_id: null, role: 'member' })
+const allUsers = ref([])
+
 const fetchMembers = async () => {
+  if (!props.project) return
   try {
-    const res = await axios.get(`http://localhost:8000/api/projects/${props.projectId}/members`)
+    const res = await axios.get(`http://localhost:8000/api/projects/${props.project.id}/members`)
     members.value = res.data
+    page.value = 1
   } catch (err) {
-    console.error('Failed to fetch members', err)
+    console.error(err)
     members.value = []
   }
 }
 
-onMounted(fetchMembers)
+const fetchAllUsers = async () => {
+  try {
+    const res = await axios.get('http://localhost:8000/api/users')
+    allUsers.value = res.data.data
+  } catch (err) {
+    console.error(err)
+  }
+}
+
+watch(() => props.project, fetchMembers, { immediate: true })
 
 const filteredMembers = computed(() =>
-  members.value.filter(m =>
-    (!searchName.value || m.user.name.toLowerCase().includes(searchName.value.toLowerCase())) &&
-    (!searchRole.value || m.role.toLowerCase().includes(searchRole.value.toLowerCase()))
+  members.value.filter(
+    m =>
+      (!searchName.value || m.user.name.toLowerCase().includes(searchName.value.toLowerCase())) &&
+      (!searchRole.value || m.role.toLowerCase().includes(searchRole.value.toLowerCase()))
   )
 )
 
 const totalPages = computed(() => Math.ceil(filteredMembers.value.length / itemsPerPage.value))
 const paginatedMembers = computed(() => {
   const start = (page.value - 1) * itemsPerPage.value
-  const end = start + itemsPerPage.value
-  return filteredMembers.value.slice(start, end)
+  return filteredMembers.value.slice(start, start + itemsPerPage.value)
 })
 
 const nextPage = () => { if (page.value < totalPages.value) page.value++ }
 const prevPage = () => { if (page.value > 1) page.value-- }
 
-const getRoleClass = role => {
-  const map = { member: 'pending', admin: 'approved', manager: 'in-use' }
-  return map[role] || 'pending'
+const getRoleClass = role => ({ member: 'pending', admin: 'approved', manager: 'in-use' }[role] || 'pending')
+
+const openAddMember = () => { isEditMember.value = false; memberForm.value = { user_id: null, role: 'member' }; showMemberModal.value = true; fetchAllUsers() }
+const openEditMember = member => { isEditMember.value = true; memberForm.value = { ...member }; showMemberModal.value = true }
+const closeMemberModal = () => { showMemberModal.value = false; memberForm.value = {} }
+
+const submitMemberForm = async () => {
+  try {
+    if (!props.project) return
+    if (isEditMember.value) {
+      await axios.put(`http://localhost:8000/api/project-members/${memberForm.value.id}`, memberForm.value)
+    } else {
+      await axios.post(`http://localhost:8000/api/projects/${props.project.id}/members`, memberForm.value)
+    }
+    closeMemberModal()
+    fetchMembers()
+    emit('member-updated')
+  } catch (err) { console.error(err); alert('Error saving member') }
+}
+
+const deleteMember = async id => {
+  if (!confirm('Are you sure?')) return
+  try {
+    await axios.delete(`http://localhost:8000/api/project-members/${id}`)
+    fetchMembers()
+    emit('member-updated')
+  } catch (err) { console.error(err); alert('Error deleting member') }
 }
 </script>
-
-<style scoped>
-.table-container {
-  background: white;
-  border-radius: 0.75rem;
-  overflow: hidden;
-  padding: 1.5rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-}
-
-.filters {
-  display: flex;
-  gap: 1rem;
-  margin-bottom: 1rem;
-}
-
-.booking-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.booking-table th {
-  padding: 1rem 5px; /* added extra 5px padding to the right */
-  text-align: center; /* align to middle */
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: #6b7280;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  border-bottom: 1px solid #e5e7eb;
-  background: #f9fafb;
-}
-
-.booking-table td {
-  padding: 1rem 5px; /* extra padding right */
-  border-bottom: 1px solid #e5e7eb;
-  text-align: center; /* align cell content to center */
-}
-
-.booking-table tbody tr:hover {
-  background: #f9fafb;
-}
-
-.status-badge {
-  display: inline-block;
-  padding: 0.25rem 0.75rem;
-  font-size: 0.75rem;
-  font-weight: 500;
-  border-radius: 9999px;
-}
-
-.status-badge.pending { background: #fef3c7; color: #92400e; }
-.status-badge.approved { background: #d1fae5; color: #065f46; }
-.status-badge.in-use { background: #dbeafe; color: #1e40af; }
-
-.pagination {
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  gap: 1rem;
-  margin-top: 1rem;
-}
-</style>
