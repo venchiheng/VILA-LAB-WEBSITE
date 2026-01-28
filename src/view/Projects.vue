@@ -35,8 +35,10 @@
 
             <!-- Projects Grid -->
             <div class="projects-grid">
-                <ProjectCard v-for="(project, index) in filteredProjects" :key="index" :projectName="project.title"
-                    :description="project.description" :image="project.image" :tags="project.tags" />
+                <ProjectCardOnPage v-for="(project, index) in filteredProjects" :key="index" :projectName="project.title"
+                    :description="project.description" 
+                    :image="project.banner_image || projectImage" 
+                    :tags="[project.status, project.category ? project.category.name : ''].filter(t => t)" />
             </div>
         </div>
     </div>
@@ -44,77 +46,45 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
-import ProjectCard from '@/components/project/ProjectCard.vue';
+import ProjectCardOnPage from '../components/project/ProjectCardOnPage.vue';
 import projectImage from '@/assets/project/image1.jpeg';
-
-import { defineStore } from 'pinia'
 import { useProjectCategoriesStore } from '../stores/categories';
+import projectsService from '@/services/projects';
 
 // const searchQuery = ref('');
 // const activeCategory = ref('All Projects');
 
 const projectCategoriesStore = useProjectCategoriesStore();
-const projects = [
-    {
-        title: "Project Alpha: Autonomous Drone Nagavation",
-        description: "Developing AI for real-time environmental mapping.",
-        tags: ["AI", "Robotics"],
-        category: "Artificial Intelligence",
-        image: projectImage
-    },
-    {
-        title: "Project Beta: Natural Language Understanding",
-        description: "Developing a conversational AI that understands nuanced human language.",
-        tags: ["AI", "HCI"],
-        category: "NLP",
-        image: projectImage
-    },
-    {
-        title: "Project Gamma: Predictive Data Modeling",
-        description: "Using machine learning to forecast market trends with high accuracy.",
-        tags: ["Data Science"],
-        category: "Data Science",
-        image: projectImage
-    },
-    {
-        title: "Project Delta: Human-Computer Interaction Study",
-        description: "Researching intuitive interfaces for complex systems.",
-        tags: ["Robotics", "HCI"],
-        category: "Computer Vision",
-        image: projectImage
-    },
-    {
-        title: "Project Epsilon: Predictive Data Analytics",
-        description: "Using machine learning to forecast market trends.",
-        tags: ["Data Science"],
-        category: "Data Science",
-        image: projectImage
-    },
-    {
-        title: "Project Zeta: Advanced Robotic Arm",
-        description: "Building a robotic arm with human-like dexterity.",
-        tags: ["AI, Robotics"],
-        category: "Artificial Intelligence",
-        image: projectImage
-    }
-]
-
-const categories = ["All Projects", "Artificial Intelligence", "Computer Vision", "Data Science", "NLP"];
+const projects = ref([]);
 
 const searchQuery = ref("");
 const activeCategory = ref("All Projects");
 
 const filteredProjects = computed(() => {
-    return projects.filter(project => {
+    return projects.value.filter(project => {
         const matchesSearch = project.title.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-            project.description.toLowerCase().includes(searchQuery.value.toLowerCase());
-        const matchesCategory = activeCategory.value === "All Projects" || project.category === activeCategory.value;
+            (project.description && project.description.toLowerCase().includes(searchQuery.value.toLowerCase()));
+        
+        // Match category name from the nested object (e.g. project.category.name)
+        const projectCategoryName = project.category ? project.category.name : null;
+        const matchesCategory = activeCategory.value === "All Projects" || projectCategoryName === activeCategory.value;
 
         return matchesSearch && matchesCategory;
     });
 });
+
+const loadProjects = async () => {
+    try {
+        const data = await projectsService.getAll();
+        projects.value = data;
+    } catch (error) {
+        console.error("Error loading projects:", error);
+    }
+};
+
 onMounted(async () => {
     await projectCategoriesStore.fetchCategories(); // load categories dynamically
+    await loadProjects(); // load projects from backend
 });
 </script>
 

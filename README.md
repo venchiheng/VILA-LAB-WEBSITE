@@ -1,5 +1,12 @@
-# Vue 3 + Vite
+# VILA-LAB-WEBSITE
 
-This template should help get you started developing with Vue 3 in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+This is the official website for ViLa Lab.
 
-Learn more about IDE Support for Vue in the [Vue Docs Scaling up Guide](https://vuejs.org/guide/scaling-up/tooling.html#ide-support).
+## Tech Stack
+- **Frontend**: Vue 3 + Vite + TailwindCSS
+- **Backend**: Laravel 11
+
+## Getting Started
+- Run `npm install` and `composer install`.
+- Start Laravel: `php artisan serve`
+- Start Frontend: `npm run dev`
