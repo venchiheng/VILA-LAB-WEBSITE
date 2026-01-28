@@ -2,26 +2,19 @@
   <div class="project-card">
     <!-- Image section -->
     <div class="image-wrapper">
-      <img :src="image" :alt="projectName" />
+      <img :src="image" />
     </div>
 
     <!-- Bottom section -->
     <div class="bottom-section">
       <p class="project-name">{{ projectName }}</p>
       <p class="description">{{ description }}</p>
-      
-      <!-- Tags section -->
-      <div class="tags-container" v-if="tags && tags.length">
-        <span class="tag" v-for="(tag, index) in tags" :key="index">
-          {{ tag }}<span v-if="index < tags.length - 1" class="separator">, </span>
-        </span>
-      </div>
     </div>
   </div>
 </template>
 
 <script setup>
-defineProps({
+const props = defineProps({
   projectName: {
     type: String,
     required: true
@@ -33,10 +26,6 @@ defineProps({
   image: {
     type: String,
     required: true
-  },
-  tags: {
-    type: Array,
-    default: () => []
   }
 })
 </script>
@@ -45,26 +34,28 @@ defineProps({
 .project-card {
   width: 100%;
   height: 100%;
-  max-width: 380px; 
-  background-color: transparent; 
+  max-width: 288px;
+  max-height: 494px;
+  background-color: var(--color-bg);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.12);
+  border-radius: 40px;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
-  transition: transform 0.3s ease;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .project-card:hover {
   transform: translateY(-8px);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.18);
 }
 
 /* Image wrapper */
 .image-wrapper {
   position: relative;
   width: 100%;
-  aspect-ratio: 16/10; 
+  height: 329px;
   overflow: hidden;
-  background-color: var(--color-secondary); /* Placeholder matches light blue theme */
-  border-radius: 20px; /* Rounded corners on the image only */
-  margin-bottom: 0; 
 }
 
 .image-wrapper img {
@@ -75,45 +66,27 @@ defineProps({
 
 /* Bottom section */
 .bottom-section {
-  padding: 16px 0 0 0; /* Top padding only, align text to left edge */
+  background-color: var(--color-primary);
+  color: var(--color-bg);
+  padding: 20px 24px 24px;
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 8px;
 }
 
 .project-name {
-  font-weight: 700; /* h4 or bold */
-  font-size: 20px;
+  font-weight: bold;
   margin: 0;
+  text-transform: uppercase;
   text-align: left;
-  color: var(--color-text);
 }
 
 .description {
-  font-size: 16px;
+  font-size: 13px;
   line-height: 1.5;
   text-align: left;
   margin: 0;
-  color: var(--color-text);
-  font-weight: 400;
-}
-
-.tags-container {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap; /* Allow tags to wrap */
-  gap: 4px; /* Reduced gap since we have commas */
-  margin-top: 4px;
-}
-
-.separator {
-  color: var(--color-text); /* Standard text color for comma */
-}
-
-.tag {
-    font-size: 14px;
-    font-weight: 500;
-    color: var(--color-primary); /* Blue text for tags */
+  opacity: 0.95;
 }
 </style>

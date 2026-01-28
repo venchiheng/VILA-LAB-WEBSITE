@@ -7,31 +7,6 @@
     <p class="journal">
       {{ journal }}, {{ year }}
     </p>
-
-    <div class="links">
-      <!-- DOI -->
-      <span class="link" @click="triggerUpload('doi')">
-        DOI
-      </span>
-
-      <!-- PDF -->
-      <span class="link" @click="triggerUpload('pdf')">
-        PDF
-      </span>
-
-      <!-- Extra DOI -->
-      <span class="link" @click="triggerUpload('doi2')">
-        DOI
-      </span>
-
-      <!-- hidden input -->
-      <input
-        ref="fileInput"
-        type="file"
-        class="hidden-input"
-        @change="handleFileUpload"
-      />
-    </div>
   </div>
 </template>
 
@@ -98,12 +73,6 @@ const handleFileUpload = (event) => {
   color: var(--color-text);
 }
 
-.links {
-  margin-top: 8px;
-  display: flex;
-  gap: 16px;
-}
-
 .link {
   font-weight: bold;
   color: var(--color-primary);
@@ -112,9 +81,5 @@ const handleFileUpload = (event) => {
 
 .link:hover {
   text-decoration: underline;
-}
-
-.hidden-input {
-  display: none;
 }
 </style>

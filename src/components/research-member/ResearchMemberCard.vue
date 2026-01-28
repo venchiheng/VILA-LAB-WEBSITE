@@ -15,14 +15,14 @@
       <p class="name">{{ name }}</p>
       <p class="description">{{ description }}</p>
 
-      <button class="explore-btn" @click="onExplore">
+      <router-link to="/aboutlab" class="explore-btn">
         <img
           src="@/assets/icons/ic-baseline-message.png"
           alt="message"
           class="btn-icon"
         />
         <span>Explore more</span>
-      </button>
+      </router-link>
     </div>
   </div>
 </template>
@@ -101,6 +101,7 @@ const onExplore = () => {
   display: flex;
   flex-direction: column;
   gap: 10px;
+  flex: 1; 
 }
 
 .name {
@@ -118,6 +119,7 @@ const onExplore = () => {
 }
 /* Button */
 .explore-btn {
+  margin-top: auto; /* key line */
   align-self: flex-start;
   background-color: var(--color-secondary);
   color: var(--color-text);
