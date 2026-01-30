@@ -12,7 +12,7 @@ class EquipmentResource extends JsonResource
             'id'           => $this->id,
             'name'         => $this->name,
             'description'  => $this->description,
-            'image'        => $this->image,
+            'image'        => $this->image ? asset('storage/' . $this->image) : null,
             'availability' => $this->availability,
             'condition'    => $this->condition,
             'stock'        => $this->stock,

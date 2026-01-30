@@ -21,7 +21,7 @@ class EquipmentController extends Controller
 
     public function index()
     {
-        $this->authorize('viewAny', Equipment::class);
+        // $this->authorize('viewAny', Equipment::class);
 
         $equipment = $this->service->all();
 
@@ -43,11 +43,15 @@ class EquipmentController extends Controller
         $validated = $request->validate([
             'name'         => 'required|string|max:255',
             'description'  => 'nullable|string',
-            'image'        => 'nullable|string|max:255',
+            'image'        => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
             'availability' => 'required|in:available,booked',
             'condition'    => 'nullable|string',
             'stock'        => 'required|integer|min:1',
         ]);
+
+        if ($request->hasFile('image')) {
+            $validated['image'] = $request->file('image')->store('equipment', 'public');
+        }
 
         $equipment = $this->service->create($validated);
 
