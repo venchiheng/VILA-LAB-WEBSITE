@@ -1,23 +1,19 @@
 <template>
     <v-dialog v-model="dialog" max-width="50%" persistent>
-        <v-card rounded="xl" class="pa-8">
+        <v-card rounded="xl" class="pa-4">
             <div class="d-flex justify-space-between align-center mb-6">
                 <h2>Add this item to cart</h2>
-                <button
-                    style="width: 32px; height: 32px; border-radius: 100px; background: lightgray; display: flex; align-items: center; justify-content: center;"
-                    @click="close">
-                    <Icon icon="mdi-close" />
+                <button @click="close">
+                    <Icon icon="material-symbols:close-rounded" style="color: black; width: 20px; height: 20px;" />
                 </button>
             </div>
 
-            <FormInput v-if="dialog" v-model:fullName="form.fullName" v-model:memberId="form.memberId"
+            <FormInput v-model:fullName="form.fullName" v-model:memberId="form.memberId"
                 v-model:purpose="form.purpose" />
 
-            <div class="mt-6" v-if="dialog">
-                <QuantitySelector v-model="form.quantity" />
-            </div>
+            <QuantitySelector v-model="form.quantity" />
 
-            <v-row class="mt-6" v-if="dialog">
+            <v-row>
                 <v-col cols="12" md="6">
                     <DatePicker label="Select Borrow Date" v-model="form.borrowDate" />
                 </v-col>
@@ -26,7 +22,7 @@
                 </v-col>
             </v-row>
 
-            <div class="d-flex justify-end mt-8" v-if="dialog">
+            <div class="d-flex justify-end mt-8">
                 <button class="sb-btn" @click="confirmBooking">Confirm Booking</button>
             </div>
         </v-card>
@@ -34,12 +30,18 @@
 </template>
 
 <script setup>
-import { reactive, watch, computed } from 'vue'
+import { reactive, computed } from 'vue'
 import FormInput from './formInput.vue'
 import QuantitySelector from './quantity-selector.vue'
 import DatePicker from './datePicker.vue'
 import { Icon } from '@iconify/vue'
 import api from '../../services/api'
+import { useRouter, useRoute } from 'vue-router'
+import { ro } from 'vuetify/locale'
+
+const router = useRouter()
+const route = useRoute()
+
 const props = defineProps({
     modelValue: Boolean,
     equipment: Object
@@ -49,7 +51,7 @@ const emit = defineEmits(['update:modelValue', 'confirm'])
 
 const dialog = computed({
     get: () => props.modelValue,
-    set: (val) => emit('update:modelValue', val)
+    set: val => emit('update:modelValue', val)
 })
 
 const form = reactive({
@@ -61,52 +63,44 @@ const form = reactive({
     returnDate: null
 })
 
-const resetForm = () => {
-    form.fullName = ''
-    form.memberId = ''
-    form.purpose = ''
-    form.quantity = 1
-    form.borrowDate = null
-    form.returnDate = null
-}
-
-const close = () => {
-    dialog.value = false
-}
+const close = () => (dialog.value = false)
 
 const confirmBooking = async () => {
-    try {
-        const payload = {
-            equipment_id: props.equipment.id,
-            full_name: form.fullName,
-            member_id: form.memberId,
-            purpose: form.purpose,
-            quantity: form.quantity,
-            borrow_date: form.borrowDate,
-            return_date: form.returnDate
-        }
-
-        const res = await api.post('/equipment-bookings', payload)
-
-        console.log('Booking success:', res.data)
-
-        // emit event to parent to update UI
-        emit('confirm', res.data)
-
-        // close dialog
-        close()
-    } catch (err) {
-        console.error('Booking failed:', err.response?.data || err.message)
-        alert('Failed to book equipment. Please try again.')
+    if (!props.equipment?.id) {
+        alert('Please select equipment before booking!')
+        return
     }
+    const formatDateAtNineAM = (date) => {
+    if (!date) return null
+    const d = new Date(date)
+    const yyyy = d.getFullYear()
+    const mm = String(d.getMonth() + 1).padStart(2, '0')
+    const dd = String(d.getDate()).padStart(2, '0')
+    
+    // Always set time to 09:00:00
+    const hh = '09'
+    const min = '00'
+    const ss = '00'
+
+    return `${yyyy}-${mm}-${dd} ${hh}:${min}:${ss}`
+    }
+
+
+    const payload = {
+        equipment_id: props.equipment.id,
+        // full_name: form.fullName,
+        // member_id: form.memberId,
+        purpose: form.purpose,
+        quantity: form.quantity,
+        booking_date: formatDateAtNineAM(form.borrowDate),
+        return_date: formatDateAtNineAM(form.returnDate)
+    }
+
+    const res = await api.post('/equipment-bookings', payload)
+    emit('confirm', res.data)
+    dialog.value = false
+    router.push('/equipments/booking')
 }
-
-watch(
-    () => props.modelValue,
-    (open) => {
-        if (!open) resetForm()
-    }
-)
 </script>
 
 <style scoped>

@@ -5,7 +5,7 @@ import { loginApi, logoutApi } from '@/services/auth/api.js'
 export const useAuthStore = defineStore('auth', () => {
   const user = ref(JSON.parse(localStorage.getItem('user')) || null)
   const token = ref(localStorage.getItem('token') || null)
-  const loginTime = ref(localStorage.getItem('loginTime') || null)
+  const loginTime = ref(Number(localStorage.getItem('loginTime')) || null)
   const loading = ref(false)
   const error = ref(null)
 
@@ -20,8 +20,11 @@ export const useAuthStore = defineStore('auth', () => {
       const data = await loginApi(memberId, password)
 
       // 🔒 Block non-admin login
-      if (data.user.role !== 'admin') {
-        throw new Error('Access denied. Admin only.')
+      // if (data.user.role !== 'admin') {
+      //   throw new Error('Access denied. Admin only.')
+      // }
+      if (!['admin', 'member'].includes(data.user.role)) {
+        throw new Error('Access denied.')
       }
 
       user.value = data.user
@@ -33,7 +36,13 @@ export const useAuthStore = defineStore('auth', () => {
       loginTime.value = Date.now()
       localStorage.setItem('loginTime', loginTime.value)
 
-      if (router) router.push('/admin/home')
+      if (router) {
+        if (data.user.role === 'admin') {
+          router.push('/admin/home')
+        } else if (data.user.role === 'researcher') {
+          router.push('/equipments')
+        }
+      }
       return data
     } catch (err) {
       error.value = err.message || err.response?.data?.message || 'Login failed'

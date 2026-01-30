@@ -17,10 +17,10 @@ import { useRouter, useRoute } from 'vue-router'
 const router = useRouter()
 const route = useRoute()
 
-const isActive = computed(() => route.path === '/equipments')
+const isActive = computed(() => route.path === '/login')
 
 function goToEquipments() {
-  router.push('/equipments')
+  router.push('/login')
 }
 </script>
 

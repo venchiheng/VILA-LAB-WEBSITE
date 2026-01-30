@@ -1,128 +1,78 @@
 <template>
-  <div class="login-container">
-    <div class="login-card">
-      <h2>Admin Login</h2>
+  <v-app>
+    <v-main>
+      <v-container fluid class="pa-0 fill-height ma-0">
+        <v-row no-gutters class="fill-height">
 
-      <input
-        v-model="memberId"
-        type="text"
-        placeholder="Member ID"
-      />
+          <v-col cols="12" md="6" class="d-flex align-center justify-center bg-white">
+            <v-card flat max-width="480" width="100%" class="pa-8 pa-md-12">
+              <div class="text-center">
 
-      <input
-        v-model="password"
-        type="password"
-        placeholder="Password"
-      />
+                <v-avatar size="120" class="mb-8 user-avatar">
+                  <Icon icon="mdi:account-circle" class="user-avatar-icon" />
+                </v-avatar>
 
-      <button @click="login">
-        Login
-      </button>
+                <h1 class="text-h4 font-weight-bold mb-3">
+                  Member Login
+                </h1>
+                <p class="text-body-1 mb-10 text-medium-emphasis">
+                  Enter your credentials to book equipment
+                </p>
 
-      <p v-if="error" class="error">
-        {{ error }}
-      </p>
-    </div>
-  </div>
+                <v-form @submit.prevent="handleLogin">
+                  <v-text-field v-model="memberId" variant="outlined" placeholder="Member ID"
+                    class="mb-6" hide-details />
+
+                  <v-text-field v-model="password" variant="outlined" placeholder="Password"
+                    type="password" class="mb-8" hide-details />
+
+                  <v-btn :loading="loading" style="background-color: var(--color-primary); color: var(--color-bg);" size="large" block rounded="pill" 
+                    class="text-capitalize py-6 text-h6" type="submit">
+                    Log in
+                  </v-btn>
+
+                  <p v-if="error" class="text-red-500 mt-4">{{ error }}</p>
+                </v-form>
+
+              </div>
+            </v-card>
+          </v-col>
+
+          <v-col cols="12" md="6" class="d-none d-md-flex justify-center align-center image-side">
+            <div class="image-frame">
+              <img src="/src/assets/login.png" alt="Login Image" style="width: 70%; height: auto;"/>
+            </div>
+          </v-col>
+
+        </v-row>
+      </v-container>
+    </v-main>
+  </v-app>
 </template>
 
-<script>
-import { loginApi } from "@/services/auth/api";
+<script setup>
+import { ref, computed } from 'vue'
+import { useRouter } from 'vue-router'
+import { useAuthStore } from '@/stores/auth'
 
-export default {
-  name: "Login",
-  data() {
-    return {
-      memberId: "",
-      password: "",
-      error: "",
-      loading: false
-    };
-  },
-  methods: {
-    async login() {
-      this.error = "";
-      this.loading = true;
+const auth = useAuthStore()
+const router = useRouter()
 
-      try {
-        const data = await loginApi(this.memberId, this.password);
+const memberId = ref('')
+const password = ref('')
+const loading = computed(() => auth.loading)
+const error = computed(() => auth.error)
 
-        // Save token & user from backend response
-        localStorage.setItem("token", data.user.token);
-        localStorage.setItem("user", JSON.stringify(data.user));
+const handleLogin = async () => {
+  try {
+    const loginResponse = await auth.login(memberId.value, password.value, { role: 'member' })
+    console.log('Token:', loginResponse.token) // ensure token exists
 
-        // Redirect after login
-        this.$router.push("/dashboard");
-
-      } catch (err) {
-        this.error = err.message || "Invalid Member ID or Password";
-      } finally {
-        this.loading = false;
-      }
-    }
+    // Now navigate
+    await router.push('/equipments')
+  } catch (err) {
+    console.error(err)
   }
-};
+}
+
 </script>
-
-
-<style scoped>
-:root {
-  --color-primary: #0049AF;
-  --color-secondary: #BAD6EB;
-  --color-bg: #FFFFFF;
-}
-
-.login-container {
-  height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: var(--color-bg);
-}
-
-.login-card {
-  width: 320px;
-  padding: 32px;
-  border-radius: 12px;
-  background-color: #fff;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-  text-align: center;
-}
-
-.login-card h2 {
-  margin-bottom: 24px;
-  color: var(--color-primary);
-}
-
-.login-card input {
-  width: 100%;
-  padding: 12px;
-  margin-bottom: 16px;
-  border-radius: 8px;
-  border: none;
-  background-color: var(--color-secondary);
-  font-size: 14px;
-  outline: none;
-}
-
-.login-card button {
-  width: 100%;
-  padding: 12px;
-  border-radius: 8px;
-  border: none;
-  background-color: var(--color-primary);
-  color: #fff;
-  font-size: 15px;
-  cursor: pointer;
-}
-
-.login-card button:hover {
-  opacity: 0.9;
-}
-
-.error {
-  margin-top: 12px;
-  font-size: 13px;
-  color: red;
-}
-</style>

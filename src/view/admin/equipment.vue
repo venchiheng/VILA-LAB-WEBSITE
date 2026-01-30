@@ -142,6 +142,16 @@
           <h3>{{ editingEquipment ? 'Update Equipment' : 'Add New Equipment' }}</h3>
           <form @submit.prevent="saveEquipment">
             <label>
+              Thumbnail:
+              <input type="file" @change="handleFileChange"/>
+              <img
+                v-if="previewUrl"
+                :src="previewUrl"
+                alt="Thumbnail preview"
+                width="120"
+              />
+            </label>
+            <label>
               Name:
               <input v-model="form.name" required />
             </label>
@@ -230,6 +240,14 @@ const fetchBookings = async (equipmentId) => {
     bookings.value = []
   }
 }
+const previewUrl = ref(null)
+
+function handleFileChange(event) {
+  const file = event.target.files[0]
+  if (!file) return
+  form.value.thumbnail = file
+  previewUrl.value = URL.createObjectURL(file)
+}
 
 // Select Equipment
 const selectEquipment = (equipment) => {
@@ -294,22 +312,26 @@ const editEquipment = (equipment) => {
   showModal.value = true
 }
 
-// Save/Create & Update
+
 const saveEquipment = async () => {
   try {
-    const payload = {
-      name: form.value.name,
-      description: form.value.description,
-      availability: form.value.availability,
-      condition: form.value.condition,
-      stock: form.value.stock
+    const formData = new FormData()
+    formData.append('name', form.value.name)
+    formData.append('description', form.value.description)
+    formData.append('availability', form.value.availability)
+    formData.append('condition', form.value.condition)
+    formData.append('stock', form.value.stock)
+    if (form.value.thumbnail instanceof File) {
+      formData.append('image', form.value.thumbnail)
     }
 
     if (editingEquipment.value) {
-      await api.put(`/equipment/${editingEquipment.value.id}`, payload)
+      await api.put(`/equipment/${editingEquipment.value.id}`, formData)
+      console.log(formData)
       alert('Equipment updated successfully!')
     } else {
-      await api.post('/equipment', payload)
+      await api.post('/equipment', formData)
+      console.log(formData)
       alert('Equipment created successfully!')
     }
 

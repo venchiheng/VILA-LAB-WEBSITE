@@ -1,29 +1,14 @@
 <template>
   <div class="equipment-card">
-    <!-- Image section -->
     <div class="image-wrapper">
-      <span
-        v-if="status"
-        class="status-badge"
-        :class="statusClass"
-      >
-        {{ status }}
-      </span>
-
-      <img
-        :src="image"
-        :alt="name"
-      />
+      <span v-if="status" class="status-badge" :class="statusClass">{{ status }}</span>
+      <img :src="image" :alt="name" />
     </div>
 
-    <!-- Info section -->
     <div class="info">
       <p class="title">{{ name }}</p>
       <p class="spec">{{ specification }}</p>
-
-      <button class="detail-btn" @click="onViewDetail">
-        View Detail
-      </button>
+      <button class="detail-btn" @click="onViewDetail">View Detail</button>
     </div>
   </div>
 </template>
@@ -32,36 +17,18 @@
 import { computed } from 'vue'
 
 const props = defineProps({
-  name: {
-    type: String,
-    required: true
-  },
-  specification: {
-    type: String,
-    required: true
-  },
-  image: {
-    type: String,
-    required: true
-  },
-  status: {
-    type: String,
-    default: ''
-  }
+  id: { type: Number, required: true },
+  name: String,
+  specification: String,
+  image: String,
+  status: String
 })
 
 const emit = defineEmits(['view-detail'])
 
-const onViewDetail = () => {
-  emit('view-detail')
-}
+const onViewDetail = () => emit('view-detail', props)
 
-/* Dynamic badge color */
-const statusClass = computed(() => {
-  return props.status.toLowerCase() === 'available'
-    ? 'available'
-    : 'booked'
-})
+const statusClass = computed(() => (props.status.toLowerCase() === 'available' ? 'available' : 'booked'))
 </script>
 
 <style scoped>

@@ -1,8 +1,8 @@
 <template>
 <div>
- <NavigationBar v-if="!isAdminRoute" />
+ <NavigationBar v-if="!isAdminRoute && !isLoginRoute" />
   <router-view />
-  <Footer v-if="!isAdminRoute" />
+  <Footer v-if="!isAdminRoute && !isLoginRoute"/>
   </div>
 </template>
 
@@ -18,6 +18,7 @@ const route = useRoute()
 
 import { computed } from 'vue'
 const isAdminRoute = computed(() => route.path.startsWith('/admin'))
+const isLoginRoute = computed(() => route.path.startsWith('/login'))
 </script>
 
 <style>

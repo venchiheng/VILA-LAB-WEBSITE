@@ -1,11 +1,12 @@
 <template>
+  <!-- Header -->
   <div v-if="currentView === 'list'" class="equipment-header">
     <div class="header-left">
       <h1>Equipment Booking</h1>
       <p>Lab Resource management</p>
 
       <div class="search-box">
-        <input type="text" placeholder="Search equipment..." />
+        <input type="text" placeholder="Search equipment..." v-model="searchQuery" />
       </div>
     </div>
 
@@ -15,22 +16,22 @@
     </button>
   </div>
 
+  <!-- Equipment List -->
   <div v-if="currentView === 'list'" class="page-wrapper">
     <div class="equipment-grid">
       <EquipmentCard
-        v-for="item in equipments"
+        v-for="item in filteredEquipments"
         :key="item.id"
-        :name="item.name"
-        :specification="item.spec"
-        :image="item.image"
-        :status="item.status"
-        @view-detail="openDetail(item)"
+        v-bind="item"
+        @view-detail="openDetail"
       />
     </div>
   </div>
 
+  <!-- My Booking -->
   <MyBooking v-if="currentView === 'booking'" />
 
+  <!-- Equipment Detail -->
   <EquipmentDetail
     v-if="currentView === 'detail'"
     :equipment="selectedEquipment"
@@ -52,13 +53,20 @@ const route = useRoute()
 const router = useRouter()
 const equipmentStore = useEquipmentStore()
 
-// Computed list from store
-const equipments = computed(() => equipmentStore.equipments)
+const searchQuery = ref('')
+
+// Computed list from store (filtered by search)
+const filteredEquipments = computed(() => {
+  if (!searchQuery.value) return equipmentStore.equipments
+  return equipmentStore.equipments.filter(e =>
+    e.name.toLowerCase().includes(searchQuery.value.toLowerCase())
+  )
+})
 
 // Selected equipment for detail view
 const selectedEquipment = ref(null)
 
-// Derive view from route
+// Current view
 const currentView = computed(() => {
   const id = route.params.id
   if (id === 'booking') return 'booking'
@@ -66,24 +74,18 @@ const currentView = computed(() => {
   return 'list'
 })
 
-// Update selected equipment based on route
-const updatedSelectedEquipment = () => {
+// Update selected equipment based on route id
+const updateSelectedEquipment = () => {
   const id = parseInt(route.params.id)
-  if (id && !isNaN(id)) {
+  if (!isNaN(id)) {
     const item = equipmentStore.getById(id)
     if (item) {
+      // Pass the full item object with extra computed fields
       selectedEquipment.value = {
-        name: item.name,
+        ...item,
         thumbnail: item.image,
-        status: item.status,
         condition: 'New',
-        description: item.spec,
-        htmlContent: `
-          <p>
-            ${item.name} with ${item.spec}.<br />
-            Current status: <b>${item.status}</b>.
-          </p>
-        `
+        htmlContent: `<p>${item.name} with ${item.spec}.<br />Current status: <b>${item.status}</b>.</p>`
       }
     } else {
       router.replace('/equipments')
@@ -93,21 +95,17 @@ const updatedSelectedEquipment = () => {
   }
 }
 
-watch(() => route.params.id, updatedSelectedEquipment, { immediate: true })
+watch(() => route.params.id, updateSelectedEquipment, { immediate: true })
 
 // Navigation handlers
-const openDetail = (item) => router.push(`/equipments/${item.id}`)
+const openDetail = (item) => {
+  router.push(`/equipments/${item.id}`)
+}
+
 const backToList = () => router.push('/equipments')
 const goToBooking = () => router.push('/equipments/booking')
 
-// // Example images for detail carousel
-// const images = ref([
-//   '/src/assets/equipment/rsbrpi.png',
-//   '/src/assets/equipment/rsbrpi.png',
-//   '/src/assets/equipment/rsbrpi.png'
-// ])
-
-// Fetch equipment from API on mounted
+// Fetch equipments from API on mount
 onMounted(() => {
   equipmentStore.fetchEquipments()
 })
