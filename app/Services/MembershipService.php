@@ -49,7 +49,7 @@ class MembershipService
         return DB::transaction(function () use ($application, $admin_id) {
 
             $memberId = $this->generateMemberId();
-            $initialPassword = Str::random(12);
+           
             $application->update([
                 'status'      => 'approved',
                 'reviewed_by' => $admin_id,
@@ -58,14 +58,14 @@ class MembershipService
             $user = User::create([
                 'name'      => $application->full_name,
                 'email'     => $application->email,
-                'password'  => Hash::make($initialPassword),
+                'password'  => Hash::make($memberId),
                 'role'      => 'member',
                 'member_id' => $memberId,
             ]);
             $user->profile()->create([]);
             return [
             'member_id' => $memberId,
-            'password'  => $initialPassword,
+            'password'  => $memberId,
             'user'      => $user,
         ];
         });
