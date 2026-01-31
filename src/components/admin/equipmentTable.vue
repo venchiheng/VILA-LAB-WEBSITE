@@ -55,7 +55,8 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import { api } from '@/lib/api.js'
+// import { api } from '@/lib/api.js'
+import api from '../../services/api'
 
 const items = ref([])
 const searchName = ref('')

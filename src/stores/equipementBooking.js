@@ -1,5 +1,6 @@
 import { defineStore } from "pinia";
-import { api } from "../lib/api";
+// import { api } from "../lib/api";
+import api from "../services/api";
 import axios from "axios";
 
 export const useEquipmentBookingStore = defineStore("equipmentBooking", {

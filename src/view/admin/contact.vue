@@ -100,7 +100,8 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import { api } from '@/lib/api.js'
+// import { api } from '@/lib/api.js'
+import api from '../../services/api'
 import Sidebar from '@/components/admin/sidebar.vue'
 import TopNav from '@/components/admin/topnav.vue'
 

@@ -193,7 +193,8 @@
 import { ref, computed, onMounted } from 'vue'
 import Sidebar from '@/components/admin/sidebar.vue'
 import TopNav from '@/components/admin/topnav.vue'
-import { api } from '@/lib/api.js'
+// import { api } from '@/lib/api.js'
+import api from '../../services/api'
 const darkMode = ref(false)
 const user = ref({
   name: 'Admin User',

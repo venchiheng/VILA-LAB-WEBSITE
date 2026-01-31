@@ -52,7 +52,8 @@
 </template>
 
 <script setup>
-import { api } from '@/lib/api.js'
+// import { api } from '@/lib/api.js'
+import api from '../../services/api'
 
 const props = defineProps({
   application: Object

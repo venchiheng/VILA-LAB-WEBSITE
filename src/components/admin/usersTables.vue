@@ -76,8 +76,8 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import { api } from '@/lib/api.js'
-
+// import { api } from '@/lib/api.js'
+import api from '../../services/api'
 const users = ref([])
 const searchText = ref('')
 const page = ref(1)
