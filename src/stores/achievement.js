@@ -37,7 +37,7 @@ export const useAchievementStore = defineStore('achievement', () => {
   async function fetchAchievements() {
     loading.fetch = true
     try {
-      const res = await axios.get('https://52.87.185.116:8000/api/achievements')
+      const res = await axios.get('http://44.223.137.10:8000/api/achievements')
       achievements.value = res.data
       console.log('Fetched achievements:', achievements.value)
     } catch (err) {
@@ -59,7 +59,7 @@ export const useAchievementStore = defineStore('achievement', () => {
       form.append('description', formData.description)
       if (formData.thumbnail) form.append('thumbnail', formData.thumbnail)
 
-      const res = await axios.post('https://52.87.185.116:8000/api/achievements', form, {
+      const res = await axios.post('http://44.223.137.10:8000/api/achievements', form, {
         headers: { 'Content-Type': 'multipart/form-data' },
       })
 
@@ -91,7 +91,7 @@ export const useAchievementStore = defineStore('achievement', () => {
       if (payload.thumbnail) form.append('thumbnail', payload.thumbnail)
       form.append('_method', 'PUT') // Laravel PUT via POST
 
-      const res = await axios.post(`https://52.87.185.116:8000/api/achievements/${id}`, form, {
+      const res = await axios.post(`http://44.223.137.10:8000/api/achievements/${id}`, form, {
         headers: { 'Content-Type': 'multipart/form-data' },
       })
 
@@ -118,7 +118,7 @@ export const useAchievementStore = defineStore('achievement', () => {
     Object.keys(errors).forEach(key => delete errors[key])
 
     try {
-      await axios.delete(`https://52.87.185.116:8000/api/achievements/${id}`)
+      await axios.delete(`http://44.223.137.10:8000/api/achievements/${id}`)
       achievements.value = achievements.value.filter(a => a.id !== id)
     } catch (err) {
       console.error('Failed to delete achievement:', err)

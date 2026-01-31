@@ -68,7 +68,7 @@ const handleAction = async (action) => {
   }
 
   try {
-    const url = `https://52.87.185.116:8000/api/membership-applications/${app.id}/${action}`
+    const url = `http://44.223.137.10:8000/api/membership-applications/${app.id}/${action}`
     const payload = action === 'reject' ? { review_notes: reviewNotes } : {}
 
     await api.put(url, payload)

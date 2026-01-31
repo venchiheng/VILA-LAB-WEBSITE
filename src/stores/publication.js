@@ -31,7 +31,7 @@ export const usePublicationStore = defineStore('publication', () => {
     // Fetch all partnerships
     async function fetchPublications() {
         try {
-            const res = await axios.get('https://52.87.185.116:8000/api/publications')
+            const res = await axios.get('http://44.223.137.10:8000/api/publications')
             publications.value = res.data
             console.log('Fetched publications:', publications.value)
         } catch (err) {
@@ -53,7 +53,7 @@ export const usePublicationStore = defineStore('publication', () => {
             form.append('published_date', formData.published_date)
 
             const res = await axios.post(
-                'https://52.87.185.116:8000/api/publications',
+                'http://44.223.137.10:8000/api/publications',
                 form,
                 { headers: { 'Content-Type': 'multipart/form-data' } }
             )
@@ -85,7 +85,7 @@ export const usePublicationStore = defineStore('publication', () => {
     //         if (payload.thumbnail) form.append('thumbnail', payload.thumbnail)
     //         form.append('_method', 'PUT') // Laravel PUT via POST
 
-    //         await axios.post(`https://52.87.185.116:8000/api/publications/${id}`, form)
+    //         await axios.post(`http://44.223.137.10:8000/api/publications/${id}`, form)
     //         await fetchPublications()
     //     } catch (err) {
     //         console.error(err)
@@ -108,7 +108,7 @@ export const usePublicationStore = defineStore('publication', () => {
             form.append('published_date', payload.published_date) || null
             form.append('_method', 'PUT') // Laravel PUT via POST
 
-            await axios.post(`https://52.87.185.116:8000/api/publications/${id}`, form)
+            await axios.post(`http://44.223.137.10:8000/api/publications/${id}`, form)
             await fetchPublications()
         } catch (err) {
             console.error(err)
@@ -125,7 +125,7 @@ export const usePublicationStore = defineStore('publication', () => {
         errors.general = null
 
         try {
-            await axios.delete(`https://52.87.185.116:8000/api/publications/${id}`)
+            await axios.delete(`http://44.223.137.10:8000/api/publications/${id}`)
             publications.value = publications.value.filter(p => p.id !== id)
         } catch (err) {
             console.error(err)

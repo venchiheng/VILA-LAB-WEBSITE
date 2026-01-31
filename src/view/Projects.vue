@@ -72,7 +72,7 @@ const getProjectImageUrl = (image) => {
     // If already a full URL (e.g., from external storage), use it
     return image.startsWith('http') 
       ? image 
-      : `https://52.87.185.116:8000/storage/${image}`
+      : `http://44.223.137.10:8000/storage/${image}`
   }
   return projectImage
 }
