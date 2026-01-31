@@ -29,7 +29,7 @@ export const usePartnershipStore = defineStore('partnership', () => {
     // Fetch all partnerships
     async function fetchPartnerships() {
         try {
-            const res = await axios.get('http://localhost:8000/api/partnerships')
+            const res = await axios.get('https://52.87.185.116:8000/api/partnerships')
             partnerships.value = res.data
             console.log('Fetched partnerships:', partnerships.value)
         } catch (err) {
@@ -51,7 +51,7 @@ export const usePartnershipStore = defineStore('partnership', () => {
             }
 
             const res = await axios.post(
-                'http://localhost:8000/api/partnerships',
+                'https://52.87.185.116:8000/api/partnerships',
                 form,
                 { headers: { 'Content-Type': 'multipart/form-data' } }
             )
@@ -80,7 +80,7 @@ export const usePartnershipStore = defineStore('partnership', () => {
             if (payload.thumbnail) form.append('thumbnail', payload.thumbnail)
             form.append('_method', 'PUT') // Laravel PUT via POST
 
-            await axios.post(`http://localhost:8000/api/partnerships/${id}`, form)
+            await axios.post(`https://52.87.185.116:8000/api/partnerships/${id}`, form)
             await fetchPartnerships()
         } catch (err) {
             console.error(err)
@@ -97,7 +97,7 @@ export const usePartnershipStore = defineStore('partnership', () => {
         errors.general = null
 
         try {
-            await axios.delete(`http://localhost:8000/api/partnerships/${id}`)
+            await axios.delete(`https://52.87.185.116:8000/api/partnerships/${id}`)
             partnerships.value = partnerships.value.filter(p => p.id !== id)
         } catch (err) {
             console.error(err)

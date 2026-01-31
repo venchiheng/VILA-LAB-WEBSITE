@@ -152,7 +152,7 @@ const openUpdate = (p) => {
   formData.title = p.title
   formData.authors = p.authors
   formData.published_date = p.published_date || null
-  preview.value = `http://localhost:8000/storage/${p.thumbnail}`
+  preview.value = `https://52.87.185.116:8000/storage/${p.thumbnail}`
   updatingId.value = p.id
   isUpdate.value = true
   dialog.value = true

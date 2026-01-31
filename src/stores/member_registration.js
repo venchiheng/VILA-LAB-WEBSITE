@@ -52,7 +52,7 @@ export const useMembershipStore = defineStore('membership', () => {
 
     try {
       const res = await axios.post(
-        'http://localhost:8000/api/membership-applications',
+        'https://52.87.185.116:8000/api/membership-applications',
         form,
         { headers: { 'Content-Type': 'multipart/form-data' } }
       )

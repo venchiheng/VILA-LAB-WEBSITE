@@ -161,7 +161,7 @@ const openCreate = () => {
 const openUpdate = (p) => {
   achievementStore.resetForm()
   formData.title = p.title
-  preview.value = `http://localhost:8000/storage/${p.thumbnail}`
+  preview.value = `https://52.87.185.116:8000/storage/${p.thumbnail}`
   updatingId.value = p.id
   isUpdate.value = true
   dialog.value = true
@@ -226,7 +226,7 @@ const deleteAchievement = async (id) => {
 const getThumbnailUrl = (p) => {
   if (!p.thumbnail) return ''
   return typeof p.thumbnail === 'string'
-    ? `http://localhost:8000/storage/${p.thumbnail}`
+    ? `https://52.87.185.116:8000/storage/${p.thumbnail}`
     : URL.createObjectURL(p.thumbnail)
 }
 

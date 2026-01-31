@@ -123,7 +123,7 @@ const expandedId = ref(null)
 // Fetch messages
 const fetchMessages = async () => {
   try {
-    const res = await api.get('http://localhost:8000/api/contact-messages') 
+    const res = await api.get('https://52.87.185.116:8000/api/contact-messages') 
     messages.value = res.data.data
   } catch (err) {
     console.error(err)

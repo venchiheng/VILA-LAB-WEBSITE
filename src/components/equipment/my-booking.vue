@@ -99,7 +99,7 @@ onMounted(async () => {
     availability: booking.equipment.availability,
     description: booking.equipment.condition || '',
     image: booking.equipment.image
-      ? `http://localhost:8000/storage/${booking.equipment.image}`
+      ? `https://52.87.185.116:8000/storage/${booking.equipment.image}`
       : '/src/assets/equipment/default.png'
   }))
 

@@ -98,7 +98,7 @@ const form = ref({ title: '', category_id: null, status: 'ongoing' })
 // Fetch projects
 const fetchProjects = async () => {
   try {
-    const res = await axios.get('http://localhost:8000/api/projects')
+    const res = await axios.get('https://52.87.185.116:8000/api/projects')
     projects.value = res.data.data
   } catch (err) {
     console.error(err)
@@ -139,9 +139,9 @@ const closeModal = () => (showModal.value = false)
 const submitForm = async () => {
   try {
     if (isEdit.value) {
-      await axios.put(`http://localhost:8000/api/projects/${form.value.id}`, form.value)
+      await axios.put(`https://52.87.185.116:8000/api/projects/${form.value.id}`, form.value)
     } else {
-      await axios.post('http://localhost:8000/api/projects', form.value)
+      await axios.post('https://52.87.185.116:8000/api/projects', form.value)
     }
     closeModal()
     fetchProjects()
