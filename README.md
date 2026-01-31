@@ -309,25 +309,8 @@ docker logs vila_lab_app
 
 ---
 
-## Author
-
-**Ven Chiheng**
-Institute of Technology of Cambodia
-Information & Communication Engineering
-
----
-
 ## License
 
 This project is intended for academic and organizational use.
 
 ---
-
-If you want next:
-
-* a **shorter client-only README**
-* a **professor / report version**
-* a **deployment diagram**
-* or **security improvement suggestions**
-
-Just tell me 👍
