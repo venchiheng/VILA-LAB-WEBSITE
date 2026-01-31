@@ -65,7 +65,7 @@ const error = computed(() => auth.error)
 
 const handleLogin = async () => {
   try {
-    const loginResponse = await auth.login(memberId.value, password.value, { role: 'member' })
+    const loginResponse = await auth.login(memberId.value, password.value, { role: 'member' && 'admin'})
     console.log('Token:', loginResponse.token) // ensure token exists
 
     // Now navigate
@@ -77,6 +77,4 @@ const handleLogin = async () => {
 const goToAdmin = () => {
   router.push('/admin/login')
 }
-
-
 </script>

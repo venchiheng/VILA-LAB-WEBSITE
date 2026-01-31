@@ -1,7 +1,7 @@
 <template>
 <div>
- <NavigationBar style="position: fixed; z-index: 1000; margin-bottom: 90px;" v-if="!isAdminRoute && !isLoginRoute" />
-  <div class="page-content">
+ <NavigationBar style="position: fixed; z-index: 100000; margin-bottom: 90px;" v-if="!isAdminRoute && !isLoginRoute" />
+  <div class="page-content"  :class="{ 'with-navbar': !isAdminRoute && !isLoginRoute }">
       <router-view />
     </div>
   <Footer v-if="!isAdminRoute && !isLoginRoute"/>
@@ -37,7 +37,7 @@ onMounted(() => {
   margin: 0;
   padding: 0;
 }
-.page-content {
+.page-content.with-navbar {
   padding-top: 76px; /* Adjust based on your navbar height */
 }
 </style>
