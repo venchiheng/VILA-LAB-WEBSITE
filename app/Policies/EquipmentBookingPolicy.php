@@ -60,4 +60,24 @@ class EquipmentBookingPolicy
     {
         return $user->role === 'admin' && $booking->status === 'approved';
     }
+   
+    /**
+     * Only admin can mark booking as in use
+     */
+    public function in_use(User $user, EquipmentBooking $booking)
+    {
+        // Example: only admin can change approved bookings to in_use
+        return $user->role === 'admin' && $booking->status === 'approved';
+    }
+
+    /**
+     * Only admin can mark booking as overdue
+     */
+    public function overdue(User $user, EquipmentBooking $booking)
+    {
+        // Example: only admin can change approved bookings to overdue
+        return $user->role === 'admin' && $booking->status === 'approved';
+    }
+
+
 }

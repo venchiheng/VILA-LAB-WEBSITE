@@ -56,7 +56,7 @@ class EquipmentBookingService
                 ->sum('quantity');
 
            
-            if (($totalBooked + $booking->quantity) > $equipment->stock) {
+            if (($totalBooked + $booking->quantity) >= $equipment->stock) {
                 throw new Exception('Not enough equipment available to approve this booking.');
             }
 
@@ -90,7 +90,7 @@ class EquipmentBookingService
     {
         DB::transaction(function () use ($booking) {
 
-            if ($booking->status !== 'approved') {
+            if ($booking->status !== 'approved' && $booking->status !== 'in_use' && $booking->status !== 'overdue') {
                 throw new Exception('Booking is not approved');
             }
 
@@ -102,6 +102,36 @@ class EquipmentBookingService
                 'availability' => 'available',
             ]);
         });
+
+        return $booking->fresh()->load('equipment');
+    }
+
+    public function in_use(EquipmentBooking $booking): EquipmentBooking
+    {
+        if ($booking->status !== 'approved' && $booking->status !== 'in_use' && $booking->status !== 'overdue') {
+            throw new Exception('Booking is not approved');
+        }
+
+        $booking->update([
+            'status' => 'in_use',
+        ]);
+
+        $booking->equipment->update([
+            'availability' => 'booked',
+        ]);
+
+        return $booking->fresh()->load('equipment');
+    }
+
+    public function overdue(EquipmentBooking $booking): EquipmentBooking
+    {
+        if ($booking->status !== 'in_use') {
+            throw new Exception('Booking is not in use');
+        }
+
+        $booking->update([
+            'status' => 'overdue',
+        ]);
 
         return $booking->fresh()->load('equipment');
     }

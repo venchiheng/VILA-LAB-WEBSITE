@@ -30,16 +30,25 @@ class ProjectController extends Controller
 
     public function store(Request $request)
     {
+        // Validate the request
         $data = $request->validate([
             'category_id'  => 'required|exists:project_categories,id',
             'title'        => 'required|string|max:255',
             'description'  => 'nullable|string',
             'status'       => 'required|in:ongoing,completed,on-hold',
             'is_featured'  => 'boolean',
-            'banner_image' => 'nullable|string',
+            'banner_image' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
         ]);
 
+        // Handle file upload
+        if ($request->hasFile('banner_image')) {
+            $path = $request->file('banner_image')->store('projects', 'public');
+            $data['banner_image'] = $path; // add the saved file path to $data
+        }
+
+        // Create the project
         $project = $this->projectService->create($data);
+
         return new ProjectResource($project);
     }
 

@@ -12,6 +12,7 @@ use App\Http\Controllers\ContactMessageController;
 use App\Http\Controllers\PublicationController;
 use App\Http\Controllers\AchievementController;
 use App\Http\Controllers\PartnershipController;
+use App\Http\Controllers\UserProfileController;
 
 Route::post('/membership-applications', [MembershipApplicationController::class, 'store']);
 Route::post('/login', [AuthController::class, 'login']);
@@ -44,9 +45,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/equipment-bookings/{id}/approve', [EquipmentBookingController::class, 'approve']);
     Route::put('/equipment-bookings/{id}/reject', [EquipmentBookingController::class, 'reject']);
     Route::put('/equipment-bookings/{id}/return', [EquipmentBookingController::class, 'return']);
-
+    Route::put('/equipment-bookings/{id}/in_use', [EquipmentBookingController::class, 'in_use']);
+    Route::put('/equipment-bookings/{id}/overdue', [EquipmentBookingController::class, 'overdue']);
 });
-
+Route::resource('user-profiles', UserProfileController::class);
 Route::resource('contact-messages', ContactMessageController::class);
 Route::resource('/publications', PublicationController::class);
 Route::resource('/achievements', AchievementController::class);

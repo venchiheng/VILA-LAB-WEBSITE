@@ -52,8 +52,10 @@ class EquipmentBookingController extends Controller
         $validated['member_id'] = auth()->id();
         $validated['full_name'] = auth()->user()->name;
 
-        $booking = $service->create($validated);
-
+        $booking = EquipmentBooking::create([
+            ...$validated,
+            'status' => 'pending',
+        ]);
         return new EquipmentBookingResource($booking);
     }
 
@@ -62,7 +64,7 @@ class EquipmentBookingController extends Controller
     {
         $booking = EquipmentBooking::findOrFail($id);
 
-        $this->authorize('approve', EquipmentBooking::class);
+        // $this->authorize('approve', EquipmentBooking::class);
 
         $booking = $service->approve($booking, auth()->id());
 
@@ -74,7 +76,7 @@ class EquipmentBookingController extends Controller
     {
         $booking = EquipmentBooking::findOrFail($id);
 
-        $this->authorize('reject', EquipmentBooking::class);
+        // $this->authorize('reject', EquipmentBooking::class);
 
         $booking = $service->reject($booking, auth()->id());
 
@@ -86,9 +88,31 @@ class EquipmentBookingController extends Controller
     {
         $booking = EquipmentBooking::findOrFail($id);
 
-        $this->authorize('return', $booking);
+        // $this->authorize('return', $booking);
 
         $booking = $service->return($booking);
+
+        return new EquipmentBookingResource($booking);
+    }
+
+    public function in_use($id, EquipmentBookingService $service)
+    {
+        $booking = EquipmentBooking::findOrFail($id);
+
+        // $this->authorize('in_use', $booking);
+
+        $booking = $service->in_use($booking);
+
+        return new EquipmentBookingResource($booking);
+    }
+    
+    public function overdue($id, EquipmentBookingService $service)
+    {
+        $booking = EquipmentBooking::findOrFail($id);
+
+        // $this->authorize('overdue', $booking);
+
+        $booking = $service->overdue($booking);
 
         return new EquipmentBookingResource($booking);
     }
