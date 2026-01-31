@@ -87,7 +87,7 @@ cp .env.example .env
 Set API base URL:
 
 ```env
-VITE_API_BASE_URL=http://44.223.137.10:8000/api
+VITE_API_BASE_URL=http://localhost:8000/api
 ```
 
 ---
@@ -124,7 +124,7 @@ docker exec -it vila_lab_app php artisan migrate --seed
   👉 [http://localhost:5173](http://localhost:5173)
 
 * Backend API:
-  👉 [http://44.223.137.10:8000/api](http://44.223.137.10:8000/api)
+  👉 [http://localhost:8000/api](http://localhost:8000/api)
 
 ---
 
