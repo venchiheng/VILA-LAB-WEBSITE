@@ -16,7 +16,7 @@ class MembershipApplicationResource extends JsonResource
             'full_name' => $this->full_name,
             'gender' => $this->gender,
             'email' => $this->email,
-            'qualification' => $this->qualification,
+            // 'qualification' => $this->qualification,
             'faculty' => $this->faculty,
             'year' => $this->year,
             'stu_id' => $this->stu_id,
