@@ -133,7 +133,7 @@ docker exec -it vila_lab_app php artisan migrate --seed
 The system implements **role-based authentication** with the following roles:
 
 * **Admin** – system management and application approval
-* **Member** – approved users with limited access
+* **Member** – allowed booking and tracking equipment
 * **Guest** – public access only
 
 ---
@@ -210,7 +210,7 @@ Once approved:
 * A member account is created automatically
 * Login credentials are generated as follows:
 
-  * **Email**: applicant’s email
+  * **Member ID**: user ID assigned by the system
   * **Password**: user ID assigned by the system
 
 ---
@@ -220,7 +220,7 @@ Once approved:
 Example:
 
 ```text
-Email: member@example.com
+Memeber ID: V20260001
 Password: 12
 ```
 
