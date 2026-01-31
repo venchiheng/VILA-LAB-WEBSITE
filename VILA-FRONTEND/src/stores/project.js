@@ -8,7 +8,7 @@ export const useProjectStore = defineStore('project', {
   actions: {
     async fetchProjects() {
       try {
-        const res = await axios.get('http://44.223.137.10:8000/api/projects')
+        const res = await axios.get('http://localhost:8000/api/projects')
         this.projects = res.data
       } catch (error) {
         console.error('Failed to fetch projects:', error)

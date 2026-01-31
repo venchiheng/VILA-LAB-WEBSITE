@@ -92,7 +92,7 @@ const allUsers = ref([])
 const fetchMembers = async () => {
   if (!props.project) return
   try {
-    const res = await axios.get(`http://44.223.137.10:8000/api/projects/${props.project.id}/members`)
+    const res = await axios.get(`http://localhost:8000/api/projects/${props.project.id}/members`)
     members.value = res.data
     page.value = 1
   } catch (err) {
@@ -103,7 +103,7 @@ const fetchMembers = async () => {
 
 const fetchAllUsers = async () => {
   try {
-    const res = await axios.get('http://44.223.137.10:8000/api/users')
+    const res = await axios.get('http://localhost:8000/api/users')
     allUsers.value = res.data.data
   } catch (err) {
     console.error(err)
@@ -139,9 +139,9 @@ const submitMemberForm = async () => {
   try {
     if (!props.project) return
     if (isEditMember.value) {
-      await axios.put(`http://44.223.137.10:8000/api/project-members/${memberForm.value.id}`, memberForm.value)
+      await axios.put(`http://localhost:8000/api/project-members/${memberForm.value.id}`, memberForm.value)
     } else {
-      await axios.post(`http://44.223.137.10:8000/api/projects/${props.project.id}/members`, memberForm.value)
+      await axios.post(`http://localhost:8000/api/projects/${props.project.id}/members`, memberForm.value)
     }
     closeMemberModal()
     fetchMembers()
@@ -152,7 +152,7 @@ const submitMemberForm = async () => {
 const deleteMember = async id => {
   if (!confirm('Are you sure?')) return
   try {
-    await axios.delete(`http://44.223.137.10:8000/api/project-members/${id}`)
+    await axios.delete(`http://localhost:8000/api/project-members/${id}`)
     fetchMembers()
     emit('member-updated')
   } catch (err) { console.error(err); alert('Error deleting member') }

@@ -20,7 +20,7 @@ export const useEquipmentBookingStore = defineStore("equipmentBooking", {
       this.error = null;
 
       try {
-        const res = await api.get("http://44.223.137.10:8000/api/equipment-bookings");
+        const res = await api.get("http://localhost:8000/api/equipment-bookings");
         this.bookings = res.data.data;
       } catch (err) {
         this.error = err.response?.data?.message || "Failed to load bookings";
@@ -54,7 +54,7 @@ export const useEquipmentBookingStore = defineStore("equipmentBooking", {
       this.error = null;
 
       try {
-        const res = await api.post("http://44.223.137.10:8000/api/equipment-bookings/equipment-bookings", payload);
+        const res = await api.post("http://localhost:8000/api/equipment-bookings/equipment-bookings", payload);
         this.bookings.unshift(res.data.data);
         return res.data.data;
       } catch (err) {
@@ -72,7 +72,7 @@ export const useEquipmentBookingStore = defineStore("equipmentBooking", {
         this.loading = true;
 
         try {
-          const res = await api.put(`http://44.223.137.10:8000/api/equipment-bookings/${id}/approve`);
+          const res = await api.put(`http://localhost:8000/api/equipment-bookings/${id}/approve`);
           this.updateBooking(res.data.data);
         } catch (err) {
           this.error = err.response?.data?.message || "Approve failed";
@@ -88,7 +88,7 @@ export const useEquipmentBookingStore = defineStore("equipmentBooking", {
       this.loading = true;
 
       try {
-        const res = await api.put(`http://44.223.137.10:8000/api/equipment-bookings/${id}/reject`);
+        const res = await api.put(`http://localhost:8000/api/equipment-bookings/${id}/reject`);
         this.updateBooking(res.data.data);
       } catch (err) {
         this.error = err.response?.data?.message || "Reject failed";
@@ -104,7 +104,7 @@ export const useEquipmentBookingStore = defineStore("equipmentBooking", {
       this.loading = true;
 
       try {
-        const res = await api.put(`http://44.223.137.10:8000/api/equipment-bookings/${id}/return`);
+        const res = await api.put(`http://localhost:8000/api/equipment-bookings/${id}/return`);
         this.updateBooking(res.data.data);
       } catch (err) {
         this.error = err.response?.data?.message || "Return failed";
@@ -120,7 +120,7 @@ export const useEquipmentBookingStore = defineStore("equipmentBooking", {
       this.loading = true;
 
       try {
-        const res = await api.put(`http://44.223.137.10:8000/api/equipment-bookings/${id}/in_use`);
+        const res = await api.put(`http://localhost:8000/api/equipment-bookings/${id}/in_use`);
         this.updateBooking(res.data.data);
       } catch (err) {
         this.error = err.response?.data?.message || "In use failed";
@@ -136,7 +136,7 @@ export const useEquipmentBookingStore = defineStore("equipmentBooking", {
       this.loading = true;
 
       try {
-        const res = await api.put(`http://44.223.137.10:8000/api/equipment-bookings/${id}/overdue`);
+        const res = await api.put(`http://localhost:8000/api/equipment-bookings/${id}/overdue`);
         this.updateBooking(res.data.data);
       } catch (err) {
         this.error = err.response?.data?.message || "Overdue failed";

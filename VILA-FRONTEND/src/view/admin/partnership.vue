@@ -153,7 +153,7 @@ const openCreate = () => {
 const openUpdate = (p) => {
   partnershipStore.resetForm()
   formData.name = p.name
-  preview.value = `http://44.223.137.10:8000/storage/${p.thumbnail}`
+  preview.value = `http://localhost:8000/storage/${p.thumbnail}`
   updatingId.value = p.id
   isUpdate.value = true
   dialog.value = true
@@ -218,7 +218,7 @@ const deletePartnership = async (id) => {
 const getThumbnailUrl = (p) => {
   if (!p.thumbnail) return ''
   return typeof p.thumbnail === 'string'
-    ? `http://44.223.137.10:8000/storage/${p.thumbnail}`
+    ? `http://localhost:8000/storage/${p.thumbnail}`
     : URL.createObjectURL(p.thumbnail)
 }
 

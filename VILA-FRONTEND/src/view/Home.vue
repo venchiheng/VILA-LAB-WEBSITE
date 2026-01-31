@@ -228,7 +228,7 @@ onMounted(() => partnershipStore.fetchPartnerships())
 const partnerList = computed(() =>
   partnershipStore.partnerships.map(p => ({
     id: p.id,
-    image: p.thumbnail ? `http://44.223.137.10:8000/storage/${p.thumbnail}` : '',
+    image: p.thumbnail ? `http://localhost:8000/storage/${p.thumbnail}` : '',
     name: p.name
   }))
 )
@@ -242,7 +242,7 @@ onMounted(async () => {
 const achievements = computed(() =>
   achievementStore.achievements.map(a => ({
     id: a.id,
-    image: a.thumbnail ? `http://44.223.137.10:8000/storage/${a.thumbnail}` : '',
+    image: a.thumbnail ? `http://localhost:8000/storage/${a.thumbnail}` : '',
   }))
 )
 
@@ -266,7 +266,7 @@ const loadProjects = async () => {
       projectName: p.title,
       description: p.description,
       image: p.banner_image
-        ? `http://44.223.137.10:8000/storage/${p.banner_image}`
+        ? `http://localhost:8000/storage/${p.banner_image}`
         : '/src/assets/project/default.png',
       category: p.category ? p.category.name : 'Other'
     }))
