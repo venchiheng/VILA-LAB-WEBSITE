@@ -14,18 +14,13 @@
 import { useRoute } from 'vue-router'
 import Footer from './components/Footer/Footer.vue'
 import NavigationBar from './components/header/NavigationBar.vue'
-import { onMounted } from 'vue'
+
 const route = useRoute()
 
 import { computed } from 'vue'
 const isAdminRoute = computed(() => route.path.startsWith('/admin'))
 const isLoginRoute = computed(() => route.path.startsWith('/login'))
-onMounted(() => {
-  // Redirect to /home when the user first enters
-  if (window.location.pathname === '/') {
-    window.location.href = '/home'
-  }
-})
+
 
 </script>
 
