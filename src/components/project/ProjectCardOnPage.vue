@@ -2,7 +2,7 @@
   <div class="project-card">
     <!-- Image section -->
     <div class="image-wrapper">
-      <img :src="image" :alt="projectName" />
+      <img :src="imagePreview" :alt="projectName" />
     </div>
 
     <!-- Bottom section -->
@@ -21,7 +21,8 @@
 </template>
 
 <script setup>
-defineProps({
+import { computed } from 'vue'
+const props = defineProps({
   projectName: {
     type: String,
     required: true
@@ -38,6 +39,13 @@ defineProps({
     type: Array,
     default: () => []
   }
+})
+
+const imagePreview = computed(() => {
+  if (!props.image) return ''
+  return typeof props.image === 'string'
+    ? props.image
+    : URL.createObjectURL(props.image)
 })
 </script>
 

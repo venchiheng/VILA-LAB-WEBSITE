@@ -15,7 +15,7 @@
                 placeholder="Search by name..."
                 hide-details
               />
-              <button style="background-color: var(--color-primary);" @click="openCreate">Create</button>
+              <button style="color:white; background-color: var(--color-primary);" @click="openCreate">Create</button>
             </div>
           </div>
 
@@ -372,15 +372,19 @@ onMounted(() => partnershipStore.fetchPartnerships())
     cursor: not-allowed;
 }
 .btn-update {
+  color: white;
     background-color: var(--color-warning);
 }
 
 .btn-delete {
+  color: white;
+
     background-color: var(--color-error);
     margin-left: 8px;
 }
 
 .btn-next {
+
     background-color: #22c55e;
 }
 

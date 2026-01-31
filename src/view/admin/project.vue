@@ -53,6 +53,7 @@
           <div class="modal-card">
             <h3>{{ editingProject ? 'Update Project' : 'Create Project' }}</h3>
             <form @submit.prevent="saveProject">
+              <label>Thumbnail:<input type="file" @change="onFileChange" required /></label>
               <label>Title:<input v-model="form.title" required /></label>
               <label>Description:<textarea v-model="form.description" required></textarea></label>
               <label>Status:
@@ -176,6 +177,8 @@ const form = ref({})
 const members = ref([])
 const searchMember = ref('')
 
+const selectedFile = ref(null)
+
 // Add Member Modal
 const showAddMemberModal = ref(false)
 const searchMemberId = ref('')
@@ -234,29 +237,57 @@ const prevPage = () => { if (page.value > 1) page.value-- }
 const getRoleClass = role => ({ member: 'pending', admin: 'approved', manager: 'in-use' }[role] || 'pending')
 const getStatusClass = status => ({ ongoing: 'in-use', completed: 'completed', 'on-hold': 'pending' }[status] || 'pending')
 
+const onFileChange = (event) => {
+  const file = event.target.files[0]
+  if (file) selectedFile.value = file
+}
+
 // --- PROJECT MODAL ---
 const openModal = () => {
   editingProject.value = null
   form.value = { title: '', description: '', status: 'ongoing', category_id: 1 }
+  selectedFile.value = null
   showModal.value = true
 }
 const closeModal = () => { showModal.value = false; editingProject.value = null }
 const saveProject = async () => {
   try {
+    const formDataToSend = new FormData()
+
+    formDataToSend.append('title', form.value.title)
+    formDataToSend.append('description', form.value.description)
+    formDataToSend.append('status', form.value.status)
+    formDataToSend.append('category_id', form.value.category_id || 1) // fallback
+    formDataToSend.append(
+      'is_featured',
+      form.value.is_featured !== undefined ? form.value.is_featured : 0
+    )
+
+    if (selectedFile.value) {
+      formDataToSend.append('banner_image', selectedFile.value)
+    }
+
     if (editingProject.value) {
-      await api.put(`/projects/${editingProject.value.id}`, form.value)
+      await api.put(`/projects/${editingProject.value.id}`, formDataToSend, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      })
       alert('Project updated successfully!')
     } else {
-      await api.post('/projects', form.value)
+      await api.post('/projects', formDataToSend, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      })
       alert('Project created successfully!')
     }
+
     closeModal()
     fetchProjects()
+    selectedFile.value = null
   } catch (err) {
     console.error(err)
     alert('Failed to save project')
   }
 }
+
 const editProject = (project) => {
   editingProject.value = project
   form.value = { ...project }

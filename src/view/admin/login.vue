@@ -26,8 +26,8 @@
                                     <v-text-field v-model="password" variant="outlined" placeholder="Enter password"
                                         type="password" class="mb-8" hide-details />
 
-                                    <v-btn :loading="loading" color="blue" size="large" block rounded="pill"
-                                        class="text-capitalize py-6 text-h6" type="submit">
+                                    <v-btn :loading="loading" size="large" block rounded="pill"
+                                        class="text-capitalize py-6 text-h6" type="submit" style="background-color: var(--color-primary); color: var(--color-bg);">
                                         Log in
                                     </v-btn>
 
@@ -54,7 +54,7 @@
 
 <script setup>
 import { ref, computed } from 'vue'
-import holImage from '@/assets/admin/image.png'
+import holImage from '@/assets/login.png'
 import { useAuthStore } from '@/stores/auth'
 import { useRouter } from 'vue-router'
 

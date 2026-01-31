@@ -33,9 +33,9 @@
         </div>
         <div class="projects-grid">
           <ProjectCard
-            v-for="project in projects"
+            v-for="project in projects.slice(0,2)"
             :key="project.id"
-            :project-name="project.projectName"
+            :projectName="project.projectName"
             :description="project.description"
             :image="project.image"
           />
@@ -185,186 +185,116 @@
 </template>
 
 <script setup>
-import ProjectSection from '@/components/showcase/ProjectShowcase.vue'
 import Banner from '../components/about-us/banner.vue'
 import ProjectCard from '../components/project/ProjectCard.vue'
 import ResearchMemberCard from '../components/research-member/ResearchMemberCard.vue'
 import AchievementCard from '@/components/achievement/achievementcard.vue'
 import PartnerCard from '@/components/PartnerCard/PartnerCard.vue'
 import LaboratoryCard from '@/components/laboratory/LaboratorryCard.vue'
+
 import { ref, onMounted, computed } from 'vue'
 import { usePartnershipStore } from '../stores/partnership'
-
-import achievementImg1 from '@/assets/achievement/achievementcard1.png'
-import achievementImg2 from '@/assets/achievement/achievementcard2.png'
-import achievementImg3 from '@/assets/achievement/achievementcard3.png'
-import achievementImg4 from '@/assets/achievement/achievementcard4.png'
-
-// import partner1 from '@/assets/Partner/partner1.png'
-// import partner2 from '@/assets/Partner/partner2.png'
-// import partner3 from '@/assets/Partner/partner3.png'
-// import partner4 from '@/assets/Partner/partner4.png'
-// import partner5 from '@/assets/Partner/partner5.png'
-// import partner6 from '@/assets/Partner/partner6.png'
-// import partner7 from '@/assets/Partner/partner7.png'
-
-
-const laboratories = [
-  {
-    id: 1,
-    name: 'Meeting Room',
-    image: '/src/assets/laboratory/meeting-room.png'
-  },
-  {
-    id: 2,
-    name: 'Open Office Space',
-    image: '/src/assets/laboratory/open-office.png'
-  },
-  {
-    id: 3,
-    name: 'Workspace Area',
-    image: '/src/assets/laboratory/workspace.png'
-  },
-  {
-    id: 4,
-    name: 'Conference Room',
-    image: '/src/assets/laboratory/conference.png'
-  }
-]
+import { useAchievementStore } from '../stores/achievement'
 
 const currentIndex = ref(0)
 
-const achievements = [
-  { image: achievementImg1 },
-  { image: achievementImg2 },
-  { image: achievementImg3 },
-  { image: achievementImg4 }
+// --- Laboratories ---
+const laboratories = [
+  { id: 1, name: 'Meeting Room', image: '/src/assets/laboratory/meeting-room.png' },
+  { id: 2, name: 'Open Office Space', image: '/src/assets/laboratory/open-office.png' },
+  { id: 3, name: 'Workspace Area', image: '/src/assets/laboratory/workspace.png' },
+  { id: 4, name: 'Conference Room', image: '/src/assets/laboratory/conference.png' }
 ]
 
-// const partners = [
-//   { image: partner1 },
-//   { image: partner2 },
-//   { image: partner3 },
-//   { image: partner4 },
-//   { image: partner5 },
-//   { image: partner6 },
-//   { image: partner7 }
-// ]
-
-const handleUpload = ({ type, file }) => {
-  console.log(type, file)
-}
-
-const projects = [
-  {
-    id: 1,
-    projectName: 'OUK CHAKTRANG',
-    description:
-      'Play the game online, anytime, anywhere! Choose Classic Mode for casual play or Ranked Mode to climb the leaderboard. Love the experience ...',
-    image: '/src/assets/project/chatbot.png',
-  },
-  {
-    id: 2,
-    projectName: 'KHMER ONLINE HANDWRITING',
-    description:
-      'The collection of Khmer handwriting data is significant for supporting AI research on the Khmer language. Your participation in providing handwriting samples is extremely ...',
-    image: '/src/assets/project/khmer-handwriting.png',
-  },
-]
-
+// --- Members ---
 const members = [
-  {
-    id: 1,
-    name: 'Heng HAM',
-    program: 'M-ECS',
-    description:
-      'Researcher of Online Khmer Handwritten Text Recognition for Teaching and Learning Assistance',
-    image: '/src/assets/research-member/heng.png'
-  },
-  {
-    id: 2,
-    name: 'Pechmonivann SEK',
-    program: 'M-MIC',
-    description:
-      'Researcher of Fine-tune FaceNet with Siamese Network for Cambodian Face Dataset',
-    image: '/src/assets/research-member/vann.png'
-  },
-  {
-    id: 3,
-    name: 'Both CHAN',
-    program: 'M-ECS',
-    description:
-      'Researcher CNN-based Reinforcement Learning with Policy Gradient for Khmer Chess',
-    image: '/src/assets/research-member/both.png'
-  },
-  {
-    id: 4,
-    name: 'Monyvann CHHAY',
-    program: 'M-MIC',
-    description:
-      'Researcher of Enhanced Robot Navigation through Reinforcement Learning with Khmer Direction Recognition',
-    image: '/src/assets/research-member/mony.png'
-  },
-  {
-    id: 5,
-    name: 'Kimleang LY',
-    program: 'M-ECS',
-    description:
-      'Researcher of Khmer Question-Answer System by Fine-tuning Pre-trained language Models',
-    image: '/src/assets/research-member/leang.png'
-  },
-  {
-    id: 6,
-    name: 'Hengly EM',
-    program: 'M-ECS',
-    description:
-      'Researcher of Word Spotting on Khmer Printed Documents using Deep Learning',
-    image: '/src/assets/research-member/hengly.png'
-  },
+  { id: 1, name: 'Heng HAM', program: 'M-ECS', description: 'Researcher of Online Khmer Handwritten Text Recognition', image: '/src/assets/research-member/heng.png' },
+  { id: 2, name: 'Pechmonivann SEK', program: 'M-MIC', description: 'Researcher of Fine-tune FaceNet with Siamese Network', image: '/src/assets/research-member/vann.png' },
+  { id: 3, name: 'Both CHAN', program: 'M-ECS', description: 'Researcher CNN-based Reinforcement Learning with Policy Gradient', image: '/src/assets/research-member/both.png' },
+  { id: 4, name: 'Monyvann CHHAY', program: 'M-MIC', description: 'Researcher of Enhanced Robot Navigation through RL', image: '/src/assets/research-member/mony.png' },
+  { id: 5, name: 'Kimleang LY', program: 'M-ECS', description: 'Researcher of Khmer Question-Answer System by fine-tuning LMs', image: '/src/assets/research-member/leang.png' },
+  { id: 6, name: 'Hengly EM', program: 'M-ECS', description: 'Researcher of Word Spotting on Khmer Printed Documents', image: '/src/assets/research-member/hengly.png' }
 ]
 
-const nextSlide = () => {
-  if (currentIndex.value < members.length - 4) {
-    currentIndex.value++
-  }
-}
+const nextSlide = () => { if (currentIndex.value < members.length - 4) currentIndex.value++ }
+const prevSlide = () => { if (currentIndex.value > 0) currentIndex.value-- }
+const goToSlide = (index) => { if (index <= members.length - 4) currentIndex.value = index }
+const goToDetail = (id) => { console.log('Explore member:', id) }
 
-const prevSlide = () => {
-  if (currentIndex.value > 0) {
-    currentIndex.value--
-  }
-}
-
-const goToSlide = (index) => {
-  if (index <= members.length - 4) {
-    currentIndex.value = index
-  }
-}
-
-const goToDetail = (id) => {
-  console.log('Explore member:', id)
-  // router.push(`/research/${id}`)
-}
-
-
+// --- Partnerships ---
 const partnershipStore = usePartnershipStore()
-// const { partnerships } = partnershipStore
+onMounted(() => partnershipStore.fetchPartnerships())
 
-// Fetch partnerships on mount
-onMounted(() => {
-  partnershipStore.fetchPartnerships()
-})
-
-// Map thumbnail URL for frontend
 const partnerList = computed(() =>
   partnershipStore.partnerships.map(p => ({
     id: p.id,
-    image: p.thumbnail
-      ? `http://localhost:8000/storage/${p.thumbnail}` // your backend URL
-      : '', // fallback if no image
+    image: p.thumbnail ? `http://localhost:8000/storage/${p.thumbnail}` : '',
     name: p.name
   }))
 )
+
+// --- Achievements ---
+const achievementStore = useAchievementStore()
+onMounted(async () => {
+  await achievementStore.fetchAchievements()
+})
+
+const achievements = computed(() =>
+  achievementStore.achievements.map(a => ({
+    id: a.id,
+    image: a.thumbnail ? `http://localhost:8000/storage/${a.thumbnail}` : '',
+  }))
+)
+
+
+import projectsService from '@/services/projects'
+
+// State
+const projects = ref([])
+
+// Optional: search/filter (hide if you don't need filtering)
+const searchQuery = ref('')
+const activeCategory = ref('All Projects')
+const projectCategories = ref(['All Projects'])
+
+// Load projects from backend
+const loadProjects = async () => {
+  try {
+    const data = await projectsService.getAll()
+    projects.value = data.map(p => ({
+      id: p.id,
+      projectName: p.title,
+      description: p.description,
+      image: p.banner_image
+        ? `http://localhost:8000/storage/${p.banner_image}`
+        : '/src/assets/project/default.png',
+      category: p.category ? p.category.name : 'Other'
+    }))
+
+    // Extract categories for optional filter buttons
+    const categories = new Set(data.map(p => (p.category ? p.category.name : 'Other')))
+    projectCategories.value = ['All Projects', ...categories]
+  } catch (error) {
+    console.error('Error loading projects:', error)
+  }
+}
+
+// Computed: filtered projects
+const filteredProjects = computed(() =>
+  projects.value.filter(project => {
+    const matchesSearch =
+      project.projectName.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+      (project.description && project.description.toLowerCase().includes(searchQuery.value.toLowerCase()))
+    const matchesCategory =
+      activeCategory.value === 'All Projects' || project.category === activeCategory.value
+    return matchesSearch && matchesCategory
+  })
+)
+
+onMounted(() => {
+  loadProjects()
+})
+
 
 </script>
 

@@ -80,6 +80,10 @@ import TopNav from '@/components/admin/topnav.vue'
 import StatCard from '@/components/admin/statcard.vue'
 import SearchBar from '@/components/admin/searchbar.vue'
 import BookingTable from '@/components/admin/bookingtable.vue'
+import { onMounted } from 'vue'
+import { useEquipmentBookingStore } from '../../stores/equipementBooking'
+
+const equipmentBookingStore = useEquipmentBookingStore()
 
 // Reactive state
 const darkMode = ref(false)
@@ -87,63 +91,42 @@ const activeTab = ref('My Bookings')
 const searchQuery = ref('')
 const user = ref({
   name: 'Admin User',
-  email: 'admin@viliab.com',
+  email: 'admin@vilalab.com',
   avatar: 'https://ui-avatars.com/api/?name=Admin+User&background=4f46e5&color=fff'
 })
 
-// Sample booking data
-const bookings = ref([
-  {
-    id: 1,
-    equipmentName: 'Raspberry Pi 5',
-    equipmentId: '001',
-    bookingDate: '11-12-2025',
-    returnDate: '12-12-2025',
-    status: 'Pending'
-  },
-  {
-    id: 2,
-    equipmentName: 'Raspberry Pi Complete Model 5',
-    equipmentId: '002',
-    bookingDate: '11-12-2025',
-    returnDate: '12-12-2024',
-    status: 'In Use'
-  },
-  {
-    id: 3,
-    equipmentName: 'Raspberry Pi 3',
-    equipmentId: '003',
-    bookingDate: '11-12-2025',
-    returnDate: '12-12-2024',
-    status: 'Overdue'
-  },
-  {
-    id: 4,
-    equipmentName: 'Raspberry Pi Complete Model 5',
-    equipmentId: '002',
-    bookingDate: '11-12-2025',
-    returnDate: '12-12-2024',
-    status: 'Approved'
-  },
-  {
-    id: 5,
-    equipmentName: 'Raspberry Pi 2',
-    equipmentId: '007',
-    bookingDate: '11-12-2025',
-    returnDate: '12-12-2024',
-    status: 'Completed'
-  }
-])
-
-// Computed property for filtered bookings
-const filteredBookings = computed(() => {
-  if (!searchQuery.value) return bookings.value
-  return bookings.value.filter(booking =>
-    booking.equipmentName.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-    booking.equipmentId.includes(searchQuery.value) ||
-    booking.status.toLowerCase().includes(searchQuery.value.toLowerCase())
-  )
+// Fetch bookings on mount
+onMounted(() => {
+  equipmentBookingStore.fetchBookings()
 })
+// Computed property for filtered bookings
+// const filteredBookings = computed(() => {
+//   if (!searchQuery.value) return bookings.value
+//   return bookings.value.filter(booking =>
+//     booking.equipmentName.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+//     booking.equipmentId.includes(searchQuery.value) ||
+//     booking.status.toLowerCase().includes(searchQuery.value.toLowerCase())
+//   )
+// })
+const filteredBookings = computed(() => {
+  const data = equipmentBookingStore.bookings.map(b => ({
+    id: b.id,
+    equipmentName: b.equipment?.name,
+    equipmentId: b.equipment?.id,
+    bookingDate: b.booking_date,
+    returnDate: b.return_date,
+    status: b.status,
+  }));
+
+  if (!searchQuery.value) return data;
+
+  return data.filter(b =>
+    b.equipmentName?.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+    String(b.equipmentId).includes(searchQuery.value) ||
+    b.status?.toLowerCase().includes(searchQuery.value.toLowerCase())
+  );
+});
+
 
 // Methods
 const toggleTheme = () => {
@@ -168,12 +151,38 @@ const handleExport = () => {
   console.log('Export clicked')
 }
 
-const handleStatusChange = (bookingId, newStatus) => {
-  const booking = bookings.value.find(b => b.id === bookingId)
-  if (booking) {
-    booking.status = newStatus
+// const handleStatusChange = (bookingId, newStatus) => {
+//   const booking = bookings.value.find(b => b.id === bookingId)
+//   if (booking) {
+//     booking.status = newStatus
+//   }
+// }
+const handleStatusChange = async (bookingId, action) => {
+  try {
+    if (action === "approved") {
+      await equipmentBookingStore.approveBooking(bookingId);
+    }
+
+    if (action === "rejected") {
+      await equipmentBookingStore.rejectBooking(bookingId);
+    }
+
+    if (action === "returned") {
+      await equipmentBookingStore.returnBooking(bookingId);
+    }
+
+    if (action === "overdue") {
+      await equipmentBookingStore.overdueBooking(bookingId);
+    }
+
+    if (action === "in_use") {
+      await equipmentBookingStore.inuseBooking(bookingId);
+    }
+  } catch (e) {
+    console.error("Status update failed", e);
   }
-}
+};
+
 </script>
 
 <style scoped>

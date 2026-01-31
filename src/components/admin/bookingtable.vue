@@ -27,16 +27,35 @@
               <button class="btn-action" @click="editBooking(booking.id)">
                 ✏️
               </button>
-              <select 
+              <select
                 class="status-select"
-                :value="booking.status"
                 @change="updateStatus(booking.id, $event.target.value)"
               >
-                <option value="Pending">Pending</option>
-                <option value="Approved">Approved</option>
-                <option value="In Use">In Use</option>
-                <option value="Completed">Completed</option>
-                <option value="Overdue">Overdue</option>
+                <option disabled selected>Change status</option>
+
+                <option value="approved" v-if="booking.status === 'pending'">
+                  Approve
+                </option>
+
+                <option value="rejected" v-if="booking.status === 'pending'">
+                  Reject
+                </option>
+
+                <option value="in_use" v-if="booking.status === 'approved'">
+                  In use
+                </option>
+
+                <option value="returned" v-if="booking.status === 'in_use'">
+                  Mark as Returned
+                </option>
+                
+                <option value="overdue" v-if="booking.status === 'in_use'">
+                  Overdue
+                </option>
+                
+                <option value="returned" v-if="booking.status === 'overdue'">
+                  Mark as Returned from Overdue
+                </option>
               </select>
             </div>
           </td>
@@ -63,11 +82,12 @@ const headers = [
 
 const getStatusClass = (status) => {
   const statusMap = {
-    'Pending': 'pending',
-    'Approved': 'approved',
-    'In Use': 'in-use',
-    'Completed': 'completed',
-    'Overdue': 'overdue'
+    'pending': 'pending',
+    'approved': 'approved',
+    'in_use': 'in_use',
+    'returned': 'returned',
+    'overdue': 'overdue',
+    'rejected': 'rejected'
   }
   return statusMap[status] || ''
 }
@@ -76,8 +96,8 @@ const editBooking = (id) => {
   console.log('Edit booking:', id)
 }
 
-const updateStatus = (id, newStatus) => {
-  emit('status-change', id, newStatus)
+const updateStatus = (id, action) => {
+  emit("status-change", id, action)
 }
 </script>
 
@@ -105,6 +125,7 @@ const updateStatus = (id, newStatus) => {
   font-weight: 600;
   color: #6b7280;
   text-transform: uppercase;
+  text-align: center;
   letter-spacing: 0.05em;
   border-bottom: 1px solid #e5e7eb;
   background: #f9fafb;
@@ -169,12 +190,15 @@ const updateStatus = (id, newStatus) => {
   color: #065f46;
 }
 
-.status-badge.in-use {
+.status-badge.in_use {
   background: #dbeafe;
   color: #1e40af;
 }
-
-.status-badge.completed {
+.status-badge.rejected {
+  background: #fee2e2;
+  color: #991b1b;
+}
+.status-badge.returned {
   background: #f3e8ff;
   color: #5b21b6;
 }
@@ -189,19 +213,31 @@ const updateStatus = (id, newStatus) => {
   color: #fef3c7;
 }
 
+.dark-mode .status-badge.returned {
+  background: #065f46;
+  color: #d1fae5;
+}
 .dark-mode .status-badge.approved {
   background: #065f46;
   color: #d1fae5;
 }
-
-.dark-mode .status-badge.in-use {
+.dark-mode .status-badge.rejected {
+  background: #991b1b;
+  color: #fee2e2;
+}
+.dark-mode .status-badge.in_use {
   background: #1e40af;
   color: #dbeafe;
 }
 
-.dark-mode .status-badge.completed {
-  background: #5b21b6;
-  color: #f3e8ff;
+.dark-mode .status-badge.returned {
+  background: #065f46;
+  color: #d1fae5;
+}
+
+.dark-mode .status-badge.in_use {
+  background: #1e40af;
+  color: #dbeafe;
 }
 
 .dark-mode .status-badge.overdue {

@@ -35,10 +35,15 @@
 
             <!-- Projects Grid -->
             <div class="projects-grid">
-                <ProjectCardOnPage v-for="(project, index) in filteredProjects" :key="index" :projectName="project.title"
-                    :description="project.description" 
-                    :image="project.banner_image || projectImage" 
-                    :tags="[project.status, project.category ? project.category.name : ''].filter(t => t)" />
+                <ProjectCardOnPage
+                    v-for="(project, index) in filteredProjects"
+                    :key="index"
+                    :projectName="project.title"
+                    :description="project.description"
+                    :image="getProjectImageUrl(project.banner_image)"
+                    :tags="[project.status, project.category ? project.category.name : ''].filter(t => t)"
+                    />
+
             </div>
         </div>
     </div>
@@ -59,6 +64,18 @@ const projects = ref([]);
 
 const searchQuery = ref("");
 const activeCategory = ref("All Projects");
+
+// Helper to get the full image URL from backend
+const getProjectImageUrl = (image) => {
+  if (!image) return projectImage // fallback to local placeholder
+  if (typeof image === 'string') {
+    // If already a full URL (e.g., from external storage), use it
+    return image.startsWith('http') 
+      ? image 
+      : `http://localhost:8000/storage/${image}`
+  }
+  return projectImage
+}
 
 const filteredProjects = computed(() => {
     return projects.value.filter(project => {
@@ -92,7 +109,7 @@ onMounted(async () => {
 .projects-page {
     background-color: var(--color-bg);
     min-height: 100vh;
-    padding-top: 120px;
+    padding-top: 70px;
     /* Space for fixed navbar + header spacing */
     padding-bottom: 80px;
     display: flex;

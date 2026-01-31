@@ -50,7 +50,7 @@
                   <td class="cell-center">{{ msg.message.substring(0, 50) }}...</td>
                   <td class="cell-center">{{ msg.created_at }}</td>
                   <td class="cell-center">
-                    <button @click="toggleDetails(msg.id)">
+                    <button style="background-color: var(--color-primary); color: white;" @click="toggleDetails(msg.id)">
                       {{ expandedId === msg.id ? 'Hide Details' : 'View Details' }}
                     </button>
                   </td>

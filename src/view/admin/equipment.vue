@@ -141,16 +141,16 @@
         <div class="modal-content">
           <h3>{{ editingEquipment ? 'Update Equipment' : 'Add New Equipment' }}</h3>
           <form @submit.prevent="saveEquipment">
-            <label>
+            <label v-if="!editingEquipment">
               Thumbnail:
-              <input type="file" @change="handleFileChange"/>
-              <img
-                v-if="previewUrl"
-                :src="previewUrl"
-                alt="Thumbnail preview"
-                width="120"
-              />
+              <input type="file" @change="handleFileChange" />
             </label>
+            <img
+              v-if="previewUrl"
+              :src="previewUrl"
+              alt="Thumbnail preview"
+              width="120"
+            />
             <label>
               Name:
               <input v-model="form.name" required />
@@ -194,7 +194,6 @@ import { ref, computed, onMounted } from 'vue'
 import Sidebar from '@/components/admin/sidebar.vue'
 import TopNav from '@/components/admin/topnav.vue'
 import { api } from '@/lib/api.js'
-
 const darkMode = ref(false)
 const user = ref({
   name: 'Admin User',
@@ -313,7 +312,7 @@ const editEquipment = (equipment) => {
 }
 
 
-const saveEquipment = async () => {
+const createEquipment = async () => {
   try {
     const formData = new FormData()
     formData.append('name', form.value.name)
@@ -321,25 +320,53 @@ const saveEquipment = async () => {
     formData.append('availability', form.value.availability)
     formData.append('condition', form.value.condition)
     formData.append('stock', form.value.stock)
+    
     if (form.value.thumbnail instanceof File) {
       formData.append('image', form.value.thumbnail)
     }
 
-    if (editingEquipment.value) {
-      await api.put(`/equipment/${editingEquipment.value.id}`, formData)
-      console.log(formData)
-      alert('Equipment updated successfully!')
-    } else {
-      await api.post('/equipment', formData)
-      console.log(formData)
-      alert('Equipment created successfully!')
-    }
-
-    closeModal()
+    await api.post('/equipment', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    })
+    alert('Equipment created successfully!')
     fetchEquipment()
+    closeModal()
   } catch (err) {
     console.error(err.response || err)
-    alert('Failed to save equipment. Check console for details.')
+    alert('Failed to create equipment')
+  }
+}
+
+const updateEquipment = async () => {
+  try {
+    const payload = {
+      name: form.value.name,
+      description: form.value.description,
+      availability: form.value.availability,
+      condition: form.value.condition,
+      stock: form.value.stock
+    }
+
+    if (form.value.thumbnail) {
+      payload.thumbnail = form.value.thumbnail
+    }
+
+    await api.patch(`/equipment/${editingEquipment.value.id}`, payload)
+    alert('Equipment updated successfully!')
+    fetchEquipment()
+    closeModal()
+  } catch (err) {
+    console.error(err.response || err)
+    alert('Failed to update equipment')
+  }
+}
+
+// Unified save handler
+const saveEquipment = () => {
+  if (editingEquipment.value) {
+    updateEquipment()
+  } else {
+    createEquipment()
   }
 }
 

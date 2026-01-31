@@ -43,8 +43,8 @@
               <img src="/src/assets/login.png" alt="Login Image" style="width: 70%; height: auto;"/>
             </div>
           </v-col>
-
         </v-row>
+        <button style="color: gray;" @click="goToAdmin">Log in as Admin?</button>
       </v-container>
     </v-main>
   </v-app>
@@ -74,5 +74,9 @@ const handleLogin = async () => {
     console.error(err)
   }
 }
+const goToAdmin = () => {
+  router.push('/admin/login')
+}
+
 
 </script>

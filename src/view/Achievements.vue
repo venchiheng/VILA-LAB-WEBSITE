@@ -3,7 +3,9 @@
     <!-- Header Section -->
     <div class="header-section">
       <h1 class="main-title">Achievements & Publications</h1>
-      <p class="subtitle">Showcasing the awards, recognitions, and published research from the Vila Laboratory.</p>
+      <p class="subtitle">
+        Showcasing the awards, recognitions, and published research from the Vila Laboratory.
+      </p>
     </div>
 
     <!-- Tabs Section -->
@@ -49,103 +51,47 @@
             <h4 class="pub-title">Published Research</h4>
             <div class="publication-list">
               <PublicationCard
-                v-for="(pub, index) in publications"
-                :key="index"
+                v-for="pub in publicationsStore.publications"
+                :key="pub.id"
                 :title="pub.title"
                 :authors="pub.authors"
-                :journal="pub.journal"
-                :year="pub.year"
-                @upload="handleUpload"
+                :journal="pub.journal || pub.journal_name"
+                :year="pub.published_date ? new Date(pub.published_date).getFullYear() : ''"
               />
+              <p v-if="publicationsStore.publications.length === 0" class="placeholder-text">
+                No publications available yet.
+              </p>
             </div>
           </div>
         </v-tabs-window-item>
-
       </v-tabs-window>
     </v-sheet>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import PublicationCard from '@/components/publication/PublicationCard.vue'
-import NewsCard from '@/components/news/NewsCard.vue'
+import { usePublicationStore } from '@/stores/publication'
 
+// Tabs
 const tab = ref('awards')
 
+// Awards (static)
 const awards = ref([
-  {
-    id: 1,
-    title: 'Best Paper Award',
-    organization: 'NeurIPS 2023',
-    icon: 'mdi-trophy'
-  },
-  {
-    id: 2,
-    title: 'Innovation in AI Grant',
-    organization: 'National Science Foundation, 2022',
-    icon: 'mdi-lightbulb'
-  },
-  {
-    id: 3,
-    title: 'Outstanding Dissertation Award',
-    organization: 'ACM, 2021',
-    icon: 'mdi-school'
-  },
-  {
-    id: 4,
-    title: 'Early Career Researcher Prize',
-    organization: 'IEEE Computer Society, 2020',
-    icon: 'mdi-account-star'
-  }
+  { id: 1, title: 'Best Paper Award', organization: 'NeurIPS 2023', icon: 'mdi-trophy' },
+  { id: 2, title: 'Innovation in AI Grant', organization: 'National Science Foundation, 2022', icon: 'mdi-lightbulb' },
+  { id: 3, title: 'Outstanding Dissertation Award', organization: 'ACM, 2021', icon: 'mdi-school' },
+  { id: 4, title: 'Early Career Researcher Prize', organization: 'IEEE Computer Society, 2020', icon: 'mdi-account-star' },
 ])
 
-const publications = ref([
-  {
-    title: 'Generative Adversarial Networks for Realistic Image Synthesis',
-    authors: 'J. Doe, A. Smith, B. Johnson',
-    journal: 'Journal of Vision and Learning',
-    year: 2023
-  },
-  {
-    title: 'Deep Learning Approaches for Natural Language Processing',
-    authors: 'M. Chen, L. Wang, R. Brown',
-    journal: 'ACM Transactions on Intelligent Systems',
-    year: 2023
-  },
-  {
-    title: 'Reinforcement Learning in Robotics: A Survey',
-    authors: 'K. Lee, P. Davis, S. Martinez',
-    journal: 'IEEE Robotics and Automation Letters',
-    year: 2022
-  }
-])
+// --- Pinia store for publications ---
+const publicationsStore = usePublicationStore()
 
-const featuredNews = ref({
-  title: 'Generative Adversarial Networks for Realistic Image Synthesis',
-  authors: 'J. Doe, A. Smith, B. Johnson',
-  journal: 'Journal of Vision and Learning',
-  year: 2023
+// Fetch publications on mount
+onMounted(async () => {
+  await publicationsStore.fetchPublications()
 })
-
-const newsItems = ref([
-  {
-    source: 'TechCrunch',
-    title: "ViLa Lab's breakthrough AI could change medical diagnostics.",
-    date: 'October 23, 2023',
-    link: '#'
-  },
-  {
-    source: 'Wired',
-    title: 'The ethical implications of next-gen language models, featuring ViLa Lab experts.',
-    date: 'August 14, 2023',
-    link: '#'
-  }
-])
-
-const handleUpload = ({ type, file }) => {
-  console.log(type, file)
-}
 </script>
 
 <style scoped>

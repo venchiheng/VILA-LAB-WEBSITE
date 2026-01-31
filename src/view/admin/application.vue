@@ -54,7 +54,7 @@
                   <td class="cell-center">{{ application.reviewed_by || '-' }}</td>
                   <td class="cell-center">{{ application.submitted_at }}</td>
                   <td class="cell-center">
-                    <button @click="toggleDetails(application.id)">
+                    <button class="vh" @click="toggleDetails(application.id)">
                       {{ expandedId === application.id ? 'Hide Details' : 'View Details' }}
                     </button>
                   </td>
@@ -94,9 +94,9 @@ const toggleTheme = () => darkMode.value = !darkMode.value
 
 // Admin user
 const user = ref({
-  name: 'Admin Sonit',
+  name: 'Admin User',
   email: 'admin@vilalab.com',
-  avatar: 'https://ui-avatars.com/api/?name=Admin+Sonit&background=4f46e5&color=fff'
+  avatar: 'https://ui-avatars.com/api/?name=Admin+User&background=4f46e5&color=fff'
 })
 
 // Applications
@@ -149,6 +149,7 @@ const handleTabChange = (tab) => console.log('Tab changed to:', tab)
 </script>
 
 <style scoped>
+.vh{ background-color: var(--color-primary); color: white; border: none;}
 .app-container { display: flex; min-height: 100vh; background-color: #f8fafc; transition: 0.3s; }
 .app-container.dark-mode { background-color: #1a1a1a; color: #e5e7eb; }
 .main-content { flex: 1; margin-left: 250px; overflow-x: hidden; overflow-y: auto; min-height: 100vh; }

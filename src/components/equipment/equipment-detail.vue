@@ -26,7 +26,7 @@
 
       <quantitySelector />
 
-      <button @click="openBooking" class="sb-btn">+ Start Booking</button>
+      <button @click="openBooking" class="sb-btn" :disabled="!canSelectDate"> + Start Booking</button>
 
       <div class="policy">
         <h4>Policy</h4>
@@ -60,6 +60,10 @@ const props = defineProps({
   source: Array
 })
 
+const canSelectDate = computed(() => {
+  return props.equipment.status.toLowerCase() === 'available'
+})
+
 const showSelectDate = ref(false)
 
 const statusColor = computed(() => {
@@ -74,6 +78,10 @@ const statusColor = computed(() => {
 })
 
 const openBooking = () => {
+  if (!canSelectDate.value) {
+    alert('This equipment is not available for booking.')
+    return
+  }
   console.log('OPEN BOOKING FOR Equipment detail page:', props.equipment.id)
   showSelectDate.value = true
 }
@@ -158,6 +166,11 @@ const handleBooking = (data) => {
     background-color: var(--color-secondary);
     transition: background-color 0.3s;
     color: var(--color-primary);
+}
+.sb-btn:disabled {
+    background-color: var(--color-secondary);
+    color: var(--color-primary);
+    cursor: not-allowed;
 }
 .policy {
     margin-top: 32px;

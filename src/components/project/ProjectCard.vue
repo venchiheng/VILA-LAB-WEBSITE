@@ -2,7 +2,7 @@
   <div class="project-card">
     <!-- Image section -->
     <div class="image-wrapper">
-      <img :src="image" />
+      <img :src="imagePreview" :alt="projectName" />
     </div>
 
     <!-- Bottom section -->
@@ -14,6 +14,8 @@
 </template>
 
 <script setup>
+import { computed } from 'vue'
+
 const props = defineProps({
   projectName: {
     type: String,
@@ -25,18 +27,25 @@ const props = defineProps({
   },
   image: {
     type: String,
-    required: true
+    default: null
   }
+})
+
+// Compute the full URL of the image
+const imagePreview = computed(() => {
+  if (!props.image) return ''
+  return typeof props.image === 'string'
+    ? props.image
+    : URL.createObjectURL(props.image)
 })
 </script>
 
 <style scoped>
 .project-card {
   width: 100%;
-  height: 100%;
   max-width: 288px;
   max-height: 494px;
-  background-color: var(--color-bg);
+  background-color: var(--color-bg, #fff);
   box-shadow: 0 10px 28px rgba(0, 0, 0, 0.12);
   border-radius: 40px;
   overflow: hidden;
@@ -52,7 +61,6 @@ const props = defineProps({
 
 /* Image wrapper */
 .image-wrapper {
-  position: relative;
   width: 100%;
   height: 329px;
   overflow: hidden;
@@ -62,12 +70,13 @@ const props = defineProps({
   width: 100%;
   height: 100%;
   object-fit: cover;
+  display: block;
 }
 
 /* Bottom section */
 .bottom-section {
-  background-color: var(--color-primary);
-  color: var(--color-bg);
+  background-color: var(--color-primary, #3b82f6);
+  color: var(--color-bg, #fff);
   padding: 20px 24px 24px;
   flex: 1;
   display: flex;

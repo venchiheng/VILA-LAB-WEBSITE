@@ -40,9 +40,9 @@
     </div>
 
     <!-- Accept / Reject Buttons -->
-    <div class="action-buttons" v-if="!application.status">
-      <button @click="markApplication('approve')" class="accept-btn">Accept</button>
-      <button @click="markApplication('reject')" class="reject-btn">Reject</button>
+    <div class="action-buttons" v-if="application.status === 'pending' || !application.status">
+      <button @click="handleAction('approve')" class="accept-btn">Approve</button>
+      <button @click="handleAction('reject')" class="reject-btn">Reject</button>
     </div>
 
     <div class="status-label" v-else>
@@ -52,27 +52,60 @@
 </template>
 
 <script setup>
-import axios from 'axios';
-import { ref } from 'vue';
+import { api } from '@/lib/api.js'
 
-defineProps({
+const props = defineProps({
   application: Object
-});
+})
 
-const markApplication = async (action) => {
-  try {
-    // Use the exact API URL
-    const url = `http://localhost:8000/api/membership-applications/${application.id}/${action}`;
-    await axios.put(url);
+const handleAction = async (action) => {
+  const app = props.application
 
-    // Update local status immediately for UI
-    application.status = action === 'approve' ? 'Accepted' : 'Rejected';
-    alert(`Application ${application.status.toLowerCase()} successfully!`);
-  } catch (err) {
-    console.error(err);
-    alert('Something went wrong. Please try again.');
+  // Get rejection notes BEFORE async call
+  let reviewNotes = ''
+  if (action === 'reject') {
+    reviewNotes = prompt('Please enter rejection notes (optional):') || ''
   }
-};
+
+  try {
+    const url = `http://localhost:8000/api/membership-applications/${app.id}/${action}`
+    const payload = action === 'reject' ? { review_notes: reviewNotes } : {}
+
+    await api.put(url, payload)
+
+    // Update local status immediately
+    if (action === 'approve') {
+      app.status = 'approved'
+      app.reviewed_by = 'Admin'
+    } else {
+      app.status = 'rejected'
+      app.review_notes = reviewNotes
+      app.reviewed_by = 'Admin'
+    }
+
+    alert(`Application ${app.status.toLowerCase()} successfully!`)
+
+    // Open email client immediately
+    const subject = encodeURIComponent(
+      action === 'approve'
+        ? 'Congratulations on Membership Approval'
+        : 'Membership Application Update'
+    )
+
+    const body = encodeURIComponent(
+      action === 'approve'
+        ? `Dear ${app.full_name},\n\nCongratulations! Your membership application has been approved. Welcome to ViLa Lab! The Orientation Session details will be sent to you shortly.\n\nBest regards,\nViLa Lab Team`
+        : `Dear ${app.full_name},\n\nWe regret to inform you that your membership application has been rejected.\n\nNotes: ${reviewNotes || 'N/A'}\n\nThank you for your interest in ViLa Lab.\n\nBest regards,\nViLa Lab Team`
+    )
+
+    window.open(`mailto:${app.email}?subject=${subject}&body=${body}`, '_blank')
+
+  } catch (err) {
+    console.error(err)
+    alert('Something went wrong. Please try again.')
+  }
+}
+
 </script>
 
 
@@ -150,11 +183,11 @@ const markApplication = async (action) => {
   font-weight: 500;
 }
 
-.status-label .Accepted {
+.status-label .approved {
   color: #22c55e;
 }
 
-.status-label .Rejected {
+.status-label .rejected {
   color: #ef4444;
 }
 </style>
