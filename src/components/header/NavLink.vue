@@ -1,5 +1,14 @@
+<template>
+    <router-link :to="to" class="nav-link" :class="{ active: isActive }">
+        {{ label }}
+    </router-link>
+</template>
+
 <script setup>
-defineProps({
+import { computed } from 'vue'
+import { useRoute } from 'vue-router'
+
+const props = defineProps({
     to: {
         type: String,
         required: true
@@ -7,45 +16,32 @@ defineProps({
     label: {
         type: String,
         required: true
-    },
-    isActive: {
-        type: Boolean,
-        default: false
     }
 })
-</script>
 
-<template>
-    <router-link :to="to" class="nav-link" :class="{ active: isActive }">
-        {{ label }}
-        <span v-if="isActive" class="active-indicator"></span>
-    </router-link>
-</template>
+const route = useRoute()
+const isActive = computed(() => route.path === props.to)
+</script>
 
 <style scoped>
 .nav-link {
-    position: relative;
-    text-decoration: none;
     color: var(--color-bg);
-    padding: 8px 12px;
     font-weight: 500;
+    font-size: 16px;
+    padding: 20px;
     transition: color 0.2s;
-}
-
-.nav-link:hover {
     color: var(--color-secondary);
 
 }
 
+.nav-link:hover {
+    color: var(--color-bg);
 
-.active-indicator {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 3px;
-    background-color: var(--color-secondary);
-    border-radius: 2px;
-    transition: left 0.3s ease, width 0.3s ease;
 }
+
+.nav-link.active {
+    font-weight: 700;
+    color: var(--color-bg);
+}
+
 </style>
