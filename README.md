@@ -1,11 +1,15 @@
-# VILA Lab Website
-
-This repository contains the **VILA Lab Official Website**, developed using a **frontend–backend separated architecture**.
-The system supports **role-based access control** (Admin, Member, Guest) and is designed for **local development, Docker deployment, and production hosting**.
+Ah! Got it ✅. That changes the instructions slightly because the Docker setup is **inside `VILA-BACKEND`**, not at the root. I can rewrite the README to reflect that properly. Here's the corrected version:
 
 ---
 
-## Tech Stack
+# VILA Lab Official Website
+
+This repository contains the **VILA Lab Official Website**, developed with a **frontend–backend separated architecture**.
+It supports **role-based access control** (Admin, Member, Guest) and is designed for **local development, Docker deployment, and production hosting**.
+
+---
+
+## 🛠 Tech Stack
 
 ### Frontend
 
@@ -24,38 +28,39 @@ The system supports **role-based access control** (Admin, Member, Guest) and is 
 
 ### Infrastructure
 
-* Docker
-* Docker Compose
+* Docker & Docker Compose
 * Nginx
 * PHP 8.2
 
 ---
 
-## Project Structure
+## 📂 Project Structure
 
 ```bash
 VILA-LAB-WEBSITE/
 ├── VILA-FRONTEND/      # Vue + Vite frontend
-├── VILA-BACKEND/       # Laravel backend
-├── docker-compose.yml
+├── VILA-BACKEND/       # Laravel backend + Docker setup
+│   └── docker-compose.yml
 ├── README.md
+├── LICENSE
+├── .gitignore
+└── .gitattributes
 ```
 
 ---
 
-## Prerequisites
+## ⚡ Prerequisites
 
 Ensure the following are installed:
 
 * Git
-* Docker
-* Docker Compose
+* Docker & Docker Compose
 * Node.js (v18+ recommended)
 * npm or yarn
 
 ---
 
-## Local Development Setup (Docker)
+## 🏗 Local Development Setup
 
 ### 1️⃣ Clone the repository
 
@@ -64,20 +69,17 @@ git clone https://github.com/venchiheng/VILA-LAB-WEBSITE.git
 cd VILA-LAB-WEBSITE
 ```
 
----
-
-### 2️⃣ Backend environment file
+### 2️⃣ Backend environment
 
 ```bash
 cd VILA-BACKEND
 cp .env.example .env
+# Update database credentials if needed
 ```
 
-> You may update database credentials later if needed.
+> The `docker-compose.yml` is located here.
 
----
-
-### 3️⃣ Frontend environment file
+### 3️⃣ Frontend environment
 
 ```bash
 cd ../VILA-FRONTEND
@@ -90,25 +92,22 @@ Set API base URL:
 VITE_API_BASE_URL=http://localhost:8000/api
 ```
 
----
-
 ### 4️⃣ Start Docker containers
 
-From the **project root**:
+From **VILA-BACKEND** directory:
+Open a terminal in **VILA-BACKEND**:
 
 ```bash
 docker compose up -d --build
 ```
 
----
-
-### 5️⃣ Verify containers are running (IMPORTANT)
+### 5️⃣ Verify containers
 
 ```bash
 docker ps
 ```
 
-You should see containers similar to:
+You should see:
 
 ```text
 vila_lab_app
@@ -116,58 +115,52 @@ vila_lab_db
 vila_lab_nginx
 ```
 
-> If containers are not running, **do not continue**.
+> ⚠️ If containers are not running, **do not continue**.
 
 ---
 
-## Backend Initialization (Required)
+## 🔧 Backend Initialization
 
-### 6️⃣ Enter the Laravel container
+### 6️⃣ Enter Laravel container
 
 ```bash
 docker exec -it vila_lab_app bash
 ```
 
----
+### 7️⃣ Navigate to Laravel root
 
-### 7️⃣ Navigate to Laravel root directory
+If you are currently inside **/var/www/html**, means you can skip to **step 8**.
 
-If you are currently inside **/var/www/html**, means you can skip to step 8.
+If **not**, please run the command below to proceed to next step.
 
-If not, please run the command below to proceed to next step.
+cd /var/www/html
+
+> ⚠️ You must be in **/var/www/html** directory before runing php artisan. Running `php artisan` outside this directory will cause errors.
+
 
 ```bash
 cd /var/www/html
 ```
 
-> ⚠️ You must be in /var/www/html directory before runing php artisan.
-> Running `php artisan` outside this directory will cause errors.
+> Must be in `/var/www/html` before running `php artisan`.
 
----
-
-### 8️⃣ Install backend dependencies
+### 8️⃣ Install dependencies
 
 ```bash
 composer install
 ```
 
----
-
-### 9️⃣ Generate application key
+### 9️⃣ Generate app key
 
 ```bash
 php artisan key:generate
 ```
 
----
-
-### 🔟 Run database migrations & seeders
+### 🔟 Run migrations & seeders
 
 ```bash
 php artisan migrate --seed
 ```
-
----
 
 ### 1️⃣1️⃣ Exit container
 
@@ -177,31 +170,24 @@ exit
 
 ---
 
-## Access the Application
+## 🌐 Access the Application
 
-* **Frontend**
-  👉 [http://localhost:5173](http://localhost:5173)
-
-* **Backend API**
-  👉 [http://localhost:8000/api](http://localhost:8000/api)
+* **Frontend:** [http://localhost:5173](http://localhost:5173)
+* **Backend API:** [http://localhost:8000/api](http://localhost:8000/api)
 
 ---
 
-## Authentication & User Roles
+## 👤 Authentication & Roles
 
-The system implements **role-based authentication**:
-
-* **Admin** – system management and approvals
-* **Member** – booking and equipment access
-* **Guest** – public access only
+* **Admin** – system management & approvals
+* **Member** – booking & equipment access
+* **Guest** – public access
 
 ---
 
-## Creating an Admin Account (Required)
+## 🛡 Creating an Admin Account
 
-Admin accounts **cannot be created via UI** and must be created manually.
-
-### Steps
+Admin accounts must be created manually (UI disabled for security):
 
 ```bash
 docker exec -it vila_lab_app bash
@@ -223,140 +209,100 @@ User::create([
 ]);
 ```
 
-Exit:
+Exit Tinker:
 
 ```bash
 exit
 ```
 
-### Admin Login
+* Log in via admin page with created credentials.
 
-* Log in via admin login page
-* Use credentials created above
-* Admin dashboard will be accessible
-
-> ⚠️ Admin creation via UI is intentionally disabled for security reasons.
+> ⚠️ Admin creation via UI is disabled intentionally.
 
 ---
 
-## Member Application Flow
+## 👥 Member Application Flow
 
-### Step 1: Application
-
-* User submits a member application
-* Status is set to `pending`
-
-### Step 2: Admin Approval
-
-* Admin reviews applications
-* Approves or rejects from admin panel
-
-### Step 3: Member Account
-
-Once approved:
-
-* Member account is created automatically by the system
-* Password is Member ID
-
-Example:
+1. **Application:** User submits a member application (status: `pending`)
+2. **Admin Approval:** Admin approves or rejects application
+3. **Member Account:** Once approved, account created automatically
 
 ```text
+Example:
 Member ID: V20260001
 Password: V20260001
 ```
 
-> Members should change their password after first login.
+> Members should change password after first login.
 
 ---
 
-## Deployment Guide (Production)
+## 🚀 Deployment Guide (Production)
 
 ### Option 1: VPS Deployment (Recommended)
 
-Supports:
-
-* AWS EC2
-* DigitalOcean
-* Linode
-
-Steps:
+* AWS EC2, DigitalOcean, Linode
 
 1. Clone repository on server
-2. Configure `.env` files
+2. Configure `.env` files in `VILA-BACKEND` and `VILA-FRONTEND`
 3. Update frontend API URL:
 
-   ```env
-   VITE_API_BASE_URL=https://your-domain.com/api
-   ```
+```env
+VITE_API_BASE_URL=https://your-domain.com/api
+```
+
 4. Build frontend:
 
-   ```bash
-   npm run build
-   ```
-5. Configure Nginx reverse proxy
-6. Enable HTTPS (Let’s Encrypt)
-7. Start containers:
+```bash
+cd VILA-FRONTEND
+npm run build
+```
 
-   ```bash
-   docker compose up -d --build
-   ```
+5. Configure Nginx reverse proxy & HTTPS
+6. Start containers from `VILA-BACKEND`:
 
----
+```bash
+docker compose up -d --build
+```
 
 ### Option 2: Separate Deployment
 
-#### Frontend
+**Frontend:** Vercel / Netlify / Nginx static hosting
+**Backend:** VPS / Docker environment
 
-* Vercel
-* Netlify
-* Static Nginx hosting
-
-#### Backend
-
-* VPS
-* Docker-based environment
-
-Ensure:
-
-* Correct CORS configuration
-* Correct API base URL
-* HTTPS enabled
+> Ensure correct CORS, API URL, and HTTPS.
 
 ---
 
-## Common Errors & Fixes
+## ⚠️ Common Errors & Fixes
 
-### ❌ `Could not open input file: artisan`
-
-**Cause:** Not inside Laravel root directory
-**Fix:**
+**1. `Could not open input file: artisan`**
+*Cause:* Not in Laravel root
+*Fix:*
 
 ```bash
 cd /var/www/html
 ```
 
----
-
-### ❌ Database connection error
-
-**Fix:**
+**2. Database connection error**
+*Fix:*
 
 * Check `.env` database credentials
 * Ensure database container is running
 
 ---
 
-## Security Notes
+## 🔒 Security Notes
 
-* `.env` files are excluded from Git
-* Frontend `VITE_*` variables are public by design
+* `.env` files excluded from Git
+* Frontend `VITE_*` variables are public
 * Backend secrets remain server-side
 * Authorization enforced on backend
 * Admin approval required for members
 
 ---
 
-## Maintenance
+## 🧹 Maintenance
 
 * Run migrations after schema changes
 * Rebuild containers after dependency updates
@@ -368,10 +314,6 @@ docker logs vila_lab_app
 
 ---
 
-## License
+## 📄 License
 
 This project is intended for academic and organizational use.
-
----
-
-Just tell me 💪
