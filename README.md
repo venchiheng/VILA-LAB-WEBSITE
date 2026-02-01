@@ -1,7 +1,7 @@
 # VILA Lab Website
 
-This repository contains the **VILA Lab Official Website**, developed using a modern **frontend–backend separated architecture**.
-The system supports **role-based access control** with Admin and Member roles and is designed for **local development, Docker deployment, and real server hosting**.
+This repository contains the **VILA Lab Official Website**, developed using a **frontend–backend separated architecture**.
+The system supports **role-based access control** (Admin, Member, Guest) and is designed for **local development, Docker deployment, and production hosting**.
 
 ---
 
@@ -66,18 +66,18 @@ cd VILA-LAB-WEBSITE
 
 ---
 
-### 2️⃣ Backend environment setup
+### 2️⃣ Backend environment file
 
 ```bash
 cd VILA-BACKEND
 cp .env.example .env
 ```
 
-Update `.env` if necessary (database credentials, app name, etc.).
+> You may update database credentials later if needed.
 
 ---
 
-### 3️⃣ Frontend environment setup
+### 3️⃣ Frontend environment file
 
 ```bash
 cd ../VILA-FRONTEND
@@ -94,7 +94,7 @@ VITE_API_BASE_URL=http://localhost:8000/api
 
 ### 4️⃣ Start Docker containers
 
-From the project root:
+From the **project root**:
 
 ```bash
 docker compose up -d --build
@@ -102,61 +102,114 @@ docker compose up -d --build
 
 ---
 
-### 5️⃣ Generate Laravel app key
+### 5️⃣ Verify containers are running (IMPORTANT)
 
 ```bash
-docker exec -it vila_lab_app php artisan key:generate
+docker ps
+```
+
+You should see containers similar to:
+
+```text
+vila_lab_app
+vila_lab_db
+vila_lab_nginx
+```
+
+> If containers are not running, **do not continue**.
+
+---
+
+## Backend Initialization (Required)
+
+### 6️⃣ Enter the Laravel container
+
+```bash
+docker exec -it vila_lab_app bash
 ```
 
 ---
 
-### 6️⃣ Run migrations & seeders
+### 7️⃣ Navigate to Laravel root directory
+
+If you are currently inside **/var/www/html**, means you can skip to step 8.
+
+If not, please run the command below to proceed to next step.
 
 ```bash
-docker exec -it vila_lab_app php artisan migrate --seed
+cd /var/www/html
+```
+
+> ⚠️ You must be in /var/www/html directory before runing php artisan.
+> Running `php artisan` outside this directory will cause errors.
+
+---
+
+### 8️⃣ Install backend dependencies
+
+```bash
+composer install
 ```
 
 ---
 
-### 7️⃣ Access the application
+### 9️⃣ Generate application key
 
-* Frontend:
+```bash
+php artisan key:generate
+```
+
+---
+
+### 🔟 Run database migrations & seeders
+
+```bash
+php artisan migrate --seed
+```
+
+---
+
+### 1️⃣1️⃣ Exit container
+
+```bash
+exit
+```
+
+---
+
+## Access the Application
+
+* **Frontend**
   👉 [http://localhost:5173](http://localhost:5173)
 
-* Backend API:
+* **Backend API**
   👉 [http://localhost:8000/api](http://localhost:8000/api)
 
 ---
 
 ## Authentication & User Roles
 
-The system implements **role-based authentication** with the following roles:
+The system implements **role-based authentication**:
 
-* **Admin** – system management and application approval
-* **Member** – allowed booking and tracking equipment
+* **Admin** – system management and approvals
+* **Member** – booking and equipment access
 * **Guest** – public access only
 
 ---
 
 ## Creating an Admin Account (Required)
 
-Admin accounts **cannot be registered through the UI** and must be created manually using Laravel Tinker.
+Admin accounts **cannot be created via UI** and must be created manually.
 
 ### Steps
 
-1. Enter the backend container:
-
 ```bash
 docker exec -it vila_lab_app bash
-```
-
-2. Open Laravel Tinker:
-
-```bash
+cd /var/www/html
 php artisan tinker
 ```
 
-3. Create an admin user:
+Inside Tinker:
 
 ```php
 use App\Models\User;
@@ -170,7 +223,7 @@ User::create([
 ]);
 ```
 
-4. Exit Tinker:
+Exit:
 
 ```bash
 exit
@@ -178,53 +231,41 @@ exit
 
 ### Admin Login
 
-* Use the admin login page
-* Log in with the email and password created above
-* Admin will have access to the admin dashboard and approval system
+* Log in via admin login page
+* Use credentials created above
+* Admin dashboard will be accessible
 
 > ⚠️ Admin creation via UI is intentionally disabled for security reasons.
 
 ---
 
-## Member Application & Login Flow
+## Member Application Flow
 
-### Step 1: Submit Application
+### Step 1: Application
 
-* A user submits a **member application** via the frontend
-* Application status is set to `pending`
-
----
+* User submits a member application
+* Status is set to `pending`
 
 ### Step 2: Admin Approval
 
-* Admin logs in
-* Reviews submitted applications
-* Approves or rejects applications from the admin panel
+* Admin reviews applications
+* Approves or rejects from admin panel
 
----
-
-### Step 3: Member Account Creation
+### Step 3: Member Account
 
 Once approved:
 
-* A member account is created automatically
-* Login credentials are generated as follows:
-
-  * **Member ID**: user ID assigned by the system
-  * **Password**: user ID assigned by the system
-
----
-
-### Member Login
+* Member account is created automatically by the system
+* Password is Member ID
 
 Example:
 
 ```text
-Memeber ID: V20260001
-Password: 12
+Member ID: V20260001
+Password: V20260001
 ```
 
-> Members are strongly encouraged to **change their password after first login**.
+> Members should change their password after first login.
 
 ---
 
@@ -238,10 +279,10 @@ Supports:
 * DigitalOcean
 * Linode
 
-#### Steps
+Steps:
 
-1. Clone the repository on the server
-2. Configure `.env` files for production
+1. Clone repository on server
+2. Configure `.env` files
 3. Update frontend API URL:
 
    ```env
@@ -266,24 +307,42 @@ Supports:
 
 #### Frontend
 
-* Deploy to:
-
-  * Vercel
-  * Netlify
-  * Static Nginx hosting
+* Vercel
+* Netlify
+* Static Nginx hosting
 
 #### Backend
 
-* Deploy Laravel API on:
-
-  * VPS
-  * Docker-based environment
+* VPS
+* Docker-based environment
 
 Ensure:
 
 * Correct CORS configuration
-* Proper API base URL
+* Correct API base URL
 * HTTPS enabled
+
+---
+
+## Common Errors & Fixes
+
+### ❌ `Could not open input file: artisan`
+
+**Cause:** Not inside Laravel root directory
+**Fix:**
+
+```bash
+cd /var/www/html
+```
+
+---
+
+### ❌ Database connection error
+
+**Fix:**
+
+* Check `.env` database credentials
+* Ensure database container is running
 
 ---
 
@@ -291,16 +350,16 @@ Ensure:
 
 * `.env` files are excluded from Git
 * Frontend `VITE_*` variables are public by design
-* Backend secrets are never exposed
-* Authentication and authorization are enforced server-side
-* Admin approval is required for member access
+* Backend secrets remain server-side
+* Authorization enforced on backend
+* Admin approval required for members
 
 ---
 
 ## Maintenance
 
-* Run migrations after schema updates
-* Rebuild Docker containers after dependency changes
+* Run migrations after schema changes
+* Rebuild containers after dependency updates
 * View logs:
 
 ```bash
@@ -314,3 +373,5 @@ docker logs vila_lab_app
 This project is intended for academic and organizational use.
 
 ---
+
+Just tell me 💪
