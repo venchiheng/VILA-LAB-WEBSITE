@@ -132,13 +132,15 @@ docker exec -it vila_lab_app bash
 
 ### 7️⃣ Navigate to Laravel root directory
 
-You will now in the /var/www/html directory, if not please run command below:
+If you are currently inside **/var/www/html**, means you can skip to step 8.
+
+If not, please run the command below to proceed to next step.
 
 ```bash
 cd /var/www/html
 ```
 
-> ⚠️ This step is required.
+> ⚠️ You must be in /var/www/html directory before runing php artisan.
 > Running `php artisan` outside this directory will cause errors.
 
 ---
