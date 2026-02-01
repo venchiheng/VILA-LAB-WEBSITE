@@ -33,6 +33,7 @@ dist-ssr
 /.fleet
 /.idea
 /.nova
+/vendor
 /.phpunit.cache
 /.vscode
 /.zed
@@ -46,3 +47,4 @@ dist-ssr
 Homestead.json
 Homestead.yaml
 Thumbs.db
+/vendor
