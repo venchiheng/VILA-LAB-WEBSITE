@@ -1,0 +1,4 @@
+mkdir -p bootstrap/cache storage
+touch bootstrap/cache/.gitkeep storage/.gitkeep
+git add bootstrap/cache/.gitkeep storage/.gitkeep
+git commit -m "Add cache & storage folders for fresh clones"

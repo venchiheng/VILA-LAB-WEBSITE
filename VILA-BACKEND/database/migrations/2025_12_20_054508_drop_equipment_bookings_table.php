@@ -3,17 +3,26 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
 return new class extends Migration
 {
     public function up(): void
     {
-        // Drop foreign key first
-        Schema::table('notifications', function (Blueprint $table) {
-            $table->dropForeign(['booking_id']); // use the column name in notifications table
-        });
+        // Check if foreign key exists before dropping
+        $foreignKeys = DB::select("SELECT CONSTRAINT_NAME 
+                                   FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE 
+                                   WHERE TABLE_SCHEMA = DATABASE() 
+                                   AND TABLE_NAME = 'notifications' 
+                                   AND COLUMN_NAME = 'booking_id'");
 
-        // Now drop the table
+        if (!empty($foreignKeys)) {
+            Schema::table('notifications', function ($table) {
+                $table->dropForeign(['booking_id']);
+            });
+        }
+
+        // Drop table safely
         Schema::dropIfExists('equipment_bookings');
     }
 
