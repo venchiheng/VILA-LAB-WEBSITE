@@ -1,7 +1,3 @@
-Ah! Got it ✅. That changes the instructions slightly because the Docker setup is **inside `VILA-BACKEND`**, not at the root. I can rewrite the README to reflect that properly. Here's the corrected version:
-
----
-
 # VILA Lab Official Website
 
 This repository contains the **VILA Lab Official Website**, developed with a **frontend–backend separated architecture**.
@@ -156,10 +152,14 @@ composer install
 php artisan key:generate
 ```
 
-### 🔟 Run migrations & seeders
+### 🔟 Run migrations & seeders & storage link
 
 ```bash
 php artisan migrate --seed
+```
+
+```bash
+php artisan storage:link
 ```
 
 ### 1️⃣1️⃣ Exit container
