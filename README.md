@@ -237,6 +237,39 @@ Password: V20260001
 
 ---
 
+## 📂 Project Category Creation (Admin Only)
+
+Before creating projects, an admin must create **project categories**, which define the type or group a project belongs to (e.g., AI, Robotics, etc).
+
+**Steps to create a category via Laravel Tinker:**
+
+1. **Enter the Laravel container:**
+
+```bash
+docker exec -it vila_lab_app bash
+cd /var/www/html
+```
+
+2. **Start Tinker:**
+
+```bash
+php artisan tinker
+```
+
+3. **Create a new project category:**
+
+```php
+use App\Models\ProjectCategory;
+
+ProjectCategory::create([
+    'name' => 'AI'
+]);
+```
+
+> ✅ The new category is saved directly to the database and can now be assigned to projects.
+
+---
+
 # 🚀 Deployment Guide — **VILA Lab Website**
 
 **Repository:** `https://github.com/venchiheng/VILA-LAB-WEBSITE.git`
