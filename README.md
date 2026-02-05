@@ -239,39 +239,212 @@ Password: V20260001
 
 ## 🚀 Deployment Guide (Production)
 
-### Option 1: VPS Deployment (Recommended)
+I wasn’t able to find the **exact repository structure or Docker Compose file from `venchiheng/VILA-LAB-WEBSITE.git`** on GitHub using online search (likely it may be private or not indexed). Because of that, I can’t inspect the current files directly to tailor steps based on that exact implementation — but I *can* still give you a **real‑server deployment guide** that assumes the repository *does* contain a typical Vue + Vite frontend and Laravel backend with a `docker-compose.yml` defined for both services along with MySQL (a very common pattern). This will work once you clone that repo locally or on your server.
 
-* AWS EC2, DigitalOcean, Linode
+The following deployment guide covers both scenarios you asked for:
 
-1. Clone repository on server
-2. Configure `.env` files in `VILA-BACKEND` and `VILA-FRONTEND`
-3. Update frontend API URL:
+---
 
-```env
-VITE_API_BASE_URL=https://your-domain.com/api
-```
+# 🚀 Deployment Guide — **VILA Lab Website**
 
-4. Build frontend:
+**Repository:** `https://github.com/venchiheng/VILA-LAB-WEBSITE.git`
+
+**Stack overview**
+✔ Frontend: Vue.js + Vite
+✔ Backend: Laravel (API)
+✔ Database: MySQL
+✔ Docker & Docker Compose for container orchestration
+
+---
+
+## 🔐 Prerequisites (for both scenarios)
+
+On **all deployment machines:**
+
+✔ OS: Ubuntu 20.04/22.04 (recommended)
+✔ Docker installed
 
 ```bash
-cd VILA-FRONTEND
+sudo apt update
+sudo apt install -y docker.io
+sudo systemctl enable --now docker
+```
+
+✔ Docker Compose (v2+ recommended)
+
+```bash
+sudo apt install -y docker-compose-plugin
+```
+
+✔ Nginx installed
+
+```bash
+sudo apt install -y nginx
+```
+
+✔ Domain names ready with DNS pointed to your server(s)
+
+
+## **Option 1: Separate Servers**
+
+**Server A — Backend (Laravel + Docker + MySQL)**
+
+1. Clone repo:
+
+```bash
+cd /var/www
+git clone https://github.com/venchiheng/VILA-LAB-WEBSITE.git
+cd VILA-LAB-WEBSITE/VILA-BACKEND
+```
+
+2. Copy `.env`:
+
+```bash
+cp .env.example .env
+```
+
+3. Update `.env` for production (APP_URL, DB credentials).
+
+4. Generate Laravel key:
+
+```bash
+docker compose run --rm app php artisan key:generate
+```
+
+5. Start containers:
+
+```bash
+docker compose up -d
+```
+
+6. Verify containers:
+
+```bash
+docker ps
+# Should see vila_lab_app, vila_lab_db, vila_lab_nginx
+```
+
+7. Initialize backend (inside `vila_lab_app` container):
+
+```bash
+docker exec -it vila_lab_app bash
+cd /var/www/html
+composer install
+php artisan migrate --seed
+php artisan key:generate
+exit
+```
+
+8. Configure Nginx for backend:
+
+```nginx
+server {
+    listen 80;
+    server_name <your-backend-domain.com>;
+
+    location / {
+        proxy_pass http://localhost:8000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    }
+}
+```
+
+Enable & restart Nginx.
+
+---
+
+**Server B — Frontend (Vue.js + Vite)**
+
+1. Clone frontend:
+
+```bash
+cd /var/www
+git clone https://github.com/venchiheng/VILA-LAB-WEBSITE.git
+cd VILA-LAB-WEBSITE/VILA-FRONTEND
+```
+
+2. Install dependencies & build:
+
+```bash
+npm install
 npm run build
 ```
 
-5. Configure Nginx reverse proxy & HTTPS
-6. Start containers from `VILA-BACKEND`:
+3. Serve with Nginx (root points to `dist/`):
 
-```bash
-docker compose up -d --build
+```nginx
+server {
+    listen 80;
+    server_name www.your-frontend-domain.com;
+
+    root /var/www/VILA-LAB-WEBSITE/VILA-FRONTEND/dist;
+    index index.html;
+    try_files $uri $uri/ /index.html;
+}
 ```
 
-### Option 2: Separate Deployment
+4. Update frontend `.env`:
 
-**Frontend:** Vercel / Netlify / Nginx static hosting
-**Backend:** VPS / Docker environment
+```
+VITE_API_BASE_URL=https://<your-backend-domain.com>/api
+```
 
-> Ensure correct CORS, API URL, and HTTPS.
+Rebuild if needed.
 
+---
+
+## **Option 2: Single Server**
+
+1. Clone repo, backend first:
+
+```bash
+cd /var/www
+git clone https://github.com/venchiheng/VILA-LAB-WEBSITE.git
+cd VILA-LAB-WEBSITE/VILA-BACKEND
+```
+
+2. Copy `.env`, configure for production.
+
+3. Build frontend:
+
+```bash
+cd ../VILA-FRONTEND
+npm install
+npm run build
+cp -r dist/* ../VILA-BACKEND/public/
+```
+
+4. Start Docker containers:
+
+```bash
+cd ../VILA-BACKEND
+docker compose up -d
+```
+
+5. Configure Nginx (root → Laravel `public/`):
+
+```nginx
+server {
+    listen 80;
+    server_name yourdomain.com www.yourdomain.com;
+
+    root /var/www/VILA-LAB-WEBSITE/VILA-BACKEND/public;
+    index index.php index.html;
+
+    location / {
+        try_files $uri $uri/ /index.php?$query_string;
+    }
+
+    location ~ \.php$ {
+        include snippets/fastcgi-php.conf;
+        fastcgi_pass unix:/var/run/php/php8.2-fpm.sock;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        include fastcgi_params;
+    }
+}
+```
 ---
 
 ## ⚠️ Common Errors & Fixes
