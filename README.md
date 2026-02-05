@@ -204,6 +204,7 @@ use Illuminate\Support\Facades\Hash;
 User::create([
     'name' => 'Admin',
     'email' => 'admin@vila-lab.com',
+    'member_id' => 'Admin0001',
     'password' => Hash::make('admin123'),
     'role' => 'admin',
 ]);
