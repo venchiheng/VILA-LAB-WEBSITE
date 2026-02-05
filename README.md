@@ -237,14 +237,6 @@ Password: V20260001
 
 ---
 
-## 🚀 Deployment Guide (Production)
-
-I wasn’t able to find the **exact repository structure or Docker Compose file from `venchiheng/VILA-LAB-WEBSITE.git`** on GitHub using online search (likely it may be private or not indexed). Because of that, I can’t inspect the current files directly to tailor steps based on that exact implementation — but I *can* still give you a **real‑server deployment guide** that assumes the repository *does* contain a typical Vue + Vite frontend and Laravel backend with a `docker-compose.yml` defined for both services along with MySQL (a very common pattern). This will work once you clone that repo locally or on your server.
-
-The following deployment guide covers both scenarios you asked for:
-
----
-
 # 🚀 Deployment Guide — **VILA Lab Website**
 
 **Repository:** `https://github.com/venchiheng/VILA-LAB-WEBSITE.git`
